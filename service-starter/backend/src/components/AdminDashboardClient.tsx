@@ -13,6 +13,10 @@ type LoginState = {
   password: string;
 };
 
+function isTestGroup(groupName: string) {
+  return groupName.toUpperCase().includes('TEST');
+}
+
 export default function AdminDashboardClient() {
   const [session, setSession] = useState<SessionInfo | null>(null);
   const [data, setData] = useState<AdminDashboardResponse | null>(null);
@@ -70,6 +74,10 @@ export default function AdminDashboardClient() {
     if (!data || data.summary.peerAssignments === 0) return 0;
     return Math.round((data.summary.peerCompleted / data.summary.peerAssignments) * 100);
   }, [data]);
+
+  const testGroups = useMemo(() => data?.groups.filter((group) => isTestGroup(group.groupName)) ?? [], [data]);
+  const testResponders = useMemo(() => data?.responders.filter((responder) => isTestGroup(responder.groupName)) ?? [], [data]);
+  const testParticipants = useMemo(() => data?.participants.filter((participant) => isTestGroup(participant.groupName)) ?? [], [data]);
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -178,6 +186,22 @@ export default function AdminDashboardClient() {
         </div>
       </div>
 
+      {testParticipants.length > 0 ? (
+        <section className="panel" style={{ marginTop: 22, borderColor: '#ffd5c3', background: 'linear-gradient(135deg, #fff7f1 0%, #fffdfb 100%)' }}>
+          <div className="chip-row" style={{ marginBottom: 12 }}>
+            <span className="chip orange">TEST조</span>
+            <span className="chip blue">내일 테스트용 계정</span>
+          </div>
+          <h2>테스트 그룹 현황</h2>
+          <p className="muted">운영 대상과 별도로 추가한 테스트 전용 계정입니다. 데모, 리허설, 링크 확인 용도로만 사용하면 됩니다.</p>
+          <div className="chip-row" style={{ marginTop: 14 }}>
+            <span className="chip orange">테스트 참가자 {testParticipants.length}명</span>
+            <span className="chip blue">테스트 응답자 {testResponders.length}명</span>
+            <span className="chip green">조 수 {testGroups.length}</span>
+          </div>
+        </section>
+      ) : null}
+
       {data ? (
         <>
           <section className="admin-stat-grid">
@@ -220,7 +244,12 @@ export default function AdminDashboardClient() {
                   <tbody>
                     {data.groups.map((group) => (
                       <tr key={group.groupName}>
-                        <td>{group.groupName}</td>
+                        <td>
+                          <div className="chip-row">
+                            <span>{group.groupName}</span>
+                            {isTestGroup(group.groupName) ? <span className="chip orange">TEST</span> : null}
+                          </div>
+                        </td>
                         <td>{group.members}</td>
                         <td>{group.selfCompleted}/{group.members}</td>
                         <td>{group.reportReady}/{group.members}</td>
@@ -248,7 +277,12 @@ export default function AdminDashboardClient() {
                     {data.responders.map((responder) => (
                       <tr key={responder.responderId}>
                         <td>{responder.nameKo}</td>
-                        <td>{responder.groupName}</td>
+                        <td>
+                          <div className="chip-row">
+                            <span>{responder.groupName}</span>
+                            {isTestGroup(responder.groupName) ? <span className="chip orange">TEST</span> : null}
+                          </div>
+                        </td>
                         <td>{responder.completed}/{responder.total}</td>
                         <td>
                           <span className={`status-pill ${responder.submitted ? 'done' : responder.completed > 0 ? 'progress' : 'pending'}`}>
@@ -283,7 +317,12 @@ export default function AdminDashboardClient() {
                     <tr key={participant.participantId}>
                       <td>{participant.nameKo}</td>
                       <td>{participant.teamName}</td>
-                      <td>{participant.groupName}</td>
+                      <td>
+                        <div className="chip-row">
+                          <span>{participant.groupName}</span>
+                          {isTestGroup(participant.groupName) ? <span className="chip orange">TEST</span> : null}
+                        </div>
+                      </td>
                       <td>
                         <span className={`status-pill ${participant.selfCompleted ? 'done' : 'pending'}`}>
                           {participant.selfCompleted ? '완료' : '대기'}

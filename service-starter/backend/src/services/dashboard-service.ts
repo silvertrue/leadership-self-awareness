@@ -89,7 +89,8 @@ export class DashboardService {
         selfCompleted,
         peerResponseCount,
         expectedPeerCount,
-        reportReady
+        reportReady,
+        reportToken: participant.reportToken ?? null
       };
     });
 

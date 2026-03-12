@@ -77,6 +77,7 @@ export interface AdminDashboardParticipant {
   peerResponseCount: number;
   expectedPeerCount: number;
   reportReady: boolean;
+  reportToken?: string | null;
 }
 
 export interface AdminDashboardResponse {

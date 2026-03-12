@@ -128,60 +128,58 @@ async function main() {
     }
   }
 
-  await prisma.$transaction(async (tx) => {
-    for (const participant of participants) {
-      const tokens = participantTokenMap.get(participant.participant_id);
-      await tx.participant.upsert({
-        where: { participantId: participant.participant_id },
-        update: {
-          nameKo: participant.name_ko,
-          teamName: participant.team_name,
-          groupName: participant.group_name,
-          email: null,
-          selfToken: tokens.selfToken,
-          reportToken: tokens.reportToken,
-          isActive: true
-        },
-        create: {
-          participantId: participant.participant_id,
-          nameKo: participant.name_ko,
-          teamName: participant.team_name,
-          groupName: participant.group_name,
-          email: null,
-          selfToken: tokens.selfToken,
-          reportToken: tokens.reportToken,
-          isActive: true
-        }
-      });
-    }
+  for (const participant of participants) {
+    const tokens = participantTokenMap.get(participant.participant_id);
+    await prisma.participant.upsert({
+      where: { participantId: participant.participant_id },
+      update: {
+        nameKo: participant.name_ko,
+        teamName: participant.team_name,
+        groupName: participant.group_name,
+        email: null,
+        selfToken: tokens.selfToken,
+        reportToken: tokens.reportToken,
+        isActive: true
+      },
+      create: {
+        participantId: participant.participant_id,
+        nameKo: participant.name_ko,
+        teamName: participant.team_name,
+        groupName: participant.group_name,
+        email: null,
+        selfToken: tokens.selfToken,
+        reportToken: tokens.reportToken,
+        isActive: true
+      }
+    });
+  }
 
-    const sequenceByResponder = new Map();
-    for (const assignment of assignments) {
-      const currentSequence = (sequenceByResponder.get(assignment.responder_id) || 0) + 1;
-      sequenceByResponder.set(assignment.responder_id, currentSequence);
+  const sequenceByResponder = new Map();
+  for (const assignment of assignments) {
+    const currentSequence = (sequenceByResponder.get(assignment.responder_id) || 0) + 1;
+    sequenceByResponder.set(assignment.responder_id, currentSequence);
 
-      await tx.peerAssignment.upsert({
-        where: { assignmentId: assignment.assignment_id },
-        update: {
-          responderId: assignment.responder_id,
-          targetId: assignment.target_id,
-          peerToken: responderPeerTokenMap.get(assignment.responder_id),
-          sequenceNo: currentSequence,
-          groupName: assignment.group_name,
-          isActive: assignment.active_yn !== 'N'
-        },
-        create: {
-          assignmentId: assignment.assignment_id,
-          responderId: assignment.responder_id,
-          targetId: assignment.target_id,
-          peerToken: responderPeerTokenMap.get(assignment.responder_id),
-          sequenceNo: currentSequence,
-          groupName: assignment.group_name,
-          isActive: assignment.active_yn !== 'N'
-        }
-      });
-    }
-  });
+    await prisma.peerAssignment.upsert({
+      where: { assignmentId: assignment.assignment_id },
+      update: {
+        responderId: assignment.responder_id,
+        targetId: assignment.target_id,
+        peerToken: responderPeerTokenMap.get(assignment.responder_id),
+        sequenceNo: currentSequence,
+        groupName: assignment.group_name,
+        isActive: assignment.active_yn !== 'N'
+      },
+      create: {
+        assignmentId: assignment.assignment_id,
+        responderId: assignment.responder_id,
+        targetId: assignment.target_id,
+        peerToken: responderPeerTokenMap.get(assignment.responder_id),
+        sequenceNo: currentSequence,
+        groupName: assignment.group_name,
+        isActive: assignment.active_yn !== 'N'
+      }
+    });
+  }
 
   const links = participants.map((participant) => {
     const tokens = participantTokenMap.get(participant.participant_id);

@@ -38,6 +38,14 @@ export class AssignmentRepository {
     return rows.map(mapAssignment);
   }
 
+  async findByResponderId(responderId: string): Promise<PeerAssignment[]> {
+    const rows = await this.db.peerAssignment.findMany({
+      where: { responderId, isActive: true },
+      include: { responder: true, target: true },
+      orderBy: { sequenceNo: 'asc' }
+    });
+    return rows.map(mapAssignment);
+  }
   async findByTargetId(targetId: string): Promise<PeerAssignment[]> {
     const rows = await this.db.peerAssignment.findMany({
       where: { targetId, isActive: true },

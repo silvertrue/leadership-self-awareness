@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SubmissionStatus {
+  not_started
+  draft
+  submitted
+}
+
+enum ReportStatus {
+  waiting_self
+  waiting_peer
+  ready
+  exported
+}
+
+model Participant {
+  participantId String   @id @map("participant_id") @db.VarChar(32)
+  nameKo        String   @map("name_ko") @db.VarChar(100)
+  teamName      String   @map("team_name") @db.VarChar(150)
+  groupName     String   @map("group_name") @db.VarChar(50)
+  email         String?  @db.VarChar(200)
+  selfToken     String?  @unique @map("self_token") @db.VarChar(120)
+  reportToken   String?  @unique @map("report_token") @db.VarChar(120)
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  selfResponse         SelfResponse?
+  responderAssignments PeerAssignment[] @relation("ResponderAssignments")
+  targetAssignments    PeerAssignment[] @relation("TargetAssignments")
+  peerSubmissionBatch  PeerSubmissionBatch?
+  reportRuns           ReportRun[]
+
+  @@map("participants")
+}
+
+model PeerAssignment {
+  assignmentId String   @id @map("assignment_id") @db.VarChar(40)
+  responderId  String   @map("responder_id") @db.VarChar(32)
+  targetId     String   @map("target_id") @db.VarChar(32)
+  peerToken    String   @map("peer_token") @db.VarChar(120)
+  sequenceNo   Int      @map("sequence_no")
+  groupName    String   @map("group_name") @db.VarChar(50)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  responder Participant @relation("ResponderAssignments", fields: [responderId], references: [participantId])
+  target    Participant @relation("TargetAssignments", fields: [targetId], references: [participantId])
+  response  PeerResponse?
+
+  @@unique([responderId, targetId])
+  @@index([responderId])
+  @@index([targetId])
+  @@map("peer_assignments")
+}
+
+model SelfResponse {
+  participantId     String           @id @map("participant_id") @db.VarChar(32)
+  strength1         String           @map("strength_1") @db.VarChar(50)
+  strength1Comment  String           @map("strength_1_comment") @db.Text
+  strength2         String           @map("strength_2") @db.VarChar(50)
+  strength2Comment  String           @map("strength_2_comment") @db.Text
+  growth1           String           @map("growth_1") @db.VarChar(50)
+  growth1Comment    String           @map("growth_1_comment") @db.Text
+  growth2           String           @map("growth_2") @db.VarChar(50)
+  growth2Comment    String           @map("growth_2_comment") @db.Text
+  status            SubmissionStatus @default(submitted)
+  submittedAt       DateTime?        @map("submitted_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+
+  participant Participant @relation(fields: [participantId], references: [participantId])
+
+  @@map("self_responses")
+}
+
+model PeerResponse {
+  assignmentId      String           @id @map("assignment_id") @db.VarChar(40)
+  strength1         String           @map("strength_1") @db.VarChar(50)
+  strength1Comment  String           @map("strength_1_comment") @db.Text
+  strength2         String           @map("strength_2") @db.VarChar(50)
+  strength2Comment  String           @map("strength_2_comment") @db.Text
+  growth1           String           @map("growth_1") @db.VarChar(50)
+  growth1Comment    String           @map("growth_1_comment") @db.Text
+  growth2           String           @map("growth_2") @db.VarChar(50)
+  growth2Comment    String           @map("growth_2_comment") @db.Text
+  freeMessage       String?          @map("free_message") @db.Text
+  status            SubmissionStatus @default(submitted)
+  submittedAt       DateTime?        @map("submitted_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+
+  assignment PeerAssignment @relation(fields: [assignmentId], references: [assignmentId])
+
+  @@map("peer_responses")
+}
+
+model PeerSubmissionBatch {
+  responderId  String           @id @map("responder_id") @db.VarChar(32)
+  submittedAt  DateTime         @map("submitted_at")
+  status       SubmissionStatus @default(submitted)
+
+  responder Participant @relation(fields: [responderId], references: [participantId])
+
+  @@map("peer_submission_batches")
+}
+
+model ReportRun {
+  reportRunId        BigInt       @id @default(autoincrement()) @map("report_run_id")
+  participantId      String       @map("participant_id") @db.VarChar(32)
+  sourceSelfUpdatedAt DateTime?   @map("source_self_updated_at")
+  sourcePeerUpdatedAt DateTime?   @map("source_peer_updated_at")
+  peerResponseCount  Int          @default(0) @map("peer_response_count")
+  reportStatus       ReportStatus @map("report_status")
+  insightTitle       String?      @map("insight_title") @db.Text
+  insightBody        String?      @map("insight_body") @db.Text
+  reportJson         Json         @map("report_json")
+  htmlPath           String?      @map("html_path") @db.Text
+  pdfPath            String?      @map("pdf_path") @db.Text
+  llmModel           String?      @map("llm_model") @db.VarChar(100)
+  llmPromptVersion   String?      @map("llm_prompt_version") @db.VarChar(40)
+  generatedAt        DateTime     @default(now()) @map("generated_at")
+
+  participant Participant @relation(fields: [participantId], references: [participantId])
+
+  @@index([participantId, generatedAt(sort: Desc)])
+  @@map("report_runs")
+}

@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>개인 리포트</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Report Viewer</div>
+        <h1>저장된 자가진단과 Peer 피드백을 바탕으로<br />개인 리포트를 자동 집계합니다</h1>
+        <p>현재 웹앱은 브라우저 저장 데이터를 기준으로 리포트를 즉시 생성합니다. 이후 서버와 GPT 요약 API를 연결하면 같은 구조로 더 자연스러운 문장과 PDF 생성까지 확장할 수 있습니다.</p>
+      </div>
+      <div class="badge">개인 리포트</div>
+    </div>
+
+    <div id="nav"></div>
+
+    <div class="panel">
+      <div class="split-header">
+        <div>
+          <h2>리포트 선택</h2>
+          <p class="muted">참가자별 현재 저장 상태를 바탕으로 리포트를 즉시 다시 계산합니다.</p>
+        </div>
+        <div class="chip-row">
+          <button class="btn secondary" id="downloadCurrentBtn" type="button">현재 리포트 JSON 다운로드</button>
+          <button class="btn secondary" id="downloadAllBtn" type="button">전체 리포트 JSON 다운로드</button>
+        </div>
+      </div>
+      <div class="field" style="margin-top:16px;"><label>팀장 리포트</label><select class="select" id="reportSelect"></select></div>
+      <div id="lockedBanner" style="margin-top:16px;"></div>
+    </div>
+
+    <div class="report-card" id="reportCard"></div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./common.js"></script>
+  <script>
+    byId('nav').innerHTML = renderTopNav('report');
+
+    const lockedParticipantId = AppStore.getQueryParam('participant');
+    const participants = AppStore.getParticipants();
+
+    byId('reportSelect').innerHTML = participants.map(item => `<option value="${item.participant_id}">${item.name_ko} | ${item.team_name}</option>`).join('');
+
+    if (lockedParticipantId && participants.some(item => item.participant_id === lockedParticipantId)) {
+      byId('reportSelect').value = lockedParticipantId;
+      byId('reportSelect').disabled = true;
+      const participant = AppStore.findParticipant(lockedParticipantId);
+      byId('lockedBanner').innerHTML = `<div class="readonly-banner">${participant.name_ko} 팀장 리포트 전용 링크로 열렸습니다. 리포트 선택은 잠겨 있습니다.</div>`;
+    }
+
+    function renderStatus(report) {
+      const statusClass = report.report_ready ? 'done' : ((report.self_completed || report.peer_response_count > 0) ? 'progress' : 'pending');
+      const statusLabel = report.report_ready ? '준비완료' : ((report.self_completed || report.peer_response_count > 0) ? '집계중' : '대기');
+      return `<span class="status-pill ${statusClass}">${statusLabel}</span>`;
+    }
+
+    function renderReport(report) {
+      if (!report) {
+        byId('reportCard').innerHTML = renderEmptyState('리포트를 만들 수 없습니다.', '대상 참가자 정보를 찾지 못했습니다.');
+        return;
+      }
+
+      const selfSection = report.self_completed
+        ? `
+          <div class="field"><label>자가진단 강점</label><div class="chip-row">${report.self_strengths.map(item => `<span class="chip blue">${item.dimension}</span>`).join('')}</div></div>
+          ${report.self_strengths.map(item => `<div class="quote"><strong>강점 판단 근거</strong><br />${item.comment}</div>`).join('')}
+          <div class="field" style="margin-top:12px;"><label>자가진단 성장과제</label><div class="chip-row">${report.self_growths.map(item => `<span class="chip orange">${item.dimension}</span>`).join('')}</div></div>
+          ${report.self_growths.map(item => `<div class="quote"><strong>성장 판단 근거</strong><br />${item.comment}</div>`).join('')}
+        `
+        : renderEmptyState('자가진단이 아직 없습니다.', '자가진단이 저장되면 이 영역에 본인 인식이 자동으로 표시됩니다.');
+
+      const peerSection = report.peer_response_count > 0
+        ? `
+          <div class="field"><label>동료가 본 강점</label><div class="chip-row">${report.peer_strengths.map(item => `<span class="chip green">${item}</span>`).join('')}</div></div>
+          ${report.peer_strength_comments.map(item => `<div class="quote"><strong>요약 강점 코멘트</strong><br />${item}</div>`).join('')}
+          <div class="field" style="margin-top:12px;"><label>동료가 본 성장가능성</label><div class="chip-row">${report.peer_growths.map(item => `<span class="chip orange">${item}</span>`).join('')}</div></div>
+          ${report.peer_growth_comments.map(item => `<div class="quote"><strong>요약 성장가능성 코멘트</strong><br />${item}</div>`).join('')}
+        `
+        : renderEmptyState('Peer 피드백이 아직 없습니다.', '배정된 동료들의 응답이 저장되면 이 영역에 요약 결과가 자동으로 표시됩니다.');
+
+      byId('reportCard').innerHTML = `
+        <div class="report-head">
+          <div>
+            <div class="eyebrow" style="color:#ff6b35;">Personal Report</div>
+            <div class="report-title">${report.participant_name} 팀장 자기인식 리포트</div>
+            <div class="kv">
+              <span>${report.team_name}</span>
+              <span>${report.group_name}</span>
+              <span>ID: ${report.participant_id}</span>
+              <span>Peer 응답 ${report.peer_response_count} / ${report.expected_peer_count}</span>
+            </div>
+          </div>
+          ${renderStatus(report)}
+        </div>
+        <div id="dimensionSummary" style="margin-top:18px;">${renderDimensionSummary('리포트 해석 기준이 되는 6개 Dimension')}</div>
+        <div id="llmNote">${renderLlmSummaryNote()}</div>
+        <div class="callout" style="margin-top:18px;">
+          <h3>${report.insight_title}</h3>
+          <p>${report.insight_body}</p>
+        </div>
+        <div class="report-grid" style="margin-top:18px;">
+          <div class="panel">
+            <h2>내가 본 나</h2>
+            ${selfSection}
+          </div>
+          <div class="panel">
+            <h2>동료가 본 나</h2>
+            ${peerSection}
+          </div>
+        </div>
+        <div class="action-grid" style="margin-top:18px;">
+          ${report.action_plan.map(item => `<div class="panel"><h2>${item.title}</h2><p>${item.body}</p></div>`).join('')}
+        </div>
+      `;
+    }
+
+    function currentReport() {
+      return AppStore.buildDynamicReport(byId('reportSelect').value);
+    }
+
+    byId('reportSelect').addEventListener('change', () => renderReport(currentReport()));
+    byId('downloadCurrentBtn').addEventListener('click', () => {
+      const report = currentReport();
+      if (!report) return;
+      AppStore.downloadJson(`${report.participant_id}-report.json`, report);
+    });
+    byId('downloadAllBtn').addEventListener('click', () => {
+      AppStore.downloadJson('all-reports.json', AppStore.buildAllReports());
+    });
+
+    renderReport(currentReport());
+  </script>
+</body>
+</html>

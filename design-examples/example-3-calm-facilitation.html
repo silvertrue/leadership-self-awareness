@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>예시 디자인 3 - Calm Facilitation</title>
+<style>
+:root{--deep:#1a2740;--slate:#55657b;--line:#d6dee9;--bg:#f3f6fa;--card:#ffffff;--accent:#d96c4f}*{box-sizing:border-box}body{margin:0;padding:24px;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;background:linear-gradient(135deg,#fafcff 0%,#edf2f7 100%);color:var(--deep)}.shell{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:12px}.slide{width:1280px;max-width:100%;aspect-ratio:16/9;display:none;flex-direction:column;background:var(--card);border-radius:30px;overflow:hidden;box-shadow:0 22px 46px rgba(26,39,64,.12)}.slide.active{display:flex}.header{height:82px;padding:0 34px;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.header h1{margin:0;font-size:30px;letter-spacing:-.03em}.brand{color:var(--accent);font-weight:800}.content{flex:1;padding:34px;background:radial-gradient(circle at top right,rgba(217,108,79,.12),transparent 18%),var(--bg)}.hero{display:grid;grid-template-columns:1fr .95fr;gap:18px;height:100%}.panel{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:26px;padding:24px}.eyebrow{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}.title{font-size:52px;line-height:1.05;letter-spacing:-.05em;font-weight:900;margin:10px 0 16px}.copy{margin:0;font-size:18px;line-height:1.65;color:#44556d}.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.stat{border:1px solid var(--line);border-radius:20px;padding:18px;background:#fff}.stat b{display:block;font-size:28px;color:var(--deep);margin-bottom:6px}.stat span{color:var(--slate);font-size:15px;line-height:1.5}.footer{height:42px;padding:0 34px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:#fff;color:#6b7a8d;font-size:12px}.prompt-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;height:100%}.prompt{background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px;display:flex;flex-direction:column;justify-content:space-between}.prompt h3{margin:0 0 12px;font-size:26px;letter-spacing:-.03em}.prompt p{margin:0;font-size:18px;line-height:1.6;color:#425369}.rule{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:15px;color:var(--slate)}.controls{display:flex;justify-content:space-between;align-items:center}.nav{display:flex;gap:10px}.btn{border:none;border-radius:999px;padding:11px 17px;background:var(--deep);color:white;font:inherit;font-weight:800;cursor:pointer}.btn.alt{background:white;color:var(--deep);border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="shell">
+  <section class="slide active">
+    <div class="header"><h1>예시 디자인 3 | Calm Facilitation</h1><div class="brand">SK Enmove</div></div>
+    <div class="content">
+      <div class="hero">
+        <div class="panel">
+          <div class="eyebrow">Facilitator-Friendly</div>
+          <div class="title">차분하게 듣고<br />깊이 있게 말하게 만드는 화면</div>
+          <p class="copy">교육 진행자가 참가자의 속도를 존중하며 운영할 때 어울리는 디자인입니다. 자극적인 장식보다 여백과 문장 리듬을 살려, 집중해서 듣고 쓰게 만드는 분위기를 만듭니다.</p>
+        </div>
+        <div class="panel">
+          <div class="eyebrow">Best For</div>
+          <div class="stat-grid">
+            <div class="stat"><b>Reflection</b><span>개인 성찰 시간에 방해되지 않는 차분한 화면</span></div>
+            <div class="stat"><b>Dialogue</b><span>조별 나눔 직전 질문 제시에 적합</span></div>
+            <div class="stat"><b>Closing</b><span>액션플랜과 마무리 멘트용으로 안정감 제공</span></div>
+            <div class="stat"><b>Focus</b><span>불필요한 정보 없이 핵심만 크게 전달</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><div>차분한 퍼실리테이션형</div><div>1 / 2</div></div>
+  </section>
+  <section class="slide">
+    <div class="header"><h1>예시 디자인 3 | Reflection Prompt</h1><div class="brand">SK Enmove</div></div>
+    <div class="content">
+      <div class="prompt-grid">
+        <div class="prompt"><div><h3>지금 떠오르는 한 문장</h3><p>리포트를 보고 가장 먼저 떠오른 생각이나 감정을 한 문장으로 적어보세요.</p></div><div class="rule">진행 팁: 1분 동안 조용히 생각한 뒤 나누게 합니다.</div></div>
+        <div class="prompt"><div><h3>작게 시작할 행동</h3><p>다음 4주 안에 바로 시도할 수 있는 가장 작은 리더십 행동을 하나 적어보세요.</p></div><div class="rule">진행 팁: 추상적인 다짐보다 구체적인 행동으로 말하게 합니다.</div></div>
+      </div>
+    </div>
+    <div class="footer"><div>리플렉션 질문 슬라이드</div><div>2 / 2</div></div>
+  </section>
+  <div class="controls"><div class="nav"><button class="btn alt" id="prev">이전</button><button class="btn" id="next">다음</button></div><div id="counter">1 / 2</div></div>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let current=0;const counter=document.getElementById('counter');function show(i){current=Math.max(0,Math.min(i,slides.length-1));slides.forEach((s,idx)=>s.classList.toggle('active',idx===current));counter.textContent=`${current+1} / ${slides.length}`;prev.disabled=current===0;next.disabled=current===slides.length-1;}prev.onclick=()=>show(current-1);next.onclick=()=>show(current+1);document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(current+1);if(e.key==='ArrowLeft')show(current-1);});show(0);
+</script>
+</body>
+</html>

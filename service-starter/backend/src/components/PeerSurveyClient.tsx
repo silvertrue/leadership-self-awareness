@@ -1,0 +1,172 @@
+"use client";
+
+import { useEffect, useMemo, useState } from 'react';
+import type { PublicPeerGetResponse } from '../types/api';
+import type { PeerResponse } from '../types/survey';
+import DimensionGuide from './DimensionGuide';
+
+type PeerForm = {
+  assignmentId: string;
+  strength1: string;
+  strength1Comment: string;
+  strength2: string;
+  strength2Comment: string;
+  growth1: string;
+  growth1Comment: string;
+  growth2: string;
+  growth2Comment: string;
+  freeMessage: string;
+};
+
+function validate(form: PeerForm) {
+  if (form.strength1 === form.strength2) return '강점 1과 강점 2는 서로 다른 항목이어야 합니다.';
+  if (form.growth1 === form.growth2) return '성장가능성 1과 성장가능성 2는 서로 다른 항목이어야 합니다.';
+  if (![form.strength1Comment, form.strength2Comment, form.growth1Comment, form.growth2Comment].every((item) => item.trim())) return '응원 메시지를 제외한 모든 필수 문항을 작성해 주세요.';
+  return '';
+}
+
+export default function PeerSurveyClient({ token }: { token: string }) {
+  const [data, setData] = useState<PublicPeerGetResponse | null>(null);
+  const [forms, setForms] = useState<Record<string, PeerForm>>({});
+  const [index, setIndex] = useState(0);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      const response = await fetch(`/api/public/peer/${token}`, { cache: 'no-store' });
+      const payload = await response.json();
+      if (!response.ok) return setError(payload.error || 'Peer 피드백 정보를 불러오지 못했습니다.');
+      setData(payload);
+      const dims = payload.dimensions;
+      const next: Record<string, PeerForm> = {};
+      for (const assignment of payload.assignments) {
+        const saved = payload.responsesByAssignment?.[assignment.assignmentId] || {};
+        next[assignment.assignmentId] = {
+          assignmentId: assignment.assignmentId,
+          strength1: String(saved.strength1 || dims[0]),
+          strength1Comment: String(saved.strength1Comment || ''),
+          strength2: String(saved.strength2 || dims[1]),
+          strength2Comment: String(saved.strength2Comment || ''),
+          growth1: String(saved.growth1 || dims[2]),
+          growth1Comment: String(saved.growth1Comment || ''),
+          growth2: String(saved.growth2 || dims[3]),
+          growth2Comment: String(saved.growth2Comment || ''),
+          freeMessage: String(saved.freeMessage || '')
+        };
+      }
+      setForms(next);
+    }
+    load();
+  }, [token]);
+
+  const currentAssignment = data?.assignments[index];
+  const currentForm = currentAssignment ? forms[currentAssignment.assignmentId] : null;
+  const currentInvalid = currentForm ? validate(currentForm) : '';
+  const completedCount = useMemo(() => {
+    if (!data) return 0;
+    return data.assignments.filter((item) => forms[item.assignmentId] && !validate(forms[item.assignmentId])).length;
+  }, [data, forms]);
+
+  function update(key: keyof PeerForm, value: string) {
+    if (!currentAssignment || !currentForm) return;
+    setForms({ ...forms, [currentAssignment.assignmentId]: { ...currentForm, [key]: value } });
+    setError('');
+    setMessage('');
+  }
+
+  async function saveOne(assignmentId: string) {
+    const form = forms[assignmentId];
+    const invalid = validate(form);
+    if (invalid) throw new Error(invalid);
+    const response = await fetch(`/api/public/peer/${token}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, status: 'submitted' } as PeerResponse)
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || '저장에 실패했습니다.');
+  }
+
+  async function saveCurrent(nextStep: number) {
+    if (!currentAssignment || !data) return;
+    try {
+      setBusy(true);
+      await saveOne(currentAssignment.assignmentId);
+      setMessage('현재 대상 응답이 저장되었습니다.');
+      setIndex((prev) => Math.max(0, Math.min(data.assignments.length - 1, prev + nextStep)));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '저장에 실패했습니다.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function submitAll() {
+    if (!data) return;
+    try {
+      setBusy(true);
+      for (const item of data.assignments) await saveOne(item.assignmentId);
+      const response = await fetch(`/api/public/peer/${token}/submit`, { method: 'POST' });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || '최종 제출에 실패했습니다.');
+      setMessage('배정된 모든 대상에 대한 응답이 최종 제출되었습니다.');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '최종 제출에 실패했습니다.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (error && !data) return <main className="page-shell"><div className="error-box">{error}</div></main>;
+  if (!data || !currentAssignment || !currentForm) return <main className="page-shell"><div className="panel">불러오는 중...</div></main>;
+
+  return (
+    <main className="page-shell">
+      <section className="page-hero">
+        <div>
+          <div className="eyebrow">Peer 피드백</div>
+          <h1>배정된 동료를 한 명씩 평가하고 모든 필수 문항 작성 후 최종 제출해 주세요</h1>
+          <p>응원 메시지만 선택 입력입니다. 나머지 필수 문항이 모두 작성되어야 저장과 최종 제출이 가능합니다.</p>
+        </div>
+        <div className="hero-badge">평가자용</div>
+      </section>
+      <div className="meta-card">
+        <div><div className="meta-label">응답자</div><div className="meta-value">{data.responder.nameKo}</div></div>
+        <div><div className="meta-label">그룹</div><div className="meta-value">{data.responder.groupName}</div></div>
+        <div><div className="meta-label">완료 현황</div><div className="meta-value">{completedCount} / {data.assignments.length}</div></div>
+      </div>
+      <div className="panel" style={{ marginTop: 22 }}>
+        <h2>평가 대상</h2>
+        <div className="progress-grid">
+          {data.assignments.map((item, idx) => {
+            const done = forms[item.assignmentId] && !validate(forms[item.assignmentId]);
+            return <button key={item.assignmentId} type="button" className={`assignment-card${idx===index?' active':''}${done?' completed':''}`} onClick={() => setIndex(idx)} style={{ textAlign:'left', cursor:'pointer' }}><div className={`status-pill ${done?'done':idx===index?'progress':'pending'}`}>{done?'완료':idx===index?'작성 중':'대기'}</div><h3 style={{ marginTop:12 }}>{item.target.nameKo}</h3><div className="muted">{item.target.teamName}</div></button>;
+          })}
+        </div>
+      </div>
+      <div className="grid-2">
+        <div className="panel">
+          <h2>현재 평가 대상: {currentAssignment.target.nameKo}</h2>
+          {error ? <div className="error-box" style={{ marginTop: 16 }}>{error}</div> : null}
+          {message ? <div className="message">{message}</div> : null}
+          {!currentInvalid ? null : <div className="notice">저장 가능 조건: {currentInvalid}</div>}
+          <div className="form-grid">
+            <div className="field"><label>강점 1</label><select className="select" value={currentForm.strength1} onChange={(e) => update('strength1', e.target.value)}>{data.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+            <div className="field"><label>강점 1 판단 근거</label><textarea className="textarea" value={currentForm.strength1Comment} onChange={(e) => update('strength1Comment', e.target.value)} /></div>
+            <div className="field"><label>강점 2</label><select className="select" value={currentForm.strength2} onChange={(e) => update('strength2', e.target.value)}>{data.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+            <div className="field"><label>강점 2 판단 근거</label><textarea className="textarea" value={currentForm.strength2Comment} onChange={(e) => update('strength2Comment', e.target.value)} /></div>
+            <div className="field"><label>성장가능성 1</label><select className="select" value={currentForm.growth1} onChange={(e) => update('growth1', e.target.value)}>{data.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+            <div className="field"><label>성장가능성 1 판단 근거</label><textarea className="textarea" value={currentForm.growth1Comment} onChange={(e) => update('growth1Comment', e.target.value)} /></div>
+            <div className="field"><label>성장가능성 2</label><select className="select" value={currentForm.growth2} onChange={(e) => update('growth2', e.target.value)}>{data.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+            <div className="field"><label>성장가능성 2 판단 근거</label><textarea className="textarea" value={currentForm.growth2Comment} onChange={(e) => update('growth2Comment', e.target.value)} /></div>
+            <div className="field full"><label>응원 메시지</label><textarea className="textarea" value={currentForm.freeMessage} onChange={(e) => update('freeMessage', e.target.value)} /><div className="notice">동료에게 평소 해 주고 싶었던 메시지를 작성해 주세요!</div></div>
+          </div>
+          <div className="button-row"><button className="btn secondary" disabled={busy || index===0} onClick={() => setIndex((prev) => Math.max(0, prev-1))}>이전</button><button className="btn secondary" disabled={busy || Boolean(currentInvalid)} onClick={() => saveCurrent(0)}>현재 대상 저장</button><button className="btn" disabled={busy || Boolean(currentInvalid)} onClick={() => saveCurrent(1)}>저장 후 다음</button></div>
+        </div>
+        <div><DimensionGuide title="6개 Dimension 안내" /><div className="panel" style={{ marginTop:20 }}><h2>최종 제출</h2><p className="muted">배정된 대상 모두가 완료 상태가 되어야 최종 제출이 가능합니다.</p><div className="button-row"><button className="btn" disabled={busy || completedCount !== data.assignments.length} onClick={submitAll}>최종 제출</button></div></div></div>
+      </div>
+    </main>
+  );
+}

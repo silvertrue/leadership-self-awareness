@@ -1,0 +1,39 @@
+﻿{
+  "participant": {
+    "participantId": "TL002",
+    "nameKo": "고인석",
+    "teamName": "Global최적화팀",
+    "groupName": "1조"
+  },
+  "reportStatus": "ready",
+  "peerResponseCount": 4,
+  "expectedPeerCount": 4,
+  "selfCompleted": true,
+  "report": {
+    "selfStrengths": [
+      { "dimension": "Leadership", "comment": "복잡한 상황에서도 우선순위를 정리해 팀의 방향을 제시해왔다." },
+      { "dimension": "전문성", "comment": "핵심 사업 이슈를 빠르게 이해하고 실행 판단으로 연결해왔다." }
+    ],
+    "selfGrowths": [
+      { "dimension": "Learning Agility", "comment": "AI 활용 경험을 더 넓히고 싶다." },
+      { "dimension": "Design 역량", "comment": "문제 구조화를 더 선명하게 하고 싶다." }
+    ],
+    "peerStrengths": ["Leadership", "Attitude"],
+    "peerGrowths": ["Learning Agility", "Design 역량"],
+    "peerStrengthComments": [
+      "총 4명의 동료 응답을 종합하면 Leadership과 Attitude가 반복적으로 언급되었습니다.",
+      "특히 방향을 정리해 팀을 안정감 있게 이끄는 모습과 협업 과정에서 신뢰를 주는 태도가 긍정적으로 인식되고 있습니다."
+    ],
+    "peerGrowthComments": [
+      "총 4명의 동료 응답을 종합하면 Learning Agility와 Design 역량이 반복적으로 언급되었습니다.",
+      "특히 AI와 새로운 맥락을 더 적극적으로 흡수하고, 이슈를 더 선명하게 구조화하면 영향력이 커질 것으로 기대됩니다."
+    ],
+    "insightTitle": "성장 우선순위가 Learning Agility에서 맞닿아 있습니다.",
+    "insightBody": "본인과 동료가 같은 성장 포인트를 보고 있다는 뜻입니다. 이번 워크샵에서는 바로 행동으로 옮길 첫 실험을 만드는 것이 효과적입니다.",
+    "actionPlan": [
+      { "title": "계속 강화할 강점", "body": "Leadership을 회의와 1on1에서 더 의식적으로 사용해보세요." },
+      { "title": "이번 달 실험 행동", "body": "Learning Agility와 연결된 작은 행동 하나를 2주 안에 실행해보세요." },
+      { "title": "동료와 나눌 질문", "body": "내가 Leadership을 잘 쓰는 순간과 Learning Agility가 더 필요해 보이는 순간을 물어보세요." }
+    ]
+  }
+}

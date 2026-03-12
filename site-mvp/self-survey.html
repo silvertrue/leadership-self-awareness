@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자가진단</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Self Survey</div>
+        <h1>강점 2개, 성장 필요 2개를 선택하고<br />각 항목의 판단 근거를 남깁니다</h1>
+        <p>실제 서비스에서는 개인별 고유 링크로 접속하면 본인 폼이 바로 열리도록 운영할 수 있습니다. 현재 화면도 URL 파라미터로 특정 팀장을 바로 여는 방식을 지원합니다.</p>
+      </div>
+      <div class="badge">참가자용</div>
+    </div>
+
+    <div id="nav"></div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="split-header">
+          <div>
+            <h2>입력 폼</h2>
+            <p class="muted">모든 항목은 필수이며, 강점 1/2와 성장 필요 1/2는 각각 서로 달라야 합니다.</p>
+          </div>
+          <div class="field" style="min-width:280px; margin:0;">
+            <label>팀장 선택</label>
+            <select class="select" id="participantSelect"></select>
+          </div>
+        </div>
+        <div id="lockedBanner" style="margin-top:16px;"></div>
+        <div class="form-grid" style="margin-top:18px;">
+          <div class="field"><label>강점 1</label><select class="select" id="strength1"></select></div>
+          <div class="field"><label>강점 1 판단 근거</label><textarea class="textarea" id="strength1Comment" placeholder="왜 이 항목을 강점으로 보았는지 실제 장면 중심으로 작성"></textarea></div>
+          <div class="field"><label>강점 2</label><select class="select" id="strength2"></select></div>
+          <div class="field"><label>강점 2 판단 근거</label><textarea class="textarea" id="strength2Comment" placeholder="강점 1과 다른 근거를 적어주세요"></textarea></div>
+          <div class="field"><label>성장 필요 1</label><select class="select" id="growth1"></select></div>
+          <div class="field"><label>성장 필요 1 판단 근거</label><textarea class="textarea" id="growth1Comment" placeholder="현재 더 보완하고 싶은 장면을 적어주세요"></textarea></div>
+          <div class="field"><label>성장 필요 2</label><select class="select" id="growth2"></select></div>
+          <div class="field"><label>성장 필요 2 판단 근거</label><textarea class="textarea" id="growth2Comment" placeholder="성장 필요 1과 다른 관점의 근거를 적어주세요"></textarea></div>
+          <div class="form-actions">
+            <span class="notice" id="saveState">아직 저장 전입니다.</span>
+            <button class="btn" id="saveBtn" type="button">저장하기</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>응답 가이드</h2>
+        <div class="summary-kpi" style="margin-top:16px;">
+          <div class="note-box"><strong>2개</strong><p>강점 선택</p></div>
+          <div class="note-box"><strong>2개</strong><p>성장 필요 선택</p></div>
+          <div class="note-box"><strong>100%</strong><p>모든 항목 필수</p></div>
+        </div>
+        <div class="note-box" style="margin-top:16px;">
+          <p>정답을 맞히는 것이 아니라 현재의 나를 가장 잘 설명하는 Dimension을 선택합니다. 추상적 인상보다 실제 행동과 경험의 근거를 남길수록 리포트의 질이 좋아집니다.</p>
+        </div>
+        <div id="dimensionSummary" style="margin-top:16px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./common.js"></script>
+  <script>
+    byId('nav').innerHTML = renderTopNav('self');
+    byId('dimensionSummary').innerHTML = renderDimensionSummary('자가진단 전에 보는 6개 Dimension');
+
+    const dimensions = AppStore.dimensions;
+    const participants = AppStore.getParticipants();
+    const lockedParticipantId = AppStore.getQueryParam('participant');
+
+    function fillOptions(id, defaultIndex) {
+      byId(id).innerHTML = dimensions.map(item => `<option value="${item}">${item}</option>`).join('');
+      byId(id).selectedIndex = defaultIndex;
+    }
+
+    fillOptions('strength1', 0);
+    fillOptions('strength2', 1);
+    fillOptions('growth1', 2);
+    fillOptions('growth2', 3);
+
+    byId('participantSelect').innerHTML = participants.map(item => `<option value="${item.participant_id}">${item.name_ko} | ${item.team_name}</option>`).join('');
+
+    if (lockedParticipantId && participants.some(item => item.participant_id === lockedParticipantId)) {
+      byId('participantSelect').value = lockedParticipantId;
+      byId('participantSelect').disabled = true;
+      const participant = AppStore.findParticipant(lockedParticipantId);
+      byId('lockedBanner').innerHTML = `<div class="readonly-banner">${participant.name_ko} 팀장 전용 링크로 열렸습니다. 참가자 선택은 잠겨 있습니다.</div>`;
+    }
+
+    function currentParticipantId() {
+      return byId('participantSelect').value;
+    }
+
+    function currentPayload() {
+      return {
+        participant_id: currentParticipantId(),
+        strength1: byId('strength1').value,
+        strength1Comment: byId('strength1Comment').value,
+        strength2: byId('strength2').value,
+        strength2Comment: byId('strength2Comment').value,
+        growth1: byId('growth1').value,
+        growth1Comment: byId('growth1Comment').value,
+        growth2: byId('growth2').value,
+        growth2Comment: byId('growth2Comment').value
+      };
+    }
+
+    function ensureDistinct(changedId, otherId, label) {
+      const changed = byId(changedId);
+      const other = byId(otherId);
+      if (changed.value === other.value) {
+        changed.value = dimensions.find(item => item !== other.value) || changed.value;
+        alert(`${label}은(는) 서로 다른 항목을 선택해야 합니다.`);
+      }
+    }
+
+    function fillForm() {
+      const payload = AppStore.getSelfResponse(currentParticipantId());
+      byId('strength1').value = payload.strength1;
+      byId('strength1Comment').value = payload.strength1Comment;
+      byId('strength2').value = payload.strength2;
+      byId('strength2Comment').value = payload.strength2Comment;
+      byId('growth1').value = payload.growth1;
+      byId('growth1Comment').value = payload.growth1Comment;
+      byId('growth2').value = payload.growth2;
+      byId('growth2Comment').value = payload.growth2Comment;
+      byId('saveState').textContent = AppStore.validateSelfPayload(payload) ? '저장된 초안이 있습니다. 필수 항목을 확인해 주세요.' : '저장된 완료 응답이 있습니다.';
+    }
+
+    byId('participantSelect').addEventListener('change', fillForm);
+    byId('strength1').addEventListener('change', () => ensureDistinct('strength1', 'strength2', '강점 1/2'));
+    byId('strength2').addEventListener('change', () => ensureDistinct('strength2', 'strength1', '강점 1/2'));
+    byId('growth1').addEventListener('change', () => ensureDistinct('growth1', 'growth2', '성장 필요 1/2'));
+    byId('growth2').addEventListener('change', () => ensureDistinct('growth2', 'growth1', '성장 필요 1/2'));
+
+    byId('saveBtn').addEventListener('click', () => {
+      const payload = currentPayload();
+      const error = AppStore.validateSelfPayload(payload);
+      if (error) {
+        alert(error);
+        return;
+      }
+      AppStore.saveSelfResponse(payload);
+      byId('saveState').textContent = '저장되었습니다. 운영 대시보드와 개인 리포트에 바로 반영됩니다.';
+      alert('자가진단이 저장되었습니다.');
+    });
+
+    fillForm();
+  </script>
+</body>
+</html>

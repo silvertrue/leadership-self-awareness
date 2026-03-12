@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>예시 디자인 1 - Bold Keynote</title>
+<style>
+:root{--navy:#101d36;--orange:#ff6b35;--cream:#fff8f1;--ink:#152033;}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;background:linear-gradient(135deg,#f8fbff 0%,#edf3fa 100%);padding:24px;color:var(--ink)}
+.shell{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:12px}.slide{width:1280px;max-width:100%;aspect-ratio:16/9;border-radius:32px;overflow:hidden;display:none;flex-direction:column;box-shadow:0 24px 50px rgba(16,29,54,.15)}.slide.active{display:flex}.header{height:86px;padding:0 34px;display:flex;justify-content:space-between;align-items:center;background:#fff}.badge{padding:8px 12px;border-radius:999px;background:#eef4fb;color:var(--navy);font-size:12px;font-weight:800}.brand{font-weight:800;color:var(--orange)}.content{flex:1;padding:34px;background:radial-gradient(circle at top right,rgba(255,107,53,.18),transparent 24%),linear-gradient(135deg,#fff 0%,#fff8f1 100%)}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;height:100%}.title{font-size:64px;line-height:1.02;letter-spacing:-.05em;font-weight:900;color:var(--navy);margin:12px 0 18px}.copy{font-size:20px;line-height:1.6;color:#3b4a5f;margin:0}.box{background:rgba(255,255,255,.92);border:1px solid #e4eaf2;border-radius:28px;padding:24px}.eyebrow{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--orange)}.pill-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.pill{padding:9px 13px;border-radius:999px;background:#fff1e9;color:#b44d25;font-weight:800;font-size:13px}.right-stack{display:grid;gap:16px}.impact{background:linear-gradient(180deg,#14243f 0%,#203b66 100%);color:#fff;border:none}.impact h2,.flow h2{margin:0 0 8px;font-size:26px;letter-spacing:-.03em}.impact p,.flow p{margin:0;font-size:17px;line-height:1.6}.flow{background:#fff}.footer{height:42px;padding:0 34px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e4eaf2;background:#fff;color:#6a7a90;font-size:12px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;height:100%}.card{background:#fff;border:1px solid #e4eaf2;border-radius:24px;padding:22px}.card h3{margin:0 0 10px;font-size:24px;color:var(--navy)}.card p{margin:0;font-size:17px;line-height:1.6;color:#405166}.line{height:4px;border-radius:999px;background:linear-gradient(90deg,var(--orange),#ffb08f);margin:14px 0 18px}.controls{display:flex;justify-content:space-between;align-items:center}.nav{display:flex;gap:10px}.btn{border:none;border-radius:999px;padding:11px 17px;background:var(--navy);color:#fff;font:inherit;font-weight:800;cursor:pointer}.btn.alt{background:#fff;color:var(--navy);border:1px solid #d8e2ee}
+</style>
+</head>
+<body>
+<div class="shell">
+  <section class="slide active">
+    <div class="header"><span class="badge">EXAMPLE 1 | BOLD KEYNOTE</span><span class="brand">SK Enmove</span></div>
+    <div class="content">
+      <div class="hero">
+        <div class="box">
+          <div class="eyebrow">Opening Slide</div>
+          <div class="title">나를 해석하고<br />팀을 더 잘 이끄는 리더로</div>
+          <p class="copy">교육 진행자가 첫 30초에 메시지를 명확하게 던질 수 있도록 만든 강한 오프닝형 디자인입니다. 설명보다 분위기와 방향성을 먼저 잡는 데 적합합니다.</p>
+          <div class="pill-row"><span class="pill">오프닝용</span><span class="pill">강한 메시지</span><span class="pill">대형 화면 최적화</span></div>
+        </div>
+        <div class="right-stack">
+          <div class="box impact"><h2>진행 멘트 예시</h2><p>“오늘은 내가 가진 강점과 동료가 기대하는 성장을 동시에 보는 시간입니다.”</p></div>
+          <div class="box flow"><h2>이 디자인이 맞는 장면</h2><p>세션 시작, 클로징, 전환 슬라이드처럼 한 문장 메시지가 중요할 때 가장 효과적입니다.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><div>교육 진행용 시안</div><div>1 / 2</div></div>
+  </section>
+  <section class="slide">
+    <div class="header"><span class="badge">EXAMPLE 1 | PAGE 2</span><span class="brand">SK Enmove</span></div>
+    <div class="content">
+      <div class="grid">
+        <div class="card"><h3>질문 1</h3><div class="line"></div><p>동료 피드백 중 가장 새롭게 보인 강점은 무엇인가요?</p></div>
+        <div class="card"><h3>질문 2</h3><div class="line"></div><p>내 인식과 동료 인식 사이에서 가장 의미 있는 차이는 어디였나요?</p></div>
+        <div class="card"><h3>질문 3</h3><div class="line"></div><p>다음 4주 안에 실험할 행동 하나를 정한다면 무엇인가요?</p></div>
+      </div>
+    </div>
+    <div class="footer"><div>토론 질문 제시 슬라이드</div><div>2 / 2</div></div>
+  </section>
+  <div class="controls"><div class="nav"><button class="btn alt" id="prev">이전</button><button class="btn" id="next">다음</button></div><div id="counter">1 / 2</div></div>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let current=0;const counter=document.getElementById('counter');function show(i){current=Math.max(0,Math.min(i,slides.length-1));slides.forEach((s,idx)=>s.classList.toggle('active',idx===current));counter.textContent=`${current+1} / ${slides.length}`;document.getElementById('prev').disabled=current===0;document.getElementById('next').disabled=current===slides.length-1;}document.getElementById('prev').onclick=()=>show(current-1);document.getElementById('next').onclick=()=>show(current+1);document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(current+1);if(e.key==='ArrowLeft')show(current-1);});show(0);
+</script>
+</body>
+</html>

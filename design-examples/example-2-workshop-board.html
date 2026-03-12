@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>예시 디자인 2 - Workshop Board</title>
+<style>
+:root{--navy:#17304f;--sky:#dfeeff;--paper:#fffdf7;--yellow:#fff0a8;--mint:#dff6ea;--pink:#ffe4dc;--ink:#1c2940}*{box-sizing:border-box}body{margin:0;padding:24px;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;background:linear-gradient(135deg,#f6fbff 0%,#ebf2f8 100%);color:var(--ink)}.shell{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:12px}.slide{width:1280px;max-width:100%;aspect-ratio:16/9;display:none;flex-direction:column;overflow:hidden;border-radius:28px;box-shadow:0 24px 48px rgba(23,48,79,.14);background:#f7fbff}.slide.active{display:flex}.header{height:84px;background:var(--navy);color:#fff;padding:0 32px;display:flex;justify-content:space-between;align-items:center}.header h1{margin:0;font-size:30px}.content{flex:1;padding:26px 30px;background-image:linear-gradient(rgba(23,48,79,.05) 1px, transparent 1px),linear-gradient(90deg, rgba(23,48,79,.05) 1px, transparent 1px);background-size:24px 24px}.board{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;height:100%}.note{background:var(--paper);border:1px solid #e5e1cf;border-radius:20px;padding:22px;box-shadow:0 10px 20px rgba(23,48,79,.08)}.big{font-size:50px;line-height:1.08;letter-spacing:-.05em;font-weight:900;margin:8px 0 16px;color:var(--navy)}.copy{font-size:19px;line-height:1.6;margin:0;color:#3f5067}.stack{display:grid;gap:16px}.sticky{border-radius:22px;padding:18px;transform:rotate(-1deg)}.yellow{background:var(--yellow)}.mint{background:var(--mint);transform:rotate(1deg)}.pink{background:var(--pink)}.sticky h3,.note h2{margin:0 0 10px;font-size:24px;color:var(--navy)}.sticky p,.note p{margin:0;font-size:16px;line-height:1.6}.footer{height:42px;padding:0 32px;border-top:1px solid #d9e3ef;display:flex;justify-content:space-between;align-items:center;background:#fff;color:#66768b;font-size:12px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;height:100%}.card{background:white;border:1px solid #d9e3ef;border-radius:22px;padding:20px;position:relative}.num{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:800}.card h3{margin:0 0 12px;font-size:22px;color:var(--navy);padding-right:42px}.card p{margin:0;font-size:16px;line-height:1.6;color:#42546a}.controls{display:flex;justify-content:space-between;align-items:center}.nav{display:flex;gap:10px}.btn{border:none;border-radius:999px;padding:11px 17px;background:var(--navy);color:white;font:inherit;font-weight:800;cursor:pointer}.btn.alt{background:white;color:var(--navy);border:1px solid #d8e2ee}
+</style>
+</head>
+<body>
+<div class="shell">
+  <section class="slide active">
+    <div class="header"><h1>예시 디자인 2 | Workshop Board</h1><strong>SK Enmove</strong></div>
+    <div class="content">
+      <div class="board">
+        <div class="note">
+          <div style="font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#ff6b35;">Workshop Mood</div>
+          <div class="big">서로의 시선으로<br />나를 다시 읽는 시간</div>
+          <p class="copy">조별 활동이 많은 교육에서 잘 맞는 디자인입니다. 참가자들이 벽에 붙은 워크샵 보드를 보는 느낌으로, 질문과 진행 규칙을 자연스럽게 받아들이게 합니다.</p>
+        </div>
+        <div class="stack">
+          <div class="sticky yellow"><h3>오늘의 원칙</h3><p>판단보다 관찰, 비교보다 나눔, 충고보다 질문</p></div>
+          <div class="sticky mint"><h3>진행자 역할</h3><p>말을 많이 하기보다, 생각이 나오도록 질문을 던지는 사람</p></div>
+          <div class="sticky pink"><h3>활용 장면</h3><p>오프닝, 조별 안내, 포스트잇 활동, 리플렉션 질문 제시에 적합</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><div>워크샵 보드형 오프닝</div><div>1 / 2</div></div>
+  </section>
+  <section class="slide">
+    <div class="header"><h1>예시 디자인 2 | Group Prompt</h1><strong>SK Enmove</strong></div>
+    <div class="content">
+      <div class="cards">
+        <div class="card"><div class="num">1</div><h3>보인 강점</h3><p>오늘 리포트에서 가장 새롭게 보인 강점은 무엇인가요?</p></div>
+        <div class="card"><div class="num">2</div><h3>의미 있는 차이</h3><p>내 인식과 동료 인식 사이에서 가장 의미 있는 차이는 무엇이었나요?</p></div>
+        <div class="card"><div class="num">3</div><h3>이유 해석</h3><p>왜 그런 차이가 생겼다고 생각하나요?</p></div>
+        <div class="card"><div class="num">4</div><h3>다음 행동</h3><p>앞으로 4주 안에 시도해볼 가장 작은 행동은 무엇인가요?</p></div>
+      </div>
+    </div>
+    <div class="footer"><div>조별 질문 보드</div><div>2 / 2</div></div>
+  </section>
+  <div class="controls"><div class="nav"><button class="btn alt" id="prev">이전</button><button class="btn" id="next">다음</button></div><div id="counter">1 / 2</div></div>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let current=0;const counter=document.getElementById('counter');function show(i){current=Math.max(0,Math.min(i,slides.length-1));slides.forEach((s,idx)=>s.classList.toggle('active',idx===current));counter.textContent=`${current+1} / ${slides.length}`;prev.disabled=current===0;next.disabled=current===slides.length-1;}prev.onclick=()=>show(current-1);next.onclick=()=>show(current+1);document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(current+1);if(e.key==='ArrowLeft')show(current-1);});show(0);
+</script>
+</body>
+</html>

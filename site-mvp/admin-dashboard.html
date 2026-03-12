@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>운영 대시보드</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Admin Dashboard</div>
+        <h1>응답 수집 상태와 리포트 준비도를<br />운영자 관점에서 한눈에 확인</h1>
+        <p>자가진단 완료율, Peer 작성 진행률, 개인 리포트 준비 상태를 같은 기준으로 집계합니다. 현재 저장된 응답을 JSON으로 바로 내보낼 수도 있습니다.</p>
+      </div>
+      <div class="badge">운영자용</div>
+    </div>
+
+    <div id="nav"></div>
+
+    <div class="toolbar">
+      <div class="chip-row">
+        <button class="btn secondary" id="exportResponsesBtn" type="button">응답 데이터 다운로드</button>
+        <button class="btn secondary" id="exportReportsBtn" type="button">리포트 데이터 다운로드</button>
+      </div>
+      <div class="notice">현재 브라우저에 저장된 데이터 기준</div>
+    </div>
+
+    <div class="metric-grid" id="metrics"></div>
+
+    <div class="two-col">
+      <div class="table-card">
+        <h2>그룹별 현황</h2>
+        <table class="table" id="groupTable"></table>
+      </div>
+      <div class="table-card">
+        <h2>응답자별 Peer 진행률</h2>
+        <table class="table" id="responderTable"></table>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h2>참가자별 리포트 준비 상태</h2>
+      <table class="table" id="participantTable"></table>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./common.js"></script>
+  <script>
+    byId('nav').innerHTML = renderTopNav('admin');
+
+    const participants = AppStore.getParticipants();
+    const assignments = AppStore.getAssignments();
+    const reports = AppStore.buildAllReports();
+    const stats = AppStore.getDashboardStats();
+    const groups = formatCountByGroup().map(group => {
+      const members = participants.filter(item => item.group_name === group.group);
+      const selfCompleted = members.filter(item => !AppStore.validateSelfPayload(AppStore.getSelfResponse(item.participant_id))).length;
+      const reportReady = members.filter(item => AppStore.buildDynamicReport(item.participant_id)?.report_ready).length;
+      return {
+        ...group,
+        selfCompleted,
+        reportReady
+      };
+    });
+    const responders = AppStore.uniqueBy(assignments, 'responder_id').map(item => AppStore.getResponderProgress(item.responder_id));
+
+    byId('metrics').innerHTML = `
+      <div class="metric"><strong>${stats.participantCount}</strong><p>전체 팀장 수</p></div>
+      <div class="metric"><strong>${stats.selfCompleted}</strong><p>자가진단 완료</p></div>
+      <div class="metric"><strong>${stats.peerSubmitted}</strong><p>Peer 최종 제출 완료</p></div>
+      <div class="metric"><strong>${stats.reportReady}</strong><p>리포트 준비 완료</p></div>
+    `;
+
+    byId('groupTable').innerHTML = `
+      <thead><tr><th>Group</th><th>Members</th><th>자가진단 완료</th><th>리포트 준비</th><th>1인 평가 수</th></tr></thead>
+      <tbody>${groups.map(group => `<tr><td>${group.group}</td><td>${group.members}</td><td>${group.selfCompleted} / ${group.members}</td><td>${group.reportReady} / ${group.members}</td><td>${group.targets}</td></tr>`).join('')}</tbody>
+    `;
+
+    byId('responderTable').innerHTML = `
+      <thead><tr><th>응답자</th><th>Group</th><th>작성 현황</th><th>최종 제출</th><th>바로가기</th></tr></thead>
+      <tbody>${responders.map(item => `
+        <tr>
+          <td>${item.responder_name} (${item.responder_id})</td>
+          <td>${item.group_name}</td>
+          <td>${item.completed} / ${item.total}</td>
+          <td><span class="status-pill ${item.submitted ? 'done' : (item.completed > 0 ? 'progress' : 'pending')}">${item.submitted ? '제출완료' : (item.completed > 0 ? '작성중' : '미작성')}</span></td>
+          <td><a class="tag" href="./peer-survey.html?responder=${item.responder_id}">열기</a></td>
+        </tr>
+      `).join('')}</tbody>
+    `;
+
+    byId('participantTable').innerHTML = `
+      <thead><tr><th>이름</th><th>팀</th><th>자가진단</th><th>Peer 수신</th><th>리포트 상태</th><th>리포트</th></tr></thead>
+      <tbody>${reports.map(report => `
+        <tr>
+          <td>${report.participant_name}</td>
+          <td>${report.team_name}</td>
+          <td><span class="status-pill ${report.self_completed ? 'done' : 'pending'}">${report.self_completed ? '완료' : '미완료'}</span></td>
+          <td>${report.peer_response_count} / ${report.expected_peer_count}</td>
+          <td><span class="status-pill ${report.report_ready ? 'done' : (report.peer_response_count > 0 || report.self_completed ? 'progress' : 'pending')}">${report.report_ready ? '준비완료' : (report.peer_response_count > 0 || report.self_completed ? '집계중' : '대기')}</span></td>
+          <td><a class="tag" href="./report-viewer.html?participant=${report.participant_id}">열기</a></td>
+        </tr>
+      `).join('')}</tbody>
+    `;
+
+    byId('exportResponsesBtn').addEventListener('click', () => {
+      const payload = {
+        exported_at: new Date().toISOString(),
+        self_responses: participants.map(item => AppStore.getSelfResponse(item.participant_id)),
+        peer_responses: assignments.map(item => AppStore.getPeerResponse(item.assignment_id)),
+        peer_submissions: responders.map(item => ({ responder_id: item.responder_id, submitted: item.submitted }))
+      };
+      AppStore.downloadJson('self-awareness-responses.json', payload);
+    });
+
+    byId('exportReportsBtn').addEventListener('click', () => {
+      AppStore.downloadJson('self-awareness-reports.json', reports);
+    });
+  </script>
+</body>
+</html>

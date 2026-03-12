@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자기인식 세션 웹앱</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Self Awareness Web App</div>
+        <h1>자가진단, Peer 피드백, 운영 현황, 개인 리포트를<br />한 흐름으로 연결한 실제 동작형 웹앱</h1>
+        <p>현재 환경에서는 브라우저 저장 기반으로 동작하지만, 설문 수집과 리포트 집계 흐름은 실제 운영 형태에 가깝게 구성했습니다. 이후 API와 DB만 연결하면 서비스형으로 확장할 수 있습니다.</p>
+      </div>
+      <div class="badge">SK Enmove</div>
+    </div>
+
+    <div id="nav"></div>
+    <div class="metric-grid" id="metrics"></div>
+
+    <div class="nav-grid">
+      <a class="nav-card" href="./admin-dashboard.html">
+        <h2>운영 대시보드</h2>
+        <p>응답 현황, 미완료 인원, 리포트 준비 상태, 내보내기 기능까지 운영자 관점에서 확인합니다.</p>
+      </a>
+      <a class="nav-card" href="./self-survey.html">
+        <h2>자가진단</h2>
+        <p>팀장 본인이 6개 Dimension 기준으로 강점과 성장 필요 영역을 선택하고 근거를 남깁니다.</p>
+      </a>
+      <a class="nav-card" href="./peer-survey.html">
+        <h2>Peer 피드백</h2>
+        <p>배정된 4명을 순서대로 평가하고, 4명 모두 완료해야 최종 제출되는 방식으로 진행합니다.</p>
+      </a>
+      <a class="nav-card" href="./report-viewer.html">
+        <h2>개인 리포트</h2>
+        <p>저장된 응답을 바탕으로 자기인식 리포트를 자동 집계하고 요약 기반으로 읽을 수 있습니다.</p>
+      </a>
+    </div>
+
+    <div class="panel">
+      <div class="split-header">
+        <div>
+          <h2>운영 흐름</h2>
+          <p>한 번의 워크샵 운영을 기준으로 실제 사용 순서를 정리했습니다.</p>
+        </div>
+      </div>
+      <div class="flow-grid" style="margin-top:16px;">
+        <div class="flow-step">
+          <strong>1</strong>
+          <h2>명단/배정 확인</h2>
+          <p>운영 대시보드에서 참가자와 Peer assignment가 맞게 들어갔는지 점검합니다.</p>
+        </div>
+        <div class="flow-step">
+          <strong>2</strong>
+          <h2>자가진단 수집</h2>
+          <p>팀장별 링크 또는 현장 QR로 자가진단을 받고, 저장 여부를 대시보드에서 확인합니다.</p>
+        </div>
+        <div class="flow-step">
+          <strong>3</strong>
+          <h2>Peer 피드백 수집</h2>
+          <p>응답자는 본인에게 배정된 4명을 순서대로 작성하고 최종 제출까지 마칩니다.</p>
+        </div>
+        <div class="flow-step">
+          <strong>4</strong>
+          <h2>리포트 확인</h2>
+          <p>자가진단과 Peer 응답이 쌓이면 개인 리포트가 자동 집계되어 바로 확인할 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <h2>바로 열기 링크 예시</h2>
+        <div class="link-list" id="exampleLinks"></div>
+      </div>
+      <div class="panel">
+        <h2>현재 빌드 상태</h2>
+        <div class="note-box">
+          <p>이 웹앱은 브라우저 localStorage를 사용하므로, 지금 이 환경에서는 별도 서버 없이 바로 동작합니다. 이후 서버/API를 붙일 때도 현재 데이터 구조와 화면 흐름을 그대로 재사용할 수 있게 설계했습니다.</p>
+        </div>
+        <div id="dimensionSummary" style="margin-top:16px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./common.js"></script>
+  <script>
+    byId('nav').innerHTML = renderTopNav('home');
+    byId('dimensionSummary').innerHTML = renderDimensionSummary('이 웹앱이 공통으로 사용하는 6개 Dimension');
+
+    const stats = AppStore.getDashboardStats();
+    const participants = AppStore.getParticipants();
+    const sampleParticipant = participants[0];
+    const sampleResponder = AppStore.uniqueBy(AppStore.getAssignments(), 'responder_id')[0];
+
+    byId('metrics').innerHTML = `
+      <div class="metric"><strong>${stats.participantCount}</strong><p>전체 참가 팀장</p></div>
+      <div class="metric"><strong>${stats.selfCompleted}</strong><p>자가진단 완료</p></div>
+      <div class="metric"><strong>${stats.peerCompleted} / ${stats.peerAssignments}</strong><p>Peer 응답 저장 수</p></div>
+      <div class="metric"><strong>${stats.reportReady}</strong><p>리포트 준비 완료</p></div>
+    `;
+
+    byId('exampleLinks').innerHTML = `
+      <div class="link-item"><div><strong>자가진단 바로 열기</strong><p>${sampleParticipant ? sampleParticipant.name_ko : '-'} 팀장 링크 예시</p></div><a class="tag" href="./self-survey.html?participant=${sampleParticipant?.participant_id || ''}">열기</a></div>
+      <div class="link-item"><div><strong>Peer 피드백 바로 열기</strong><p>${sampleResponder ? sampleResponder.responder_name : '-'} 응답자 링크 예시</p></div><a class="tag" href="./peer-survey.html?responder=${sampleResponder?.responder_id || ''}">열기</a></div>
+      <div class="link-item"><div><strong>리포트 바로 열기</strong><p>${sampleParticipant ? sampleParticipant.name_ko : '-'} 팀장 리포트 예시</p></div><a class="tag" href="./report-viewer.html?participant=${sampleParticipant?.participant_id || ''}">열기</a></div>
+    `;
+  </script>
+</body>
+</html>

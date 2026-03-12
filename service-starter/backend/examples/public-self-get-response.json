@@ -1,0 +1,23 @@
+{
+  "participant": {
+    "participantId": "TL002",
+    "nameKo": "고인석",
+    "teamName": "Global최적화팀",
+    "groupName": "1조"
+  },
+  "surveyMeta": {
+    "dimensions": ["전문성", "성공 경험", "Design 역량", "Learning Agility", "Attitude", "Leadership"],
+    "status": "draft",
+    "submittedAt": null
+  },
+  "response": {
+    "strength1": "Leadership",
+    "strength1Comment": "복잡한 상황에서도 우선순위를 정리해 팀이 흔들리지 않도록 방향을 제시해왔다.",
+    "strength2": "전문성",
+    "strength2Comment": "핵심 사업 이슈를 빠르게 이해하고 실행 방향으로 연결하는 편이다.",
+    "growth1": "Learning Agility",
+    "growth1Comment": "AI와 새로운 도구를 더 적극적으로 업무에 접목해보고 싶다.",
+    "growth2": "Design 역량",
+    "growth2Comment": "문제를 더 구조화해 한 장으로 설명하는 힘을 강화하고 싶다."
+  }
+}

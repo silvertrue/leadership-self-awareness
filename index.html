@@ -1,0 +1,770 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>팀장 자기인식 세션 발표자료</title>
+  <style>
+    :root {
+      --navy: #14243f;
+      --navy-2: #213760;
+      --orange: #ff6b35;
+      --orange-soft: #fff1ea;
+      --blue-soft: #eef4ff;
+      --ink: #172033;
+      --muted: #66758b;
+      --line: #d9e3f0;
+      --card: #ffffff;
+      --shadow: 0 22px 50px rgba(20, 36, 63, 0.14);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 107, 53, 0.14), transparent 24%),
+        linear-gradient(135deg, #f8fbff 0%, #eef4fa 45%, #e8eef6 100%);
+      color: var(--ink);
+    }
+    body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+    .topbar {
+      width: min(1360px, 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .topbar strong { color: var(--navy); }
+    .deck-shell {
+      width: min(1360px, 100%);
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .toc {
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(217, 227, 240, 0.95);
+      border-radius: 26px;
+      padding: 18px;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: sticky;
+      top: 20px;
+    }
+    .toc-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .toc-item {
+      border: 1px solid transparent;
+      background: #fff;
+      border-radius: 18px;
+      padding: 12px 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: 0.2s ease;
+      font: inherit;
+      color: var(--ink);
+    }
+    .toc-item:hover, .toc-item.active {
+      border-color: rgba(255, 107, 53, 0.42);
+      background: linear-gradient(135deg, #fff 0%, #fff7f2 100%);
+      transform: translateY(-1px);
+    }
+    .toc-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .toc-label {
+      display: block;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .stage { display: flex; flex-direction: column; gap: 12px; }
+    .slide {
+      width: 1280px;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      display: none;
+      flex-direction: column;
+      border-radius: 32px;
+      overflow: hidden;
+      background: var(--card);
+      border: 1px solid rgba(217, 227, 240, 0.95);
+      box-shadow: var(--shadow);
+    }
+    .slide.active { display: flex; }
+    .header {
+      height: 88px;
+      padding: 0 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      color: var(--navy);
+      border-bottom: 1px solid var(--line);
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: none;
+      background: #eef4fb;
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+    .brand { font-size: 18px; font-weight: 800; color: var(--orange); }
+    .content {
+      flex: 1;
+      padding: 28px 34px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      background:
+        radial-gradient(circle at right top, rgba(255, 107, 53, 0.08), transparent 20%),
+        linear-gradient(135deg, #fff 0%, #fff8f1 100%);
+    }
+    .footer {
+      height: 40px;
+      padding: 0 34px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--orange);
+    }
+    .hero-grid, .split-grid, .category-grid, .process-grid, .report-grid, .closing-grid, .check-grid {
+      display: grid;
+      gap: 18px;
+    }
+    .hero-grid { grid-template-columns: 1.15fr 0.85fr; flex: 1; }
+    .split-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); flex: 1; }
+    .category-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); flex: 1; }
+    .process-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); flex: 1; }
+    .report-grid { grid-template-columns: 0.95fr 1.1fr 0.95fr; flex: 1; }
+    .closing-grid { grid-template-columns: 1fr 0.95fr; flex: 1; }
+    .check-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); flex: 1; }
+    .panel, .metric, .report-panel, .check-panel, .timeline-row, .process-card {
+      background: rgba(255, 255, 255, 0.97);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 10px 28px rgba(20, 36, 63, 0.06);
+    }
+    .panel, .report-panel, .check-panel { padding: 20px; }
+    .metric, .process-card { padding: 18px; }
+    .hero-title {
+      margin: 10px 0 14px;
+      font-size: 42px;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      color: var(--navy);
+      font-weight: 900;
+    }
+    .hero-copy, .body, .muted {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.65;
+      color: #334155;
+    }
+    .muted { color: var(--muted); font-size: 14px; }
+    .pill-row, .tag-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pill, .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .pill { background: var(--orange-soft); color: #b2451f; }
+    .tag { background: var(--blue-soft); color: var(--navy); }
+    .metric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .metric-value {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--navy);
+      letter-spacing: -0.04em;
+      margin-bottom: 6px;
+    }
+    .accent-box, .note-box {
+      padding: 18px 20px;
+      border-radius: 20px;
+      border-left: 6px solid var(--orange);
+      background: linear-gradient(135deg, #fff7f2 0%, #fff 100%);
+      border-top: 1px solid #ffd9ca;
+      border-right: 1px solid #ffd9ca;
+      border-bottom: 1px solid #ffd9ca;
+    }
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.25;
+      color: var(--navy);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    .list {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #334155;
+    }
+    .list li { margin-bottom: 8px; }
+    .category-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 20px;
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      box-shadow: 0 10px 28px rgba(20, 36, 63, 0.06);
+    }
+    .category-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .category-badge {
+      min-width: 88px;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 14px;
+      background: #e9f1fb;
+      color: var(--navy);
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .category-line { flex: 1; height: 2px; background: linear-gradient(90deg, rgba(20,36,63,0.24), rgba(20,36,63,0)); }
+    .dimension-box {
+      border-radius: 18px;
+      padding: 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+    .dimension-name {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 7px 10px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #21437a 0%, #2d5aa1 100%);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .dimension-name small { display: block; margin-top: 4px; font-size: 11px; font-weight: 700; opacity: 0.85; }
+    .dimension-desc { font-size: 15px; line-height: 1.58; color: #334155; }
+    .hashes { margin-top: 10px; font-size: 12px; line-height: 1.5; color: #7a879a; font-weight: 700; }
+    .process-card .step-num {
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+    .process-card h3, .timeline-main h3, .report-panel h3, .check-panel h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.25;
+      color: var(--navy);
+      font-weight: 900;
+    }
+    .timeline { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 140px 1fr 230px;
+      gap: 14px;
+      padding: 14px;
+      align-items: stretch;
+    }
+    .timeline-time {
+      border-radius: 18px;
+      background: linear-gradient(180deg, #213760 0%, #14243f 100%);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      letter-spacing: -0.03em;
+    }
+    .timeline-main, .timeline-tip {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 16px;
+    }
+    .timeline-tip { background: #f8fbff; }
+    .agenda-slide .content {
+      gap: 12px;
+      padding-top: 22px;
+      padding-bottom: 18px;
+    }
+    .agenda-slide .timeline {
+      gap: 10px;
+    }
+    .agenda-slide .timeline-row {
+      grid-template-columns: 118px 1fr 190px;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 20px;
+    }
+    .agenda-slide .timeline-time {
+      font-size: 18px;
+    }
+    .agenda-slide .timeline-main,
+    .agenda-slide .timeline-tip {
+      padding: 12px 14px;
+      border-radius: 16px;
+    }
+    .agenda-slide .timeline-main h3,
+    .agenda-slide .timeline-tip h3 {
+      font-size: 17px;
+      margin-bottom: 6px;
+    }
+    .agenda-slide .body {
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .report-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .report-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .self-label { background: #edf4ff; color: #23457a; }
+    .gap-label { background: var(--orange-soft); color: #b64e27; }
+    .peer-label { background: #edf9f4; color: #1c7d57; }
+    .report-item {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 16px;
+    }
+    .report-item strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--navy);
+      font-size: 16px;
+    }
+    .score-chip {
+      display: inline-flex;
+      align-items: center;
+      margin: 4px 8px 0 0;
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .score-blue { background: #edf4ff; color: #21437a; }
+    .score-orange { background: #fff1ea; color: #b2451f; }
+    .score-green { background: #ecf8f2; color: #167551; }
+    .report-center {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top, rgba(255, 107, 53, 0.16), transparent 32%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+    .spotlight {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid #ffd9ca;
+      background: linear-gradient(180deg, #fff8f4 0%, #fff 100%);
+    }
+    .spotlight big {
+      display: block;
+      font-size: 30px;
+      line-height: 1.15;
+      font-weight: 900;
+      color: var(--navy);
+      letter-spacing: -0.04em;
+      margin: 10px 0 12px;
+    }
+    .quote-bubble {
+      border-radius: 18px;
+      padding: 16px 18px;
+      background: #fff;
+      border: 1px dashed #bdcad9;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #425467;
+    }
+    .check-panel { display: flex; flex-direction: column; gap: 10px; }
+    .action-grid { display: grid; gap: 12px; }
+    .action-card {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 16px 18px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #334155;
+    }
+    .action-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy);
+    }
+    .controls {
+      width: min(1280px, 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .control-group { display: flex; gap: 10px; }
+    .nav-button {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 11px 18px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s ease;
+      background: var(--navy);
+      color: #fff;
+    }
+    .nav-button.secondary {
+      background: #fff;
+      color: var(--navy);
+      border: 1px solid var(--line);
+    }
+    .nav-button:hover:not(:disabled) { transform: translateY(-1px); background: var(--navy-2); }
+    .nav-button.secondary:hover:not(:disabled) { background: #f6f9fd; }
+    .nav-button:disabled { opacity: 0.45; cursor: default; }
+    .dots { display: flex; gap: 8px; align-items: center; }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border: none;
+      padding: 0;
+      border-radius: 50%;
+      background: #c4cfde;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .dot.active {
+      width: 30px;
+      border-radius: 999px;
+      background: var(--orange);
+    }
+    @media (max-width: 1200px) {
+      .deck-shell { grid-template-columns: 1fr; }
+      .toc {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .toc-title { grid-column: 1 / -1; }
+    }
+    @media (max-width: 960px) {
+      body { padding: 12px; }
+      .toc { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-grid, .split-grid, .category-grid, .process-grid, .report-grid, .closing-grid, .check-grid { grid-template-columns: 1fr; }
+      .timeline-row { grid-template-columns: 1fr; }
+      .slide { aspect-ratio: auto; min-height: 720px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div><strong>팀장 자기인식 세션</strong> 발표용 슬라이드</div>
+    <div>화살표 키 또는 하단 버튼으로 이동</div>
+  </div>
+
+  <div class="deck-shell">
+    <aside class="toc">
+      <div class="toc-title">Slide Menu</div>
+      <button class="toc-item active" data-target="0"><span class="toc-num">1</span><span class="toc-label">세션 오프닝</span></button>
+      <button class="toc-item" data-target="1"><span class="toc-num">2</span><span class="toc-label">오늘 얻어갈 것</span></button>
+      <button class="toc-item" data-target="2"><span class="toc-num">3</span><span class="toc-label">경험 · 역량 · 자질</span></button>
+      <button class="toc-item" data-target="3"><span class="toc-num">4</span><span class="toc-label">사전 서베이 흐름</span></button>
+      <button class="toc-item" data-target="4"><span class="toc-num">5</span><span class="toc-label">리포트 읽기</span></button>
+            <button class="toc-item" data-target="5"><span class="toc-num">6</span><span class="toc-label">토론 가이드</span></button>
+      <button class="toc-item" data-target="6"><span class="toc-num">7</span><span class="toc-label">액션플랜</span></button>
+    </aside>
+
+    <main class="stage">
+      <section class="slide active">
+        <div class="header"><div class="header-left"><span class="badge">DAY 1 SESSION 3</span><h1>팀장 자기인식 세션</h1></div><div class="brand">SK Enmove</div></div>
+        <div class="content">
+          <div class="hero-grid">
+            <div class="panel">
+              <div class="eyebrow">Opening Message</div>
+              <div class="hero-title">나를 다시 보고,<br />동료의 시선으로 확장합니다</div>
+              <p class="hero-copy">오늘 세션은 평가 시간이 아닙니다. 지금의 나를 더 정확히 이해하고, 앞으로 어떤 리더로 성장할지 방향을 잡는 시간입니다.</p>
+              <div class="pill-row" style="margin-top:18px;"><span class="pill">총 120분</span><span class="pill">개인 리포트 활용</span><span class="pill">5인 1조 대화</span><span class="pill">마지막 액션플랜 작성</span></div>
+              <div class="accent-box" style="margin-top:22px;"><p class="body"><strong>세션 목적</strong><br />6개 Dimension을 바탕으로 자기인식을 심화하고, Peer 피드백을 통해 인식의 사각지대를 넓혀봅니다.</p></div>
+            </div>
+            <div class="panel">
+              <div class="eyebrow">Ground Rules</div>
+              <h2 class="section-title">오늘의 대화 원칙</h2>
+              <div class="metric-grid">
+                <div class="metric"><div class="metric-value">Observe</div><div class="muted">판단보다 관찰</div></div>
+                <div class="metric"><div class="metric-value">Reflect</div><div class="muted">변명보다 성찰</div></div>
+                <div class="metric"><div class="metric-value">Share</div><div class="muted">비교보다 나눔</div></div>
+                <div class="metric"><div class="metric-value">Act</div><div class="muted">깨달음보다 실천</div></div>
+              </div>
+              <div class="note-box" style="margin-top:18px;"><p class="body">진행 멘트: “좋은 리더인지 증명하는 시간이 아니라, 더 나은 리더가 되기 위한 단서를 찾는 시간으로 참여해 주세요.”</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><div>발표용 메인 오프닝</div><div>1 / 7</div></div>
+      </section>
+
+      <section class="slide">
+        <div class="header"><div class="header-left"><span class="badge">SLIDE 2</span><h1>오늘 세션에서 얻어갈 것</h1></div><div class="brand">SK Enmove</div></div>
+        <div class="content">
+          <div class="split-grid">
+            <div class="panel">
+              <div class="eyebrow">Learning Goals</div>
+              <h2 class="section-title">오늘의 3가지 포인트</h2>
+              <div class="action-grid">
+                <div class="action-card"><strong>1. 내가 보는 나</strong>내가 생각한 강점과 성장 과제를 먼저 분명히 합니다.</div>
+                <div class="action-card"><strong>2. 동료가 보는 나</strong>Peer 피드백으로 내가 놓친 강점과 기대를 확인합니다.</div>
+                <div class="action-card"><strong>3. 앞으로의 나</strong>오늘 얻은 인사이트를 다음 4주 행동으로 바꿉니다.</div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="eyebrow">Output</div>
+              <h2 class="section-title">세션 종료 시 남는 결과</h2>
+              <ul class="list"><li>내 강점에 대한 새로운 해석 1가지</li><li>동료 시선으로 확인한 성장 과제 1가지</li><li>바로 실행할 액션플랜 1가지</li></ul>
+              <div class="tag-row" style="margin-top:18px;"><span class="tag">자가인식</span><span class="tag">피드백 수용</span><span class="tag">리더십 성장</span><span class="tag">행동 전환</span></div>
+              <div class="accent-box" style="margin-top:22px;"><p class="body">리포트를 맞고 틀림으로 읽지 말고, <strong>왜 이런 인식이 생겼는가</strong>를 탐색하는 데 집중합니다.</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><div>학습 목표 정렬</div><div>2 / 7</div></div>
+      </section>
+
+      <section class="slide slide-3">
+        <div class="header"><div class="header-left"><span class="badge">SLIDE 3</span><h1>사람 판단 기준: 경험 · 역량 · 자질</h1></div><div class="brand">SK Enmove</div></div>
+        <div class="content">
+          <div class="focus-intro"><div class="eyebrow">6 Dimension Framework</div><p class="focus-title">경험, 역량, 자질의 세 축으로<br />리더를 입체적으로 봅니다</p><p class="focus-copy">각 Dimension은 점수가 아니라 사람을 해석하는 기준입니다. 강점과 성장 기회를 어떤 축에서 볼 것인지 먼저 맞춰둡니다.</p></div>
+          <div class="category-grid">
+            <div class="category-card">
+              <div class="category-head"><div class="category-badge">경험</div><div class="category-line"></div></div>
+              <div class="dimension-box"><div class="dimension-name">전문성</div><div class="dimension-desc">특정 사업, Tech, 시장, 기능에서 깊이 있는 실무와 리딩 경험을 바탕으로 복잡한 과제를 스스로 설계하고 이끌어본 경험</div><div class="hashes">#산업전문성 #Function전문성 #복합이슈리딩</div></div>
+              <div class="dimension-box"><div class="dimension-name">성공 경험<small>Proven Impact</small></div><div class="dimension-desc">높은 불확실성과 책임이 동반된 상황에서 재무, 비재무 성과를 만들고 위기 극복과 혁신을 통해 비즈니스 임팩트를 증명한 경험</div><div class="hashes">#전략성과 #혁신주도 #변화완수</div></div>
+            </div>
+            <div class="category-card">
+              <div class="category-head"><div class="category-badge">역량</div><div class="category-line"></div></div>
+              <div class="dimension-box"><div class="dimension-name">Design 역량</div><div class="dimension-desc">복잡한 문제를 재정의하고 통합적으로 사고해 최적의 해결 방향을 도출하며, 지속적인 실행으로 근본적 변화를 추진하는 능력</div><div class="hashes">#문제구조화 #전략적Planning #실행설계</div></div>
+              <div class="dimension-box"><div class="dimension-name">Learning Agility<small>Globality / AI 포함</small></div><div class="dimension-desc">급격한 환경 변화 속에서 기존 성공공식을 빠르게 내려놓고, Globality와 AI Literacy를 포함한 새로운 판단 기준으로 스스로 업그레이드하는 능력</div><div class="hashes">#GlobalCapability #AI활용 #새로운학습</div></div>
+            </div>
+            <div class="category-card">
+              <div class="category-head"><div class="category-badge">자질</div><div class="category-line"></div></div>
+              <div class="dimension-box"><div class="dimension-name">Attitude</div><div class="dimension-desc">개인의 인성, 됨됨이, Integrity와 회복탄력성을 포함해 리더가 반드시 갖춰야 할 최소한의 신뢰 기반</div><div class="hashes">#겸손 #신뢰 #Integrity #Resilience</div></div>
+              <div class="dimension-box"><div class="dimension-name">Leadership</div><div class="dimension-desc">조직과 구성원이 따르고 싶어 하는 영향력 수준, 방향 제시와 사람 성장, 상황에 맞는 리더십 스타일을 통해 함께 가고 싶은 리더가 되는 힘</div><div class="hashes">#동기부여 #사람성장 #영향력 #함께가고싶은리더</div></div>
+            </div>
+          </div>
+          <div class="note-box"><p class="body">이 6개 Dimension은 점수표가 아니라 <strong>사람을 보는 렌즈</strong>입니다. 오늘은 이 렌즈를 통해 “내가 이미 가진 것”과 “앞으로 키워갈 것”을 함께 보겠습니다.</p></div>
+        </div>
+        <div class="footer"><div>첨부 자료 구조 반영</div><div>3 / 7</div></div>
+      </section>
+      <section class="slide">
+        <div class="header"><div class="header-left"><span class="badge">SLIDE 4</span><h1>사전 서베이와 오늘 세션 흐름</h1></div><div class="brand">SK Enmove</div></div>
+        <div class="content">
+          <div class="process-grid">
+            <div class="process-card"><div class="step-num">1</div><h3>자가진단</h3><ul class="list"><li>강점 2개 선택</li><li>성장 필요 2개 선택</li><li>구체적 경험 근거 작성</li></ul></div>
+            <div class="process-card"><div class="step-num">2</div><h3>Peer 피드백</h3><ul class="list"><li>동료 5~8명 익명 응답</li><li>강점 2개, 성장 가능성 2개</li><li>숫자평가 없이 관찰 중심 작성</li></ul></div>
+            <div class="process-card"><div class="step-num">3</div><h3>개인 리포트</h3><ul class="list"><li>자가인식과 타인인식 비교</li><li>일치점과 차이점 정리</li><li>개인별 봉투로 배포</li></ul></div>
+            <div class="process-card"><div class="step-num">4</div><h3>오늘 세션</h3><ul class="list"><li>리포트 해석</li><li>조별 나눔</li><li>개인 액션플랜 작성</li></ul></div>
+          </div>
+          <div class="split-grid">
+            <div class="panel"><div class="eyebrow">What Matters</div><h2 class="section-title">서베이 설계 원칙</h2><p class="body">숫자로 줄 세우는 평가가 아니라, “이 사람에게서 무엇을 보았는가”를 남기는 관찰형 피드백으로 설계합니다.</p></div>
+            <div class="panel"><div class="eyebrow">Ready To Use</div><h2 class="section-title">오늘 현장 준비물</h2><p class="body">개인 리포트 봉투, 성찰 워크시트, 필기구, 조별 질문 카드, 타이머</p></div>
+          </div>
+        </div>
+        <div class="footer"><div>세션 전 데이터 연결</div><div>4 / 7</div></div>
+      </section>
+
+      <section class="slide slide-5">
+        <div class="header"><div class="header-left"><span class="badge">SLIDE 5</span><h1>개인 비교 리포트, 이렇게 읽습니다</h1></div><div class="brand">SK Enmove</div></div>
+        <div class="content">
+          <div class="focus-intro"><div class="eyebrow">Report Reading Guide</div><p class="focus-title">리포트는 평가표가 아니라<br />나를 더 잘 이해하는 비교 지도입니다</p><p class="focus-copy">왼쪽은 내가 본 나, 오른쪽은 동료가 본 나, 가운데는 오늘 가장 주목해야 할 인사이트입니다.</p></div>
+          <div class="report-grid">
+            <div class="report-panel">
+              <span class="report-label self-label">Self View</span>
+              <h3>내가 본 나</h3>
+              <div class="report-item"><strong>내가 선택한 강점</strong><span class="score-chip score-blue">Leadership</span><span class="score-chip score-blue">전문성</span></div>
+              <div class="report-item"><strong>내가 선택한 성장 과제</strong><span class="score-chip score-orange">Learning Agility</span><span class="score-chip score-orange">Design 역량</span></div>
+              <div class="quote-bubble">“나는 방향을 잡는 리더십은 강하지만, AI와 구조화 측면은 더 보완이 필요하다고 느꼈다.”</div>
+            </div>
+            <div class="report-panel report-center">
+              <span class="report-label gap-label">Insight Spotlight</span>
+              <div class="spotlight"><div class="eyebrow">What Stands Out</div><big>내가 약점이라 본 영역을<br />동료도 같은 성장기회로 보고 있다</big><p class="body">Learning Agility는 자가진단과 Peer 피드백이 함께 가리킨 공통 과제입니다. 지금 행동으로 바꾸기 가장 좋은 영역입니다.</p></div>
+              <div class="report-item"><strong>새롭게 보게 된 강점</strong><p class="body">Attitude는 스스로 선택하지 않았지만 동료 4명이 강점으로 지목했습니다. 내가 당연하게 여긴 태도가 조직에는 신뢰 자산으로 읽히고 있습니다.</p></div>
+              <div class="quote-bubble">핵심 질문: <strong>“나는 무엇을 과소평가했고, 동료는 무엇을 더 크게 보고 있는가?”</strong></div>
+            </div>
+            <div class="report-panel">
+              <span class="report-label peer-label">Peer View</span>
+              <h3>동료가 본 나</h3>
+              <div class="report-item"><strong>동료가 본 강점 Top 2</strong><span class="score-chip score-green">1위 Leadership</span><span class="score-chip score-green">2위 Attitude</span></div>
+              <div class="report-item"><strong>동료가 본 성장 가능성 Top 2</strong><span class="score-chip score-orange">1위 Learning Agility</span><span class="score-chip score-orange">2위 Design 역량</span></div>
+              <div class="quote-bubble">“AI를 더 적극적으로 활용하면 팀장님의 방향 제시가 더 강력해질 것 같아 기대됩니다.”</div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><div>눈에 들어오는 리포트 독해 보드</div><div>5 / 7</div></div>
+      </section>
+
+      <section class="slide">
+        <div class="header"><div class="header-left"><span class="badge">SLIDE 6</span><h1>소그룹 토론 가이드</h1></div><div class="brand">SK Enmove</div></div>
+        <div class="content">
+          <div class="check-grid">
+            <div class="check-panel"><h3>질문 1</h3><p class="body">오늘 리포트에서 가장 새롭게 보인 강점은 무엇이었나요?</p></div>
+            <div class="check-panel"><h3>질문 2</h3><p class="body">내 인식과 동료 인식 사이에서 가장 의미 있는 차이는 어디였나요?</p></div>
+            <div class="check-panel"><h3>질문 3</h3><p class="body">그 차이는 왜 생겼다고 해석하나요?</p></div>
+            <div class="check-panel"><h3>질문 4</h3><p class="body">앞으로 4주 안에 시도할 행동 한 가지는 무엇인가요?</p></div>
+          </div>
+          <div class="split-grid">
+            <div class="panel"><div class="eyebrow">Facilitator Lines</div><h2 class="section-title">퍼실리테이터 질문 예시</h2><ul class="list"><li>“가장 먼저 든 감정은 무엇이었나요?”</li><li>“동료 시선이 알려준 새로운 정보는 무엇이었나요?”</li><li>“그 강점을 더 의도적으로 쓰려면 어떤 장면이 필요할까요?”</li></ul></div>
+            <div class="panel"><div class="eyebrow">Do Not</div><h2 class="section-title">주의할 반응</h2><ul class="list"><li>특정 피드백을 바로 정정하거나 변명하기</li><li>강점은 무시하고 부족한 부분만 집요하게 보기</li><li>다른 팀장과 비교하며 위축되거나 과시하기</li></ul></div>
+          </div>
+        </div>
+        <div class="footer"><div>대화 질문 제시용 슬라이드</div><div>6 / 7</div></div>
+      </section>
+      <section class="slide">
+        <div class="header"><div class="header-left"><span class="badge">SLIDE 7</span><h1>마무리: 오늘의 인식을 행동으로</h1></div><div class="brand">SK Enmove</div></div>
+        <div class="content">
+          <div class="closing-grid">
+            <div class="panel">
+              <div class="eyebrow">Closing Message</div>
+              <div class="hero-title">오늘 받은 피드백은<br />평가서가 아니라 거울입니다</div>
+              <p class="hero-copy">내가 이미 가진 강점을 더 의식적으로 사용하고, 동료가 기대하는 성장영역을 작게 실험해보는 것. 그게 오늘 세션의 진짜 마무리입니다.</p>
+              <div class="note-box" style="margin-top:20px;"><p class="body">클로징 멘트: “한 번에 완벽해지기보다, 작게 시작하는 리더가 결국 더 멀리 갑니다.”</p></div>
+            </div>
+            <div class="panel">
+              <div class="eyebrow">Action Plan</div>
+              <h2 class="section-title">4주 실행 카드</h2>
+              <div class="action-grid">
+                <div class="action-card"><strong>계속 강화할 강점 1개</strong>내가 이미 잘하고 있고 더 의도적으로 활용할 강점은?</div>
+                <div class="action-card"><strong>실험할 성장 행동 1개</strong>다음 4주 안에 해볼 가장 작은 행동은?</div>
+                <div class="action-card"><strong>점검 파트너 1명</strong>내 실천을 함께 확인해줄 동료는 누구인가?</div>
+              </div>
+              <div class="tag-row" style="margin-top:18px;"><span class="tag">작게 시작</span><span class="tag">4주 내 실행</span><span class="tag">동료와 점검</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="footer"><div>세션 마무리</div><div>7 / 7</div></div>
+      </section>
+
+      <div class="controls">
+        <div class="control-group"><button id="prevBtn" class="nav-button secondary">이전</button><button id="nextBtn" class="nav-button">다음</button></div>
+        <div class="dots" id="dots"></div>
+        <div class="muted" id="counter">1 / 7</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const tocItems = Array.from(document.querySelectorAll('.toc-item'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+    const dotsRoot = document.getElementById('dots');
+    let current = 0;
+    slides.forEach((_, index) => {
+      const dot = document.createElement('button');
+      dot.className = 'dot' + (index === 0 ? ' active' : '');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', `slide ${index + 1}`);
+      dot.addEventListener('click', () => showSlide(index));
+      dotsRoot.appendChild(dot);
+    });
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    function showSlide(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+      tocItems.forEach((item, i) => item.classList.toggle('active', i === current));
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+      counter.textContent = `${current + 1} / ${slides.length}`;
+    }
+    prevBtn.addEventListener('click', () => showSlide(current - 1));
+    nextBtn.addEventListener('click', () => showSlide(current + 1));
+    tocItems.forEach((item) => item.addEventListener('click', () => showSlide(Number(item.dataset.target))));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown') showSlide(current + 1);
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') showSlide(current - 1);
+      if (event.key === 'Home') showSlide(0);
+      if (event.key === 'End') showSlide(slides.length - 1);
+    });
+    showSlide(0);
+  </script>
+</body>
+</html>
+
+
+
+
+
+

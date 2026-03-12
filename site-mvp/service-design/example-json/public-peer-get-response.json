@@ -1,0 +1,63 @@
+﻿{
+  "responder": {
+    "responderId": "TL001",
+    "nameKo": "방경석",
+    "groupName": "2조",
+    "submitted": false
+  },
+  "dimensions": ["전문성", "성공 경험", "Design 역량", "Learning Agility", "Attitude", "Leadership"],
+  "assignments": [
+    {
+      "assignmentId": "A-001",
+      "sequenceNo": 1,
+      "status": "completed",
+      "target": {
+        "participantId": "TL003",
+        "nameKo": "이승희",
+        "teamName": "브랜드Communication팀"
+      }
+    },
+    {
+      "assignmentId": "A-002",
+      "sequenceNo": 2,
+      "status": "in_progress",
+      "target": {
+        "participantId": "TL005",
+        "nameKo": "윤원진",
+        "teamName": "HVAC사업팀"
+      }
+    },
+    {
+      "assignmentId": "A-003",
+      "sequenceNo": 3,
+      "status": "not_started",
+      "target": {
+        "participantId": "TL006",
+        "nameKo": "박세준",
+        "teamName": "e-Thermal사업팀"
+      }
+    },
+    {
+      "assignmentId": "A-004",
+      "sequenceNo": 4,
+      "status": "not_started",
+      "target": {
+        "participantId": "TL020",
+        "nameKo": "예시대상",
+        "teamName": "예시팀"
+      }
+    }
+  ],
+  "currentResponse": {
+    "assignmentId": "A-002",
+    "strength1": "Attitude",
+    "strength1Comment": "협업 과정에서 신뢰를 주는 태도가 인상적이었다.",
+    "strength2": "Design 역량",
+    "strength2Comment": "핵심을 빠르게 구조화해 모두가 같은 그림을 보게 했다.",
+    "growth1": "성공 경험",
+    "growth1Comment": "더 큰 범위의 과제에서 성과 사례가 쌓이면 설득력이 더 커질 것 같다.",
+    "growth2": "Learning Agility",
+    "growth2Comment": "AI와 새로운 맥락을 더 적극적으로 흡수하면 영향력이 더 커질 것 같다.",
+    "freeMessage": "평소처럼 차분한 중심을 잘 잡아주셔서 감사합니다."
+  }
+}

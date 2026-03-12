@@ -1,0 +1,432 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자기인식 세션 서베이 폼</title>
+  <style>
+    :root {
+      --navy: #14243f;
+      --navy-2: #24406d;
+      --orange: #ff6b35;
+      --green: #159466;
+      --line: #d8e2ee;
+      --bg: #eef4fa;
+      --card: #ffffff;
+      --text: #1b2638;
+      --muted: #67768d;
+      --shadow: 0 20px 40px rgba(20, 36, 63, 0.1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+      background: linear-gradient(135deg, #f8fbff 0%, #eef4fa 50%, #e7eef6 100%);
+      color: var(--text);
+      padding: 28px;
+    }
+    .shell {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+      color: white;
+      border-radius: 28px;
+      padding: 28px 32px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 20px;
+    }
+    .hero h1 {
+      margin: 10px 0 8px;
+      font-size: 38px;
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+    }
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #ffd9cc;
+    }
+    .hero p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.82);
+      max-width: 720px;
+    }
+    .hero-badge {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .tab-row {
+      display: flex;
+      gap: 12px;
+    }
+    .tab {
+      border: 1px solid transparent;
+      background: white;
+      color: var(--navy);
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(20, 36, 63, 0.06);
+    }
+    .tab.active {
+      background: var(--navy);
+      color: white;
+    }
+    .form {
+      display: none;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+    }
+    .form.active { display: grid; }
+    .panel {
+      background: rgba(255,255,255,0.97);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 26px;
+      color: var(--navy);
+      letter-spacing: -0.03em;
+    }
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+    .section {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .section h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      color: var(--navy);
+    }
+    .field {
+      margin-bottom: 16px;
+    }
+    .label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      background: #f8fbff;
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .input, .textarea, .select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+    .select {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #43536a;
+    }
+    .side-stack {
+      display: grid;
+      gap: 18px;
+    }
+    .info-card {
+      border-radius: 22px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+    .info-card h4 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      color: var(--navy);
+    }
+    .info-card p, .info-card li {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #425467;
+    }
+    .info-card ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .callout {
+      border-left: 5px solid var(--orange);
+      background: linear-gradient(135deg, #fff7f2 0%, #fff 100%);
+    }
+    .success {
+      border-left: 5px solid var(--green);
+      background: linear-gradient(135deg, #f2fbf7 0%, #fff 100%);
+    }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 4px 2px 0;
+    }
+    @media (max-width: 1100px) {
+      .form { grid-template-columns: 1fr; }
+      .hero { flex-direction: column; align-items: start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Workshop Survey Form</div>
+        <h1>자기인식 세션 서베이 폼</h1>
+        <p>발표자료와는 별도로, 사전 수집용으로 사용할 수 있는 자가진단 폼과 Peer 피드백 폼 디자인입니다. 실제 설문 도구로 옮기기 쉽도록 섹션 구조와 문항 의도를 한 화면에 정리했습니다.</p>
+      </div>
+      <div class="hero-badge">SK Enmove</div>
+    </div>
+
+    <div class="tab-row">
+      <button class="tab active" data-target="self-form">PART A 자가진단</button>
+      <button class="tab" data-target="peer-form">PART B Peer 피드백</button>
+    </div>
+
+    <section id="self-form" class="form active">
+      <div class="panel">
+        <h2>PART A 자가진단 설문</h2>
+        <p class="sub">본인이 직접 작성합니다. 6개 Dimension 중 강점 2개, 성장 필요 영역 2개를 선택하고 각 항목마다 판단 근거를 반드시 작성합니다.</p>
+
+        <div class="section">
+          <h3>기본 정보</h3>
+          <div class="field">
+            <div class="label"><span>이름 / 소속</span><span class="hint">예: 홍길동 / 윤활유사업팀</span></div>
+            <input class="input" placeholder="이름과 소속을 입력하세요" />
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>나의 강점 Dimension (2개 선택)</h3>
+          <div class="field">
+            <div class="label"><span>강점 후보</span><span class="hint">각 항목 판단 근거 필수</span></div>
+            <div class="chips">
+              <span class="chip">전문성</span>
+              <span class="chip">성공 경험</span>
+              <span class="chip">Design 역량</span>
+              <span class="chip">Learning Agility</span>
+              <span class="chip">Attitude</span>
+              <span class="chip">Leadership</span>
+            </div>
+          </div>
+          <div class="field">
+            <div class="label"><span>강점 1 선택</span><span class="hint">구체적 경험 중심</span></div>
+            <textarea class="textarea" placeholder="왜 이 항목을 강점으로 보았는지, 실제 장면이나 사례를 중심으로 작성하세요."></textarea>
+          </div>
+          <div class="field">
+            <div class="label"><span>강점 2 선택</span><span class="hint">다른 강점과 구분되게</span></div>
+            <textarea class="textarea" placeholder="두 번째 강점을 선택한 이유를 작성하세요."></textarea>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>성장이 필요한 Dimension (2개 선택)</h3>
+          <div class="field">
+            <div class="label"><span>성장 후보</span><span class="hint">각 항목 판단 근거 필수</span></div>
+            <div class="chips">
+              <span class="chip">전문성</span>
+              <span class="chip">성공 경험</span>
+              <span class="chip">Design 역량</span>
+              <span class="chip">Learning Agility</span>
+              <span class="chip">Attitude</span>
+              <span class="chip">Leadership</span>
+            </div>
+          </div>
+          <div class="field">
+            <div class="label"><span>성장 영역 1</span><span class="hint">판단 근거 작성</span></div>
+            <textarea class="textarea" placeholder="무엇이 부족하거나 더 키우고 싶은지 솔직하게 작성하세요."></textarea>
+          </div>
+          <div class="field">
+            <div class="label"><span>성장 영역 2</span><span class="hint">판단 근거 작성</span></div>
+            <textarea class="textarea" placeholder="왜 지금 이 성장이 필요한지도 함께 적어주세요."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-stack">
+        <div class="info-card callout">
+          <h4>작성 안내</h4>
+          <ul>
+            <li>정답을 고르는 것이 아니라 현재의 나를 가장 잘 설명하는 항목을 선택합니다.</li>
+            <li>추상적인 성격 묘사보다 실제 행동 장면과 결과를 중심으로 씁니다.</li>
+            <li>강점과 성장 필요 영역을 균형 있게 작성합니다.</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>6개 Dimension 축</h4>
+          <p>경험: 전문성, 성공 경험</p>
+          <p>역량: Design 역량, Learning Agility</p>
+          <p>자질: Attitude, Leadership</p>
+        </div>
+        <div class="info-card success">
+          <h4>활용 목적</h4>
+          <p>이 응답은 당일 개인 비교 리포트의 출발점이 되며, Peer 피드백과 함께 자기인식 세션에서 사용됩니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="peer-form" class="form">
+      <div class="panel">
+        <h2>PART B Peer 피드백</h2>
+        <p class="sub">동료 팀장 5~8명이 익명으로 작성합니다. 점수 평가 없이, 강점과 성장 가능성 각각에 대해 관찰한 판단 근거를 반드시 남깁니다.</p>
+
+        <div class="section">
+          <h3>대상 팀장 선택</h3>
+          <div class="field">
+            <div class="select">홍길동 팀장 <span>▼</span></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>이 팀장의 강점 (2개 선택)</h3>
+          <div class="field">
+            <div class="label"><span>강점 후보</span><span class="hint">강점별 판단 근거 필수</span></div>
+            <div class="chips">
+              <span class="chip">전문성</span>
+              <span class="chip">성공 경험</span>
+              <span class="chip">Design 역량</span>
+              <span class="chip">Learning Agility</span>
+              <span class="chip">Attitude</span>
+              <span class="chip">Leadership</span>
+            </div>
+          </div>
+          <div class="field">
+            <div class="label"><span>강점 1 근거</span><span class="hint">본 장면을 적어주세요</span></div>
+            <textarea class="textarea" placeholder="어떤 상황에서 이 강점이 보였는지 관찰한 사실을 적어주세요."></textarea>
+          </div>
+          <div class="field">
+            <div class="label"><span>강점 2 근거</span><span class="hint">가능하면 다른 장면</span></div>
+            <textarea class="textarea" placeholder="두 번째 강점의 이유를 적어주세요."></textarea>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>이 팀장의 성장 가능성 (2개 선택)</h3>
+          <div class="field">
+            <div class="label"><span>성장 후보</span><span class="hint">성장영역별 판단 근거 필수</span></div>
+            <div class="chips">
+              <span class="chip">전문성</span>
+              <span class="chip">성공 경험</span>
+              <span class="chip">Design 역량</span>
+              <span class="chip">Learning Agility</span>
+              <span class="chip">Attitude</span>
+              <span class="chip">Leadership</span>
+            </div>
+          </div>
+          <div class="field">
+            <div class="label"><span>성장 영역 1</span><span class="hint">관찰 근거 작성</span></div>
+            <textarea class="textarea" placeholder="이 팀장이 더 발휘하면 좋겠다고 생각하는 점을 적어주세요."></textarea>
+          </div>
+          <div class="field">
+            <div class="label"><span>성장 영역 2</span><span class="hint">관찰 근거 작성</span></div>
+            <textarea class="textarea" placeholder="응원과 기대를 담아 작성해주세요."></textarea>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>한마디 메시지</h3>
+          <div class="field">
+            <textarea class="textarea" placeholder="이 팀장에게 전하고 싶은 응원의 말이 있다면 자유롭게 적어주세요."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-stack">
+        <div class="info-card callout">
+          <h4>작성 원칙</h4>
+          <ul>
+            <li>사람을 평가하지 말고, 관찰한 행동과 장면을 설명합니다.</li>
+            <li>비판보다 성장 기대와 응원에 초점을 둡니다.</li>
+            <li>숫자 점수 없이도 충분히 좋은 피드백을 만들 수 있습니다.</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>좋은 문장 예시</h4>
+          <p>“회의에서 복잡한 이슈를 빠르게 구조화해 팀이 방향을 잡을 수 있었습니다.”</p>
+          <p style="margin-top:10px;">“AI 툴을 더 적극적으로 활용하면 이미 강한 방향 제시가 더 강력해질 것 같습니다.”</p>
+        </div>
+        <div class="info-card success">
+          <h4>리포트 반영 방식</h4>
+          <p>동일 항목 반복 응답은 Top 강점과 Top 성장 가능성으로 요약되고, 메시지는 당일 개인 리포트에 발췌 반영됩니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <div>파일은 디자인 시안용 HTML입니다.</div>
+      <div>자가진단 / Peer 피드백 분리 제공</div>
+    </div>
+  </div>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const forms = Array.from(document.querySelectorAll('.form'));
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.target;
+        tabs.forEach((item) => item.classList.toggle('active', item === tab));
+        forms.forEach((form) => form.classList.toggle('active', form.id === target));
+      });
+    });
+  </script>
+</body>
+</html>
+

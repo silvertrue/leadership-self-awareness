@@ -1,0 +1,333 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Peer 피드백</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Peer Survey</div>
+        <h1>배정된 4명을 순서대로 평가하고<br />모두 완료해야 최종 제출됩니다</h1>
+        <p>응답자는 본인에게 자동 배정된 대상만 보게 되고, 한 사람씩 작성하면서 진행률을 확인합니다. 4명 모두 완료되어야 최종 제출 버튼이 열립니다.</p>
+      </div>
+      <div class="badge">동료 평가용</div>
+    </div>
+
+    <div id="nav"></div>
+
+    <div class="panel progress-board">
+      <div class="progress-meta">
+        <div>
+          <h2 style="margin-bottom:4px;">진행 현황</h2>
+          <p id="assignmentInfo">응답자를 선택하면 배정된 평가 대상과 진행률이 표시됩니다.</p>
+        </div>
+        <div class="field" style="min-width:280px; margin:0;">
+          <label>응답자 선택</label>
+          <select class="select" id="responderSelect"></select>
+        </div>
+      </div>
+      <div id="lockedBanner"></div>
+      <div class="progress-grid-ui" id="progressGrid"></div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="target-overview">
+          <div class="target-hero">
+            <div>
+              <div class="eyebrow" style="color:#ff6b35;">Current Target</div>
+              <div class="target-hero-name" id="currentTargetName">-</div>
+              <div class="kv" id="currentTargetMeta"></div>
+            </div>
+            <div id="currentStatus"></div>
+          </div>
+          <div class="helper-list">
+            <div class="helper-item">
+              <strong>작성 원칙</strong>
+              실제 행동이나 관찰 장면을 바탕으로 작성하고, 추상적인 인상평보다 판단 근거를 분명히 남겨주세요.
+            </div>
+            <div class="helper-item">
+              <strong>성장가능성 표현 원칙</strong>
+              부족함을 지적하기보다, 더 발휘되면 좋을 방향과 기대를 행동 중심으로 적어주세요.
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-top:18px;">
+          <div class="field"><label>강점 1</label><select class="select" id="peerStrength1"></select></div>
+          <div class="field"><label>강점 1 판단 근거</label><textarea class="textarea" id="peerStrength1Comment" placeholder="이 팀장을 강점으로 보게 만든 실제 장면을 적어주세요"></textarea></div>
+          <div class="field"><label>강점 2</label><select class="select" id="peerStrength2"></select></div>
+          <div class="field"><label>강점 2 판단 근거</label><textarea class="textarea" id="peerStrength2Comment" placeholder="강점 1과 다른 관점의 근거를 적어주세요"></textarea></div>
+          <div class="field"><label>성장가능성 1</label><select class="select" id="peerGrowth1"></select></div>
+          <div class="field"><label>성장가능성 1 판단 근거</label><textarea class="textarea" id="peerGrowth1Comment" placeholder="더 발휘되면 좋을 가능성과 기대를 행동 중심으로 적어주세요"></textarea></div>
+          <div class="field"><label>성장가능성 2</label><select class="select" id="peerGrowth2"></select></div>
+          <div class="field"><label>성장가능성 2 판단 근거</label><textarea class="textarea" id="peerGrowth2Comment" placeholder="성장가능성 1과 다른 관점의 근거를 적어주세요"></textarea></div>
+          <div class="field">
+            <label>응원 메시지</label>
+            <textarea class="textarea" id="freeMessage" placeholder="선택 입력"></textarea>
+            <div class="notice">동료에게 평소 해 주고 싶었던 메시지를 작성해 주세요!</div>
+          </div>
+          <div class="form-actions">
+            <span class="notice" id="saveHint">임시 저장은 가능하지만, 다음 단계 이동과 최종 제출은 필수 항목이 모두 채워져야 가능합니다.</span>
+            <div class="chip-row">
+              <button class="btn secondary" id="prevBtn" type="button">이전 대상</button>
+              <button class="btn secondary" id="saveBtn" type="button">임시 저장</button>
+              <button class="btn" id="nextBtn" type="button">저장 후 다음</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>응답 가이드</h2>
+        <p>상단 카드에서 완료 여부를 확인할 수 있고, 4명 모두 필수 항목이 채워져야 최종 제출 버튼이 열립니다.</p>
+        <div id="dimensionSummary" style="margin-top:16px;"></div>
+        <div class="callout" style="margin-top:16px;">
+          <h3>최종 제출 체크</h3>
+          <p id="submitStatus">아직 제출 전입니다.</p>
+          <div class="review-list" id="reviewList"></div>
+          <div class="form-actions" style="margin-top:16px; justify-content:flex-end;">
+            <button class="btn" id="submitBtn" type="button" disabled>4명 완료 후 최종 제출</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./common.js"></script>
+  <script>
+    byId('nav').innerHTML = renderTopNav('peer');
+    byId('dimensionSummary').innerHTML = renderDimensionSummary('Peer 피드백 전에 보는 6개 Dimension');
+
+    const dimensions = AppStore.dimensions;
+    const responders = AppStore.uniqueBy(AppStore.getAssignments(), 'responder_id');
+    const lockedResponderId = AppStore.getQueryParam('responder');
+    let currentAssignments = [];
+    let currentIndex = 0;
+
+    function fillOptions(id, defaultIndex) {
+      byId(id).innerHTML = dimensions.map(item => `<option value="${item}">${item}</option>`).join('');
+      byId(id).selectedIndex = defaultIndex;
+    }
+
+    fillOptions('peerStrength1', 0);
+    fillOptions('peerStrength2', 1);
+    fillOptions('peerGrowth1', 2);
+    fillOptions('peerGrowth2', 3);
+
+    byId('responderSelect').innerHTML = responders.map(item => `<option value="${item.responder_id}">${item.responder_name} | ${item.group_name}</option>`).join('');
+
+    if (lockedResponderId && responders.some(item => item.responder_id === lockedResponderId)) {
+      byId('responderSelect').value = lockedResponderId;
+      byId('responderSelect').disabled = true;
+      const responder = responders.find(item => item.responder_id === lockedResponderId);
+      byId('lockedBanner').innerHTML = `<div class="readonly-banner">${responder.responder_name} 님 전용 링크로 열렸습니다. 응답자 선택은 잠겨 있습니다.</div>`;
+    }
+
+    function currentAssignment() {
+      return currentAssignments[currentIndex] || null;
+    }
+
+    function currentPayload() {
+      const assignment = currentAssignment();
+      if (!assignment) return null;
+      return {
+        assignment_id: assignment.assignment_id,
+        strength1: byId('peerStrength1').value,
+        strength1Comment: byId('peerStrength1Comment').value,
+        strength2: byId('peerStrength2').value,
+        strength2Comment: byId('peerStrength2Comment').value,
+        growth1: byId('peerGrowth1').value,
+        growth1Comment: byId('peerGrowth1Comment').value,
+        growth2: byId('peerGrowth2').value,
+        growth2Comment: byId('peerGrowth2Comment').value,
+        freeMessage: byId('freeMessage').value
+      };
+    }
+
+    function ensureDistinct(changedId, otherId, label) {
+      const changed = byId(changedId);
+      const other = byId(otherId);
+      if (changed.value === other.value) {
+        changed.value = dimensions.find(item => item !== other.value) || changed.value;
+        alert(`${label}은(는) 서로 다른 항목을 선택해야 합니다.`);
+      }
+    }
+
+    function fillForm() {
+      const assignment = currentAssignment();
+      if (!assignment) return;
+      const payload = AppStore.getPeerResponse(assignment.assignment_id);
+      byId('peerStrength1').value = payload.strength1;
+      byId('peerStrength1Comment').value = payload.strength1Comment;
+      byId('peerStrength2').value = payload.strength2;
+      byId('peerStrength2Comment').value = payload.strength2Comment;
+      byId('peerGrowth1').value = payload.growth1;
+      byId('peerGrowth1Comment').value = payload.growth1Comment;
+      byId('peerGrowth2').value = payload.growth2;
+      byId('peerGrowth2Comment').value = payload.growth2Comment;
+      byId('freeMessage').value = payload.freeMessage;
+    }
+
+    function getStatus(assignment, index) {
+      const payload = AppStore.getPeerResponse(assignment.assignment_id);
+      const error = AppStore.validatePeerPayload(payload);
+      if (!error) return 'completed';
+      const touched = [payload.strength1Comment, payload.strength2Comment, payload.growth1Comment, payload.growth2Comment, payload.freeMessage]
+        .some(value => String(value || '').trim().length > 0);
+      if (index === currentIndex || touched) return 'in-progress';
+      return 'pending';
+    }
+
+    function statusLabel(status, index) {
+      if (status === 'completed') return '완료';
+      if (status === 'in-progress') return index === currentIndex ? '작성중' : '미완료';
+      return '미작성';
+    }
+
+    function persistCurrent(showAlert) {
+      const payload = currentPayload();
+      if (!payload) return;
+      AppStore.savePeerResponse(payload);
+      if (showAlert) alert('현재 대상 응답이 임시 저장되었습니다.');
+      renderProgress();
+      renderCurrentMeta();
+      renderReview();
+    }
+
+    function validateCurrentForAdvance() {
+      const payload = currentPayload();
+      const error = AppStore.validatePeerPayload(payload);
+      if (error) {
+        alert(error);
+        return false;
+      }
+      return true;
+    }
+
+    function renderProgress() {
+      if (currentAssignments.length === 0) {
+        byId('progressGrid').innerHTML = renderEmptyState('배정된 대상이 없습니다.', '응답자 매칭 데이터를 먼저 확인해 주세요.');
+        return;
+      }
+      const completedCount = currentAssignments.filter(item => getStatus(item, currentAssignments.indexOf(item)) === 'completed').length;
+      const responder = currentAssignments[0];
+      byId('assignmentInfo').textContent = `${responder.responder_name} 님은 현재 ${currentAssignments.length}명의 Peer 평가 대상이 배정되어 있으며, ${completedCount}명 완료했습니다.`;
+      byId('progressGrid').innerHTML = currentAssignments.map((assignment, index) => {
+        const status = getStatus(assignment, index);
+        return `
+          <button class="target-step ${status} ${index === currentIndex ? 'active' : ''}" type="button" data-index="${index}">
+            <div class="target-step-number">대상 ${index + 1}</div>
+            <div class="target-step-name">${assignment.target_name}</div>
+            <div class="target-step-team">${assignment.target_team}</div>
+            <span class="status-badge ${status}">${statusLabel(status, index)}</span>
+          </button>
+        `;
+      }).join('');
+      Array.from(document.querySelectorAll('[data-index]')).forEach(button => {
+        button.addEventListener('click', () => {
+          persistCurrent(false);
+          currentIndex = Number(button.dataset.index);
+          renderCurrentMeta();
+          fillForm();
+          renderProgress();
+        });
+      });
+    }
+
+    function renderCurrentMeta() {
+      const assignment = currentAssignment();
+      if (!assignment) return;
+      const completedCount = currentAssignments.filter(item => getStatus(item, currentAssignments.indexOf(item)) === 'completed').length;
+      const status = getStatus(assignment, currentIndex);
+      byId('currentTargetName').textContent = assignment.target_name;
+      byId('currentTargetMeta').innerHTML = `<span>${assignment.target_team}</span><span>${assignment.group_name}</span><span>${currentIndex + 1} / ${currentAssignments.length}</span><span>완료 ${completedCount} / ${currentAssignments.length}</span>`;
+      byId('currentStatus').innerHTML = `<span class="status-badge ${status}">${statusLabel(status, currentIndex)}</span>`;
+      byId('prevBtn').disabled = currentIndex === 0;
+      byId('nextBtn').textContent = currentIndex === currentAssignments.length - 1 ? '저장' : '저장 후 다음';
+    }
+
+    function renderReview() {
+      if (currentAssignments.length === 0) {
+        byId('reviewList').innerHTML = '';
+        byId('submitBtn').disabled = true;
+        byId('submitStatus').textContent = '배정된 대상이 없습니다.';
+        return;
+      }
+      const completedCount = currentAssignments.filter(item => getStatus(item, currentAssignments.indexOf(item)) === 'completed').length;
+      const allDone = completedCount === currentAssignments.length;
+      byId('submitStatus').textContent = allDone
+        ? '4명 모두 필수 항목이 채워졌습니다. 최종 제출할 수 있습니다.'
+        : `아직 ${currentAssignments.length - completedCount}명의 응답이 남아 있습니다. 응원 메시지를 제외한 모든 필수 항목을 채워야 제출할 수 있습니다.`;
+      byId('reviewList').innerHTML = currentAssignments.map((assignment, index) => {
+        const status = getStatus(assignment, index);
+        return `<div class="review-row"><div><strong>${assignment.target_name}</strong><div class="notice">${assignment.target_team}</div></div><span class="status-badge ${status}">${statusLabel(status, index)}</span></div>`;
+      }).join('');
+      byId('submitBtn').disabled = !allDone;
+    }
+
+    function refreshResponder() {
+      const responderId = byId('responderSelect').value;
+      currentAssignments = AppStore.findAssignmentsByResponder(responderId);
+      const firstIncomplete = currentAssignments.findIndex(item => AppStore.validatePeerPayload(AppStore.getPeerResponse(item.assignment_id)) !== '');
+      currentIndex = firstIncomplete >= 0 ? firstIncomplete : 0;
+      const submitted = AppStore.isPeerSubmitted(responderId);
+      byId('saveHint').textContent = submitted
+        ? '이미 최종 제출된 응답자입니다. 화면상 수정은 가능하지만 실제 서비스에서는 재제출 정책을 별도로 관리합니다.'
+        : '임시 저장은 가능하지만, 다음 단계 이동과 최종 제출은 필수 항목이 모두 채워져야 가능합니다.';
+      renderProgress();
+      renderCurrentMeta();
+      fillForm();
+      renderReview();
+    }
+
+    byId('responderSelect').addEventListener('change', refreshResponder);
+    byId('peerStrength1').addEventListener('change', () => { ensureDistinct('peerStrength1', 'peerStrength2', '강점 1/2'); persistCurrent(false); });
+    byId('peerStrength2').addEventListener('change', () => { ensureDistinct('peerStrength2', 'peerStrength1', '강점 1/2'); persistCurrent(false); });
+    byId('peerGrowth1').addEventListener('change', () => { ensureDistinct('peerGrowth1', 'peerGrowth2', '성장가능성 1/2'); persistCurrent(false); });
+    byId('peerGrowth2').addEventListener('change', () => { ensureDistinct('peerGrowth2', 'peerGrowth1', '성장가능성 1/2'); persistCurrent(false); });
+
+    ['peerStrength1Comment','peerStrength2Comment','peerGrowth1Comment','peerGrowth2Comment','freeMessage'].forEach(id => {
+      byId(id).addEventListener('input', () => persistCurrent(false));
+    });
+
+    byId('prevBtn').addEventListener('click', () => {
+      persistCurrent(false);
+      currentIndex = Math.max(0, currentIndex - 1);
+      renderCurrentMeta();
+      fillForm();
+      renderProgress();
+    });
+
+    byId('saveBtn').addEventListener('click', () => persistCurrent(true));
+
+    byId('nextBtn').addEventListener('click', () => {
+      if (!validateCurrentForAdvance()) return;
+      persistCurrent(false);
+      if (currentIndex < currentAssignments.length - 1) {
+        currentIndex += 1;
+        renderCurrentMeta();
+        fillForm();
+        renderProgress();
+      } else {
+        alert('현재 대상 응답을 저장했습니다. 우측 제출 체크에서 전체 완료 여부를 확인해주세요.');
+      }
+    });
+
+    byId('submitBtn').addEventListener('click', () => {
+      if (!validateCurrentForAdvance()) return;
+      persistCurrent(false);
+      AppStore.setPeerSubmitted(byId('responderSelect').value);
+      alert('4명 응답이 모두 완료되어 최종 제출 처리되었습니다.');
+      refreshResponder();
+    });
+
+    refreshResponder();
+  </script>
+</body>
+</html>

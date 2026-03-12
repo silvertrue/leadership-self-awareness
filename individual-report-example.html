@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>팀장 개인 리포트 예시</title>
+<style>
+:root{--navy:#14243f;--navy2:#23406b;--orange:#ff6b35;--orange-soft:#fff1ea;--green:#178b61;--green-soft:#edf8f3;--blue-soft:#edf4ff;--line:#d8e2ee;--text:#1b273a;--muted:#6a7a90;--shadow:0 22px 46px rgba(20,36,63,.12)}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;background:linear-gradient(135deg,#f8fbff 0%,#edf3fa 100%);color:var(--text)}
+.page{max-width:1320px;margin:0 auto}.report{background:#fff;border:1px solid var(--line);border-radius:30px;overflow:hidden;box-shadow:var(--shadow)}
+.header{padding:24px 28px;background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;display:flex;justify-content:space-between;align-items:flex-start;gap:20px}.eyebrow{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#ffd9cc}.header h1{margin:8px 0 8px;font-size:34px;line-height:1.12;letter-spacing:-.04em}.meta{display:flex;gap:18px;flex-wrap:wrap;font-size:14px;color:rgba(255,255,255,.84)}.badge{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);font-weight:800;white-space:nowrap}
+.content{padding:24px;background:radial-gradient(circle at top right,rgba(255,107,53,.14),transparent 24%),linear-gradient(135deg,#fff 0%,#fff8f1 100%);display:flex;flex-direction:column;gap:18px}
+.summary{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.panel{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:24px;padding:20px}.panel h2{margin:0 0 10px;font-size:22px;line-height:1.25;letter-spacing:-.03em;color:var(--navy)}.panel p{margin:0;font-size:16px;line-height:1.65;color:#42546a}.summary-hero{background:linear-gradient(135deg,#fff 0%,#fff6f1 100%);border:1px solid #ffd7c7}.summary-hero big{display:block;font-size:34px;line-height:1.12;letter-spacing:-.04em;color:var(--navy);font-weight:900;margin:8px 0 12px}.summary-side{display:grid;gap:14px}.mini{border-radius:20px;border:1px solid var(--line);background:#fff;padding:16px}.mini strong{display:block;margin-bottom:6px;color:var(--navy);font-size:16px}.mini p{margin:0;font-size:15px;line-height:1.6;color:#4a5b70}
+.compare{display:grid;grid-template-columns:1fr 150px 1fr;gap:16px;align-items:stretch}.col{display:grid;gap:14px}.col-head{display:flex;align-items:center;justify-content:space-between}.col-title{font-size:28px;letter-spacing:-.04em;font-weight:900;color:var(--navy);margin:0}.label{display:inline-flex;align-items:center;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}.label.self{background:var(--blue-soft);color:#24457a}.label.peer{background:var(--green-soft);color:var(--green)}.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px}.card h3{margin:0 0 10px;font-size:18px;color:var(--navy)}.chip-row{display:flex;flex-wrap:wrap;gap:8px}.chip{display:inline-flex;align-items:center;padding:8px 10px;border-radius:12px;font-size:14px;font-weight:800}.chip.blue{background:var(--blue-soft);color:#24457a}.chip.orange{background:var(--orange-soft);color:#b34c24}.chip.green{background:var(--green-soft);color:var(--green)}.quote{border:1px dashed #bdcad9;background:#fff;border-radius:18px;padding:15px 16px;font-size:15px;line-height:1.6;color:#4a5b70}.center-line{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}.arrow{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#fff3ec 0%,#ffe0d3 100%);display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:30px;font-weight:900;border:1px solid #ffd1bf}.center-note{font-size:14px;line-height:1.55;color:var(--muted);text-align:center;font-weight:700}
+.insight{background:linear-gradient(135deg,#fff8f4 0%,#fff 100%);border:1px solid #ffd7c7;border-radius:24px;padding:20px}.insight .eyebrow2{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--orange)}.insight h2{margin:8px 0 10px;font-size:30px;line-height:1.14;letter-spacing:-.04em;color:var(--navy)}.insight p{margin:0;font-size:16px;line-height:1.65;color:#42546a}.insight .question{margin-top:14px;padding-top:14px;border-top:1px solid #ffd9ca;font-weight:800;color:#b34c24}
+.action{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.action-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px}.action-card strong{display:block;margin-bottom:8px;color:var(--navy);font-size:16px}.action-card p{margin:0;font-size:15px;line-height:1.6;color:#42546a}.footer{padding:14px 24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:#fff;color:var(--muted);font-size:13px}
+@media (max-width:1100px){.summary,.compare,.action{grid-template-columns:1fr}.compare{gap:12px}.center-line{flex-direction:row}.center-note{text-align:left}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="report">
+    <div class="header">
+      <div>
+        <div class="eyebrow">Personal Report Example</div>
+        <h1>2026 1차 팀장 워크샵 | 개인 자기인식 리포트</h1>
+        <div class="meta"><span>이름: 홍길동 팀장</span><span>조직: 윤활유사업팀</span><span>Peer 응답자 수: 6명</span></div>
+      </div>
+      <div class="badge">본인 열람용</div>
+    </div>
+
+    <div class="content">
+      <section class="summary">
+        <div class="panel summary-hero">
+          <div class="eyebrow">One-Line Summary</div>
+          <big>내가 성장 과제로 본 영역을<br />동료도 같은 성장 기회로 보고 있습니다</big>
+          <p>Learning Agility는 자가진단과 Peer 피드백이 함께 가리킨 공통 과제입니다. 지금 가장 작고 구체적인 행동으로 옮기기 좋은 우선순위입니다.</p>
+        </div>
+        <div class="summary-side">
+          <div class="mini"><strong>새롭게 보게 된 강점</strong><p>Attitude는 스스로 고르지 않았지만 동료 4명이 강점으로 보았습니다. 내가 당연하게 여기던 태도가 조직에서는 중요한 신뢰 자산으로 읽히고 있습니다.</p></div>
+          <div class="mini"><strong>리포트 읽는 질문</strong><p>나는 무엇을 과소평가했고, 동료는 무엇을 더 크게 보고 있는가?</p></div>
+        </div>
+      </section>
+
+      <section class="compare">
+        <div class="col">
+          <div class="col-head"><h2 class="col-title">내가 본 나</h2><span class="label self">Self View</span></div>
+          <div class="card"><h3>내가 선택한 강점</h3><div class="chip-row"><span class="chip blue">Leadership</span><span class="chip blue">전문성</span></div></div>
+          <div class="quote"><strong>강점 판단 근거</strong><br />“방향이 불명확한 상황에서도 우선순위를 잡아 팀이 흔들리지 않도록 정리해온 경험이 있다.”</div>
+          <div class="card"><h3>내가 선택한 성장 과제</h3><div class="chip-row"><span class="chip orange">Learning Agility</span><span class="chip orange">Design 역량</span></div></div>
+          <div class="quote"><strong>성장 판단 근거</strong><br />“AI와 구조화 역량은 더 의식적으로 훈련해야 다음 단계 리더십으로 확장될 수 있다고 느낀다.”</div>
+        </div>
+
+        <div class="center-line">
+          <div class="arrow">→</div>
+          <div class="center-note">자가인식과 동료인식을 비교해<br />오늘의 핵심 인사이트를 찾습니다</div>
+        </div>
+
+        <div class="col">
+          <div class="col-head"><h2 class="col-title">동료가 본 나</h2><span class="label peer">Peer View</span></div>
+          <div class="card"><h3>동료가 본 강점 Top 2</h3><div class="chip-row"><span class="chip green">1위 Leadership</span><span class="chip green">2위 Attitude</span></div></div>
+          <div class="quote"><strong>강점 코멘트</strong><br />“복잡한 상황에서도 팀이 우왕좌왕하지 않도록 방향을 잡아주는 리더십이 인상적입니다.”</div>
+          <div class="card"><h3>동료가 본 성장 가능성 Top 2</h3><div class="chip-row"><span class="chip orange">1위 Learning Agility</span><span class="chip orange">2위 Design 역량</span></div></div>
+          <div class="quote"><strong>성장가능성 코멘트</strong><br />“AI를 더 적극적으로 활용하면 이미 강한 방향 제시가 더 또렷해질 것 같아 기대됩니다.”</div>
+        </div>
+      </section>
+
+      <section class="insight">
+        <div class="eyebrow2">Insight Spotlight</div>
+        <h2>오늘 가장 주목할 포인트는<br />‘성장 필요’에 대한 인식 일치입니다</h2>
+        <p>자가진단과 Peer 피드백이 같은 영역을 가리킨다는 것은, 지금 조직 안에서 이미 드러나고 있는 성장 신호라는 뜻입니다. 이 영역을 방어하지 말고, 다음 4주 안에 작게 실험할 행동으로 연결해보세요.</p>
+        <div class="question">핵심 질문: 나는 이 기대를 어떤 행동으로 증명해볼 것인가?</div>
+      </section>
+
+      <section class="action">
+        <div class="action-card"><strong>계속 강화할 강점</strong><p>Leadership을 더 의식적으로 사용해 팀의 방향 정렬을 자주 돕기</p></div>
+        <div class="action-card"><strong>실험할 성장 행동</strong><p>다음 4주 동안 주 1회 AI 툴을 활용해 문제 구조화 메모 작성하기</p></div>
+        <div class="action-card"><strong>점검 파트너</strong><p>같은 조 동료 팀장 1명과 2주 후 실행 점검</p></div>
+      </section>
+    </div>
+
+    <div class="footer">
+      <div>워크샵 당일 개인 배포용 예시 시안</div>
+      <div>SK Enmove</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+

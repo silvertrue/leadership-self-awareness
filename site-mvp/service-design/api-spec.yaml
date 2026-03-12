@@ -1,0 +1,251 @@
+﻿openapi: 3.0.3
+info:
+  title: Self Awareness Session API
+  version: 0.1.0
+  description: |
+    팀장 자기인식 세션용 서베이 수집/리포트 생성 API 명세 초안.
+servers:
+  - url: https://self-awareness.example.com
+paths:
+  /api/public/self/{token}:
+    get:
+      summary: 자가진단 폼 초기 데이터 조회
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: 자가진단 제출 또는 수정 저장
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelfResponseUpsert'
+      responses:
+        '200':
+          description: Saved
+  /api/public/peer/{token}:
+    get:
+      summary: Peer 피드백 폼 초기 데이터 조회
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: 특정 assignment 응답 임시 저장
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeerResponseUpsert'
+      responses:
+        '200':
+          description: Saved
+  /api/public/peer/{token}/submit:
+    post:
+      summary: Peer 4명 응답 최종 제출
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Submitted
+  /api/public/report/{token}:
+    get:
+      summary: 개인 리포트 조회
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/admin/participants/import:
+    post:
+      summary: 참가자 명단 업로드
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                participants:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Participant'
+      responses:
+        '200':
+          description: Imported
+  /api/admin/peer-assignments/import:
+    post:
+      summary: Peer assignment 업로드
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                peer_assignments:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PeerAssignment'
+      responses:
+        '200':
+          description: Imported
+  /api/admin/dashboard:
+    get:
+      summary: 운영 대시보드 집계 데이터 조회
+      responses:
+        '200':
+          description: OK
+  /api/admin/reports/{participantId}/generate:
+    post:
+      summary: 특정 참가자 리포트 강제 생성
+      parameters:
+        - in: path
+          name: participantId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Generated
+  /api/admin/reports/generate-all:
+    post:
+      summary: 전체 리포트 일괄 생성
+      responses:
+        '200':
+          description: Generated
+components:
+  schemas:
+    Participant:
+      type: object
+      required:
+        - participant_id
+        - name_ko
+        - team_name
+        - group_name
+      properties:
+        participant_id:
+          type: string
+        name_ko:
+          type: string
+        team_name:
+          type: string
+        group_name:
+          type: string
+        email:
+          type: string
+          nullable: true
+    PeerAssignment:
+      type: object
+      required:
+        - assignment_id
+        - responder_id
+        - target_id
+      properties:
+        assignment_id:
+          type: string
+        responder_id:
+          type: string
+        responder_name:
+          type: string
+        target_id:
+          type: string
+        target_name:
+          type: string
+        group_name:
+          type: string
+    SelfResponseUpsert:
+      type: object
+      required:
+        - strength1
+        - strength1Comment
+        - strength2
+        - strength2Comment
+        - growth1
+        - growth1Comment
+        - growth2
+        - growth2Comment
+      properties:
+        strength1:
+          type: string
+        strength1Comment:
+          type: string
+        strength2:
+          type: string
+        strength2Comment:
+          type: string
+        growth1:
+          type: string
+        growth1Comment:
+          type: string
+        growth2:
+          type: string
+        growth2Comment:
+          type: string
+    PeerResponseUpsert:
+      type: object
+      required:
+        - assignment_id
+        - strength1
+        - strength1Comment
+        - strength2
+        - strength2Comment
+        - growth1
+        - growth1Comment
+        - growth2
+        - growth2Comment
+      properties:
+        assignment_id:
+          type: string
+        strength1:
+          type: string
+        strength1Comment:
+          type: string
+        strength2:
+          type: string
+        strength2Comment:
+          type: string
+        growth1:
+          type: string
+        growth1Comment:
+          type: string
+        growth2:
+          type: string
+        growth2Comment:
+          type: string
+        freeMessage:
+          type: string
+          nullable: true

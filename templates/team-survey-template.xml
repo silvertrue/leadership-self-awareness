@@ -1,0 +1,108 @@
+﻿<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+ <Styles>
+  <Style ss:ID="Header"><Font ss:Bold="1"/><Interior ss:Color="#DCEBFA" ss:Pattern="Solid"/></Style>
+  <Style ss:ID="Guide"><Font ss:Color="#666666"/></Style>
+ </Styles>
+ <Worksheet ss:Name="README">
+  <Table>
+   <Row>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">sheet</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">purpose</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">how_to_fill</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">participants</Data></Cell>
+    <Cell><Data ss:Type="String">팀장 기본 명단</Data></Cell>
+    <Cell><Data ss:Type="String">participant_id는 반드시 고유값으로 입력하세요. 예: TL001</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">peer_assignments</Data></Cell>
+    <Cell><Data ss:Type="String">이미 매칭된 Peer 대상 관계</Data></Cell>
+    <Cell><Data ss:Type="String">한 줄이 한 건의 Peer 평가 관계입니다. responder_id와 target_id는 participants의 participant_id와 반드시 일치해야 합니다.</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">rule</Data></Cell>
+    <Cell><Data ss:Type="String">필수 원칙</Data></Cell>
+    <Cell><Data ss:Type="String">이름보다 participant_id를 기준으로 시스템이 매칭됩니다.</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">rule</Data></Cell>
+    <Cell><Data ss:Type="String">권장 원칙</Data></Cell>
+    <Cell><Data ss:Type="String">responder_name, target_name도 함께 적어두면 검수하기 쉽습니다.</Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="participants">
+  <Table>
+   <Row>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">participant_id</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">name_ko</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">team_name</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">email</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">role_title</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">group_name</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">status</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">notes</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">TL001</Data></Cell>
+    <Cell><Data ss:Type="String">홍길동</Data></Cell>
+    <Cell><Data ss:Type="String">윤활유사업팀</Data></Cell>
+    <Cell><Data ss:Type="String">hong@example.com</Data></Cell>
+    <Cell><Data ss:Type="String">팀장</Data></Cell>
+    <Cell><Data ss:Type="String">1조</Data></Cell>
+    <Cell><Data ss:Type="String">ACTIVE</Data></Cell>
+    <Cell><Data ss:Type="String">예시 행</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">TL002</Data></Cell>
+    <Cell><Data ss:Type="String">김영희</Data></Cell>
+    <Cell><Data ss:Type="String">기획팀</Data></Cell>
+    <Cell><Data ss:Type="String">kim@example.com</Data></Cell>
+    <Cell><Data ss:Type="String">팀장</Data></Cell>
+    <Cell><Data ss:Type="String">1조</Data></Cell>
+    <Cell><Data ss:Type="String">ACTIVE</Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+ <Worksheet ss:Name="peer_assignments">
+  <Table>
+   <Row>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">assignment_id</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">responder_id</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">responder_name</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">target_id</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">target_name</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">survey_type</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">active_yn</Data></Cell>
+    <Cell ss:StyleID="Header"><Data ss:Type="String">notes</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">A001</Data></Cell>
+    <Cell><Data ss:Type="String">TL001</Data></Cell>
+    <Cell><Data ss:Type="String">홍길동</Data></Cell>
+    <Cell><Data ss:Type="String">TL002</Data></Cell>
+    <Cell><Data ss:Type="String">김영희</Data></Cell>
+    <Cell><Data ss:Type="String">PEER</Data></Cell>
+    <Cell><Data ss:Type="String">Y</Data></Cell>
+    <Cell><Data ss:Type="String">예시 행</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">A002</Data></Cell>
+    <Cell><Data ss:Type="String">TL002</Data></Cell>
+    <Cell><Data ss:Type="String">김영희</Data></Cell>
+    <Cell><Data ss:Type="String">TL001</Data></Cell>
+    <Cell><Data ss:Type="String">홍길동</Data></Cell>
+    <Cell><Data ss:Type="String">PEER</Data></Cell>
+    <Cell><Data ss:Type="String">Y</Data></Cell>
+    <Cell><Data ss:Type="String"></Data></Cell>
+   </Row>
+  </Table>
+ </Worksheet>
+</Workbook>

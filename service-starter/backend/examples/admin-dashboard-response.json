@@ -1,0 +1,22 @@
+{
+  "summary": {
+    "participantCount": 25,
+    "selfCompleted": 18,
+    "peerAssignments": 96,
+    "peerCompleted": 71,
+    "peerSubmitted": 16,
+    "reportReady": 12
+  },
+  "groups": [
+    { "groupName": "1조", "members": 5, "selfCompleted": 4, "reportReady": 3, "targetsPerPerson": 4 },
+    { "groupName": "2조", "members": 4, "selfCompleted": 3, "reportReady": 2, "targetsPerPerson": 3 }
+  ],
+  "responders": [
+    { "responderId": "TL001", "nameKo": "방경석", "groupName": "2조", "completed": 4, "total": 4, "submitted": true },
+    { "responderId": "TL002", "nameKo": "고인석", "groupName": "1조", "completed": 2, "total": 4, "submitted": false }
+  ],
+  "participants": [
+    { "participantId": "TL001", "nameKo": "방경석", "teamName": "Green성장전략팀", "selfCompleted": true, "peerResponseCount": 4, "expectedPeerCount": 4, "reportReady": true },
+    { "participantId": "TL002", "nameKo": "고인석", "teamName": "Global최적화팀", "selfCompleted": true, "peerResponseCount": 2, "expectedPeerCount": 4, "reportReady": false }
+  ]
+}

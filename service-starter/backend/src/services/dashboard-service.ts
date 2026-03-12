@@ -79,7 +79,7 @@ export class DashboardService {
       const selfCompleted = selfCompletedSet.has(participant.participantId);
       const generatedReport = reportRunMap.get(participant.participantId);
       const derivedReady = selfCompleted && expectedPeerCount > 0 && peerResponseCount >= expectedPeerCount;
-      const reportReady = generatedReport?.reportStatus === 'completed' || derivedReady;
+      const reportReady = generatedReport?.reportStatus === 'ready' || generatedReport?.reportStatus === 'exported' || derivedReady;
 
       return {
         participantId: participant.participantId,

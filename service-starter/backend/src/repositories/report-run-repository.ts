@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import type { DbClient } from '../lib/db';
 import type { ReportRun } from '../types/report';
 
@@ -10,7 +11,7 @@ export class ReportRunRepository {
         participantId: run.participantId,
         reportStatus: run.reportStatus,
         peerResponseCount: run.peerResponseCount,
-        reportJson: run.reportJson,
+        reportJson: run.reportJson as unknown as Prisma.InputJsonValue,
         htmlPath: run.htmlPath ?? null,
         pdfPath: run.pdfPath ?? null,
         llmModel: run.llmModel ?? null,
@@ -33,7 +34,7 @@ export class ReportRunRepository {
       participantId: row.participantId,
       reportStatus: row.reportStatus,
       peerResponseCount: row.peerResponseCount,
-      reportJson: row.reportJson as ReportRun['reportJson'],
+      reportJson: row.reportJson as unknown as ReportRun['reportJson'],
       htmlPath: row.htmlPath,
       pdfPath: row.pdfPath,
       llmModel: row.llmModel,

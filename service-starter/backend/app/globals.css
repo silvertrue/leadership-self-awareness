@@ -49,10 +49,17 @@ a { color: inherit; }
 .meta-value { font-weight: 800; }
 .dimension-guide { display: grid; gap: 12px; }
 .dimension-item { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
-.dimension-head { display: flex; gap: 12px; align-items: center; padding: 14px 16px; background: #f7f9fc; }
-.dimension-group { width: 68px; text-align: center; font-size: 12px; font-weight: 800; color: var(--navy); background: #e7eef8; border-radius: 999px; padding: 6px 10px; }
+.dimension-item.experience { background: #fff9f1; border-color: #f2dfbf; }
+.dimension-item.capability { background: #f3fbf7; border-color: #cfe8dc; }
+.dimension-item.trait { background: #f7f3ff; border-color: #ddd4f4; }
+.dimension-head { display: flex; gap: 12px; align-items: center; padding: 14px 16px; background: rgba(255,255,255,0.55); }
+.dimension-group { width: 68px; text-align: center; font-size: 12px; font-weight: 800; color: var(--navy); border-radius: 999px; padding: 6px 10px; }
+.dimension-group.experience { background: #f6e6c8; color: #8a5a12; }
+.dimension-group.capability { background: #dcefe6; color: #1f6a4b; }
+.dimension-group.trait { background: #e6ddf8; color: #5c3a8d; }
 .dimension-name { font-size: 18px; font-weight: 800; }
-.dimension-body { padding: 0 16px 16px; color: var(--muted); line-height: 1.65; }
+.dimension-tags { font-size: 13px; font-weight: 700; color: #5a6d84; margin-top: 4px; }
+.dimension-body { padding: 0 16px 16px; color: var(--muted); line-height: 1.75; }
 .progress-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
 .assignment-card { padding: 16px; border-radius: 18px; border: 1px solid var(--line); background: #fff; }
 .assignment-card.active { border-color: #ffd0bf; box-shadow: 0 0 0 3px #fff1ec; }

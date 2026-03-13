@@ -36,24 +36,35 @@ function quotes(items: string[], title: string): string {
     .join("");
 }
 
+function dimensionCardColors(groupKey: string) {
+  if (groupKey === "experience") {
+    return { card: "#fff9f1", border: "#f2dfbf", pill: "#f6e6c8", pillText: "#8a5a12" };
+  }
+  if (groupKey === "capability") {
+    return { card: "#f3fbf7", border: "#cfe8dc", pill: "#dcefe6", pillText: "#1f6a4b" };
+  }
+  return { card: "#f7f3ff", border: "#ddd4f4", pill: "#e6ddf8", pillText: "#5c3a8d" };
+}
+
 function dimensionGuideHtml(): string {
   return `
     <div class="section">
-      <h2 class="section-title">리더십 3영역 - 6개 Dimension 설명</h2>
-      ${DIMENSION_META.map(
-        (item) => `
-          <div style="border:1px solid #dbe5ef;border-radius:18px;padding:18px;margin-top:14px;background:#fff;">
+      <h2 class="section-title">리더십 3영역 - 6 Dimension 설명</h2>
+      ${DIMENSION_META.map((item) => {
+        const colors = dimensionCardColors(item.groupKey);
+        return `
+          <div style="border:1px solid ${colors.border};border-radius:18px;padding:18px;margin-top:14px;background:${colors.card};">
             <div style="display:flex;gap:12px;align-items:flex-start;">
-              <div style="font-size:12px;font-weight:800;color:#5d6f86;background:#eef4fa;padding:6px 10px;border-radius:999px;">${escapeHtml(item.group)}</div>
+              <div style="font-size:12px;font-weight:800;color:${colors.pillText};background:${colors.pill};padding:6px 10px;border-radius:999px;">${escapeHtml(item.group)}</div>
               <div>
-                <div style="font-size:20px;font-weight:800;color:#14243f;">${escapeHtml(item.label)}</div>
+                <div style="font-size:20px;font-weight:800;color:#14243f;">${escapeHtml(item.name)}</div>
                 <div style="font-size:13px;font-weight:700;color:#5a6d84;margin-top:4px;">${escapeHtml(item.hashtags)}</div>
               </div>
             </div>
             <div style="font-size:15px;line-height:1.8;color:#33465a;margin-top:14px;">${escapeHtml(item.summary)}</div>
           </div>
-        `,
-      ).join("")}
+        `;
+      }).join("")}
     </div>
   `;
 }

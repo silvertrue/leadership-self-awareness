@@ -51,26 +51,29 @@ function toAnonymousYoTone(comment: string): string {
   if (!text) return "";
 
   text = text
-    .replace(/팀장님/g, "이 리더는")
+    .replace(/팀장님께서는/g, "이 리더는")
+    .replace(/팀장님은/g, "이 리더는")
+    .replace(/팀장님이/g, "이 리더가")
+    .replace(/팀장님/g, "이 리더")
     .replace(/당신/g, "이 리더")
     .replace(/[“”"]/g, "")
     .replace(/\s+/g, " ");
 
-  const replacements: Array<[RegExp, string]> = [
-    [/했습니다[.]?$/u, "했어요."],
-    [/하였습니다[.]?$/u, "했어요."],
-    [/있습니다[.]?$/u, "있어요."],
-    [/없습니다[.]?$/u, "없어요."],
-    [/좋습니다[.]?$/u, "좋아요."],
-    [/됩니다[.]?$/u, "돼요."],
-    [/보입니다[.]?$/u, "보여요."],
-    [/느껴집니다[.]?$/u, "느껴져요."],
-    [/같습니다[.]?$/u, "같아요."],
-    [/입니다[.]?$/u, "이에요."],
-    [/습니다[.]?$/u, "어요."],
+  const endings: Array<[RegExp, string]> = [
+    [/했습니다\.$/u, "했어요."],
+    [/하였습니다\.$/u, "했어요."],
+    [/있습니다\.$/u, "있어요."],
+    [/없습니다\.$/u, "없어요."],
+    [/좋습니다\.$/u, "좋아요."],
+    [/보입니다\.$/u, "보여요."],
+    [/느껴집니다\.$/u, "느껴져요."],
+    [/같습니다\.$/u, "같아요."],
+    [/입니다\.$/u, "이에요."],
+    [/됩니다\.$/u, "돼요."],
+    [/합니다\.$/u, "해요."],
   ];
 
-  for (const [pattern, replacement] of replacements) {
+  for (const [pattern, replacement] of endings) {
     if (pattern.test(text)) {
       return text.replace(pattern, replacement);
     }
@@ -94,7 +97,7 @@ function buildDimensionSummary(kind: "strength" | "growth", dimension: Dimension
     return [
       `${dimension}은 Peer 응답에서 총 ${count}회 선택되어 가장 많이 언급된 강점 중 하나였습니다.`,
       representatives[0]
-        ? `동료들은 특히 ${toAnonymousYoTone(representatives[0])}라는 맥락을 근거로 이 강점을 인식하고 있었습니다.`
+        ? `동료들은 특히 "${toAnonymousYoTone(representatives[0])}"처럼 드러난 장면을 근거로 이 강점을 인식하고 있었습니다.`
         : `동료들은 이 차원이 실제 업무 장면에서 반복적으로 드러난다고 보고 있었습니다.`,
     ].join(" ");
   }
@@ -102,7 +105,7 @@ function buildDimensionSummary(kind: "strength" | "growth", dimension: Dimension
   return [
     `${dimension}은 Peer 응답에서 총 ${count}회 선택되어 가장 많이 언급된 성장가능성 중 하나였습니다.`,
     representatives[0]
-      ? `동료들은 특히 ${toAnonymousYoTone(representatives[0])}라는 맥락에서 이 차원의 확장을 기대하고 있었습니다.`
+      ? `동료들은 특히 "${toAnonymousYoTone(representatives[0])}"처럼 보였던 순간을 바탕으로 이 차원의 확장을 기대하고 있었습니다.`
       : `동료들은 이 차원에서 한 단계 더 확장되면 좋겠다는 기대를 반복적으로 보여주었습니다.`,
   ].join(" ");
 }

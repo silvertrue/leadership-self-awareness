@@ -336,7 +336,6 @@ export default function WorkspaceClient({ token }: { token: string }) {
           {tab === "self" ? (
             <section className="panel">
               <h2>자가진단 작성</h2>
-              <p className="muted">강점과 성장가능성을 각각 나누어 생각할 수 있도록 두 섹션으로 구분했습니다.</p>
 
               <section className="survey-section strength-section">
                 <div className="survey-section-head">
@@ -465,8 +464,6 @@ export default function WorkspaceClient({ token }: { token: string }) {
 
                   {activePeerForm ? (
                     <div style={{ marginTop: 20 }}>
-                      <p className="muted">강점과 성장가능성을 구분해 작성할 수 있도록 두 섹션으로 나누었습니다.</p>
-
                       <section className="survey-section strength-section">
                         <div className="survey-section-head">
                           <div className="survey-section-badge strength">강점</div>

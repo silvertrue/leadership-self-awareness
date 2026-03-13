@@ -229,7 +229,7 @@ export default function PeerSurveyClient({ token }: { token: string }) {
           <section className="survey-section strength-section">
             <div className="survey-section-head">
               <div className="survey-section-badge strength">강점</div>
-              <h3>이 팀장의 강점 2가지</h3>
+              <h3>{currentAssignment.target.nameKo} 팀장의 강점 2가지</h3>
             </div>
             <p className="muted">이 팀장의 강점이라고 생각하는 영역 2개를 고르고, 그렇게 판단한 근거를 적어 주세요.</p>
             <div className="form-grid">
@@ -269,7 +269,7 @@ export default function PeerSurveyClient({ token }: { token: string }) {
           <section className="survey-section growth-section">
             <div className="survey-section-head">
               <div className="survey-section-badge growth">성장가능성</div>
-              <h3>이 팀장의 성장가능성 2가지</h3>
+              <h3>{currentAssignment.target.nameKo} 팀장의 성장가능성 2가지</h3>
             </div>
             <p className="muted">앞으로 더 발휘될 수 있다고 생각하는 영역 2개를 고르고, 그렇게 판단한 근거를 적어 주세요.</p>
             <div className="form-grid">

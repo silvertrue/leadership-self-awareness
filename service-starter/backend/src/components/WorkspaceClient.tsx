@@ -470,7 +470,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                       <section className="survey-section strength-section">
                         <div className="survey-section-head">
                           <div className="survey-section-badge strength">강점</div>
-                          <h3>이 팀장의 강점 2가지</h3>
+                          <h3>{peerData.assignments.find((item) => item.assignmentId === activeAssignmentId)?.target.nameKo} 팀장의 강점 2가지</h3>
                         </div>
                         <p className="muted">강점 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
                         <div className="form-grid">
@@ -510,7 +510,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                       <section className="survey-section growth-section">
                         <div className="survey-section-head">
                           <div className="survey-section-badge growth">성장가능성</div>
-                          <h3>이 팀장의 성장가능성 2가지</h3>
+                          <h3>{peerData.assignments.find((item) => item.assignmentId === activeAssignmentId)?.target.nameKo} 팀장의 성장가능성 2가지</h3>
                         </div>
                         <p className="muted">성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
                         <div className="form-grid">

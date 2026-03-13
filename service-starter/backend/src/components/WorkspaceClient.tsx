@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Dimension } from '../types/survey';
 import type { PublicPeerGetResponse, PublicSelfGetResponse } from '../types/api';
+import DimensionGuide from './DimensionGuide';
 
-type TabKey = 'self' | 'peer' | 'report';
+type TabKey = 'self' | 'peer';
 
 type WorkspaceResponse = PublicSelfGetResponse & {
   linked: {
@@ -107,7 +108,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
         const nextPeerData = peerPayload as PublicPeerGetResponse;
         setPeerData(nextPeerData);
         const nextForms = Object.fromEntries(
-          nextPeerData.assignments.map((assignment, index) => {
+          nextPeerData.assignments.map((assignment) => {
             const current = nextPeerData.responsesByAssignment[assignment.assignmentId] || {};
             return [assignment.assignmentId, {
               assignmentId: assignment.assignmentId,
@@ -259,8 +260,8 @@ export default function WorkspaceClient({ token }: { token: string }) {
       <section className="page-hero">
         <div>
           <div className="eyebrow">팀장 워크샵 참여 페이지</div>
-          <h1>{workspace.participant.nameKo} 팀장님, 한 링크에서 모두 진행하세요</h1>
-          <p>자가진단 작성, Peer 피드백 진행, 개인 리포트 확인까지 한 화면에서 바로 이동할 수 있습니다.</p>
+          <h1>{workspace.participant.nameKo} 팀장님, 이 페이지에서 모두 진행해 주세요</h1>
+          <p>자가진단과 Peer 피드백을 한 링크에서 진행할 수 있습니다. 개인 리포트는 추후 HR 담당자가 별도로 전달할 예정입니다.</p>
         </div>
         <div className="hero-badge">{workspace.participant.teamName}</div>
       </section>
@@ -268,102 +269,92 @@ export default function WorkspaceClient({ token }: { token: string }) {
       <div className="meta-card">
         <div><div className="meta-label">자가진단</div><div className="meta-value">{selfDone ? '완료' : '작성 필요'}</div></div>
         <div><div className="meta-label">Peer 피드백</div><div className="meta-value">{workspace.linked.peerCompleted} / {workspace.linked.peerAssignments}</div></div>
-        <div><div className="meta-label">리포트</div><div className="meta-value">{workspace.linked.reportToken ? '확인 가능' : '준비 중'}</div></div>
+        <div><div className="meta-label">리포트 안내</div><div className="meta-value">HR 별도 제공</div></div>
       </div>
 
       <div className="tab-row">
         <button className={`tab-btn ${tab === 'self' ? 'active' : ''}`} onClick={() => setTab('self')}>자가진단</button>
         <button className={`tab-btn ${tab === 'peer' ? 'active' : ''}`} onClick={() => setTab('peer')}>Peer 피드백</button>
-        <button className={`tab-btn ${tab === 'report' ? 'active' : ''}`} onClick={() => setTab('report')}>개인 리포트</button>
       </div>
 
       {error ? <div className="error-box" style={{ marginTop: 18 }}>{error}</div> : null}
       {selfMessage ? <div className="message">{selfMessage}</div> : null}
       {peerMessage ? <div className="message">{peerMessage}</div> : null}
 
-      {tab === 'self' ? (
-        <section className="panel" style={{ marginTop: 22 }}>
-          <h2>자가진단 작성</h2>
-          <p className="muted">강점 2개, 성장 필요 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
-          <div className="form-grid">
-            <div className="field"><label>강점 1</label><select className="select" value={selfForm.strength1} onChange={(e) => updateSelf('strength1', e.target.value)}>{workspace.surveyMeta.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-            <div className="field"><label>강점 1 판단 근거</label><textarea className="textarea" value={selfForm.strength1Comment} onChange={(e) => updateSelf('strength1Comment', e.target.value)} /></div>
-            <div className="field"><label>강점 2</label><select className="select" value={selfForm.strength2} onChange={(e) => updateSelf('strength2', e.target.value)}>{workspace.surveyMeta.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-            <div className="field"><label>강점 2 판단 근거</label><textarea className="textarea" value={selfForm.strength2Comment} onChange={(e) => updateSelf('strength2Comment', e.target.value)} /></div>
-            <div className="field"><label>성장 필요 1</label><select className="select" value={selfForm.growth1} onChange={(e) => updateSelf('growth1', e.target.value)}>{workspace.surveyMeta.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-            <div className="field"><label>성장 필요 1 판단 근거</label><textarea className="textarea" value={selfForm.growth1Comment} onChange={(e) => updateSelf('growth1Comment', e.target.value)} /></div>
-            <div className="field"><label>성장 필요 2</label><select className="select" value={selfForm.growth2} onChange={(e) => updateSelf('growth2', e.target.value)}>{workspace.surveyMeta.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-            <div className="field"><label>성장 필요 2 판단 근거</label><textarea className="textarea" value={selfForm.growth2Comment} onChange={(e) => updateSelf('growth2Comment', e.target.value)} /></div>
-          </div>
-          {selfValidation ? <div className="notice">저장 조건: {selfValidation}</div> : null}
-          <div className="button-row">
-            <button className="btn" type="button" disabled={Boolean(selfValidation) || savingSelf} onClick={saveSelf}>{savingSelf ? '저장 중...' : '자가진단 저장'}</button>
-            {workspace.linked.peerToken ? <button className="btn secondary" type="button" onClick={() => setTab('peer')}>Peer 피드백으로 이동</button> : null}
-          </div>
-        </section>
-      ) : null}
-
-      {tab === 'peer' ? (
-        <section className="panel" style={{ marginTop: 22 }}>
-          <h2>Peer 피드백</h2>
-          {!workspace.linked.peerToken || !peerData ? (
-            <div className="empty-state">이 계정에는 배정된 Peer 피드백 대상이 없습니다.</div>
-          ) : (
-            <>
-              <div className="progress-grid">
-                {peerData.assignments.map((assignment) => {
-                  const form = peerForms[assignment.assignmentId];
-                  const complete = form && !validatePeer(form);
-                  return (
-                    <button key={assignment.assignmentId} type="button" className={`assignment-card ${activeAssignmentId === assignment.assignmentId ? 'active' : ''} ${complete ? 'completed' : ''}`} onClick={() => setActiveAssignmentId(assignment.assignmentId)}>
-                      <div className={`status-pill ${complete ? 'done' : assignment.status === 'in_progress' ? 'progress' : 'pending'}`}>{complete ? '완료' : assignment.status === 'in_progress' ? '작성 중' : '미작성'}</div>
-                      <h3 style={{ margin: '12px 0 6px' }}>{assignment.sequenceNo}. {assignment.target.nameKo}</h3>
-                      <div className="muted">{assignment.target.teamName}</div>
-                    </button>
-                  );
-                })}
+      <div className="grid-2" style={{ alignItems: 'start', marginTop: 22 }}>
+        <div>
+          {tab === 'self' ? (
+            <section className="panel">
+              <h2>자가진단 작성</h2>
+              <p className="muted">강점 2개, 성장 필요 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
+              <div className="form-grid">
+                <div className="field"><label>강점 1</label><select className="select" value={selfForm.strength1} onChange={(e) => updateSelf('strength1', e.target.value)}>{workspace.surveyMeta.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+                <div className="field"><label>강점 1 판단 근거</label><textarea className="textarea" value={selfForm.strength1Comment} onChange={(e) => updateSelf('strength1Comment', e.target.value)} /></div>
+                <div className="field"><label>강점 2</label><select className="select" value={selfForm.strength2} onChange={(e) => updateSelf('strength2', e.target.value)}>{workspace.surveyMeta.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+                <div className="field"><label>강점 2 판단 근거</label><textarea className="textarea" value={selfForm.strength2Comment} onChange={(e) => updateSelf('strength2Comment', e.target.value)} /></div>
+                <div className="field"><label>성장 필요 1</label><select className="select" value={selfForm.growth1} onChange={(e) => updateSelf('growth1', e.target.value)}>{workspace.surveyMeta.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+                <div className="field"><label>성장 필요 1 판단 근거</label><textarea className="textarea" value={selfForm.growth1Comment} onChange={(e) => updateSelf('growth1Comment', e.target.value)} /></div>
+                <div className="field"><label>성장 필요 2</label><select className="select" value={selfForm.growth2} onChange={(e) => updateSelf('growth2', e.target.value)}>{workspace.surveyMeta.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+                <div className="field"><label>성장 필요 2 판단 근거</label><textarea className="textarea" value={selfForm.growth2Comment} onChange={(e) => updateSelf('growth2Comment', e.target.value)} /></div>
               </div>
+              {selfValidation ? <div className="notice">저장 조건: {selfValidation}</div> : null}
+              <div className="button-row">
+                <button className="btn" type="button" disabled={Boolean(selfValidation) || savingSelf} onClick={saveSelf}>{savingSelf ? '저장 중...' : '자가진단 저장'}</button>
+                {workspace.linked.peerToken ? <button className="btn secondary" type="button" onClick={() => setTab('peer')}>Peer 피드백으로 이동</button> : null}
+              </div>
+            </section>
+          ) : null}
 
-              {activePeerForm ? (
-                <div style={{ marginTop: 20 }}>
-                  <div className="form-grid">
-                    <div className="field"><label>강점 1</label><select className="select" value={activePeerForm.strength1} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'strength1', e.target.value)}>{peerData.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-                    <div className="field"><label>강점 1 판단 근거</label><textarea className="textarea" value={activePeerForm.strength1Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'strength1Comment', e.target.value)} /></div>
-                    <div className="field"><label>강점 2</label><select className="select" value={activePeerForm.strength2} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'strength2', e.target.value)}>{peerData.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-                    <div className="field"><label>강점 2 판단 근거</label><textarea className="textarea" value={activePeerForm.strength2Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'strength2Comment', e.target.value)} /></div>
-                    <div className="field"><label>성장가능성 1</label><select className="select" value={activePeerForm.growth1} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'growth1', e.target.value)}>{peerData.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-                    <div className="field"><label>성장가능성 1 판단 근거</label><textarea className="textarea" value={activePeerForm.growth1Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'growth1Comment', e.target.value)} /></div>
-                    <div className="field"><label>성장가능성 2</label><select className="select" value={activePeerForm.growth2} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'growth2', e.target.value)}>{peerData.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
-                    <div className="field"><label>성장가능성 2 판단 근거</label><textarea className="textarea" value={activePeerForm.growth2Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'growth2Comment', e.target.value)} /></div>
-                    <div className="field full"><label>응원 메시지 (선택)</label><textarea className="textarea" value={activePeerForm.freeMessage} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'freeMessage', e.target.value)} /><div className="notice" style={{ marginTop: 0 }}>동료에게 평소 해 주고 싶었던 메시지를 작성해 주세요!</div></div>
+          {tab === 'peer' ? (
+            <section className="panel">
+              <h2>Peer 피드백</h2>
+              {!workspace.linked.peerToken || !peerData ? (
+                <div className="empty-state">이 계정에는 배정된 Peer 피드백 대상이 없습니다.</div>
+              ) : (
+                <>
+                  <div className="progress-grid">
+                    {peerData.assignments.map((assignment) => {
+                      const form = peerForms[assignment.assignmentId];
+                      const complete = form && !validatePeer(form);
+                      return (
+                        <button key={assignment.assignmentId} type="button" className={`assignment-card ${activeAssignmentId === assignment.assignmentId ? 'active' : ''} ${complete ? 'completed' : ''}`} onClick={() => setActiveAssignmentId(assignment.assignmentId)}>
+                          <div className={`status-pill ${complete ? 'done' : assignment.status === 'in_progress' ? 'progress' : 'pending'}`}>{complete ? '완료' : assignment.status === 'in_progress' ? '작성 중' : '미작성'}</div>
+                          <h3 style={{ margin: '12px 0 6px' }}>{assignment.sequenceNo}. {assignment.target.nameKo}</h3>
+                          <div className="muted">{assignment.target.teamName}</div>
+                        </button>
+                      );
+                    })}
                   </div>
-                  {activePeerValidation ? <div className="notice">저장 조건: {activePeerValidation}</div> : null}
-                  <div className="button-row">
-                    <button className="btn" type="button" disabled={Boolean(activePeerValidation) || savingPeer} onClick={() => savePeer(false)}>{savingPeer ? '저장 중...' : '현재 대상 저장'}</button>
-                    <button className="btn secondary" type="button" disabled={Boolean(activePeerValidation) || savingPeer} onClick={() => savePeer(true)}>저장 후 다음</button>
-                    <button className="btn secondary" type="button" disabled={!allPeerComplete || submittingPeer || peerDone} onClick={submitPeer}>{peerDone ? '최종 제출 완료' : submittingPeer ? '제출 중...' : 'Peer 최종 제출'}</button>
-                  </div>
-                </div>
-              ) : null}
-            </>
-          )}
-        </section>
-      ) : null}
 
-      {tab === 'report' ? (
-        <section className="panel" style={{ marginTop: 22 }}>
-          <h2>개인 리포트</h2>
-          <p className="muted">자가진단과 Peer 응답이 충분히 수집되면 개인 리포트를 열어볼 수 있습니다.</p>
-          {workspace.linked.reportToken ? (
-            <div className="button-row">
-              <a className="btn" href={`/report/${workspace.linked.reportToken}`} target="_blank" rel="noreferrer">리포트 열기</a>
-              <a className="btn secondary" href={`/report/${workspace.linked.reportToken}?print=1`} target="_blank" rel="noreferrer">리포트 다운로드</a>
-            </div>
-          ) : (
-            <div className="empty-state">아직 연결된 리포트 토큰이 없습니다.</div>
-          )}
-        </section>
-      ) : null}
+                  {activePeerForm ? (
+                    <div style={{ marginTop: 20 }}>
+                      <div className="form-grid">
+                        <div className="field"><label>강점 1</label><select className="select" value={activePeerForm.strength1} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'strength1', e.target.value)}>{peerData.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+                        <div className="field"><label>강점 1 판단 근거</label><textarea className="textarea" value={activePeerForm.strength1Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'strength1Comment', e.target.value)} /></div>
+                        <div className="field"><label>강점 2</label><select className="select" value={activePeerForm.strength2} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'strength2', e.target.value)}>{peerData.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+                        <div className="field"><label>강점 2 판단 근거</label><textarea className="textarea" value={activePeerForm.strength2Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'strength2Comment', e.target.value)} /></div>
+                        <div className="field"><label>성장가능성 1</label><select className="select" value={activePeerForm.growth1} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'growth1', e.target.value)}>{peerData.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+                        <div className="field"><label>성장가능성 1 판단 근거</label><textarea className="textarea" value={activePeerForm.growth1Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'growth1Comment', e.target.value)} /></div>
+                        <div className="field"><label>성장가능성 2</label><select className="select" value={activePeerForm.growth2} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'growth2', e.target.value)}>{peerData.dimensions.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+                        <div className="field"><label>성장가능성 2 판단 근거</label><textarea className="textarea" value={activePeerForm.growth2Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'growth2Comment', e.target.value)} /></div>
+                        <div className="field full"><label>응원 메시지 (선택)</label><textarea className="textarea" value={activePeerForm.freeMessage} onChange={(e) => updatePeer(activePeerForm.assignmentId, 'freeMessage', e.target.value)} /><div className="notice" style={{ marginTop: 0 }}>동료에게 평소 해 주고 싶었던 메시지를 작성해 주세요!</div></div>
+                      </div>
+                      {activePeerValidation ? <div className="notice">저장 조건: {activePeerValidation}</div> : null}
+                      <div className="button-row">
+                        <button className="btn" type="button" disabled={Boolean(activePeerValidation) || savingPeer} onClick={() => savePeer(false)}>{savingPeer ? '저장 중...' : '현재 대상 저장'}</button>
+                        <button className="btn secondary" type="button" disabled={Boolean(activePeerValidation) || savingPeer} onClick={() => savePeer(true)}>저장 후 다음</button>
+                        <button className="btn secondary" type="button" disabled={!allPeerComplete || submittingPeer || peerDone} onClick={submitPeer}>{peerDone ? '최종 제출 완료' : submittingPeer ? '제출 중...' : 'Peer 최종 제출'}</button>
+                      </div>
+                    </div>
+                  ) : null}
+                </>
+              )}
+            </section>
+          ) : null}
+        </div>
+
+        <DimensionGuide title="리더십 3영역 - 6개 Dimension 설명" />
+      </div>
     </main>
   );
 }

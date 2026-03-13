@@ -4,7 +4,7 @@ export default function DimensionGuide({ title }: { title: string }) {
   return (
     <div className="panel">
       <h2>{title}</h2>
-      <p className="muted">6개 Dimension을 경험, 역량, 자질의 세 관점에서 이해한 뒤 선택하면 판단 근거를 더 선명하게 적을 수 있습니다.</p>
+      <p className="muted">리더십 3영역과 6개 Dimension 설명입니다. 자가진단과 Peer 피드백을 작성할 때 아래 기준을 참고해 주세요.</p>
       <div className="dimension-guide" style={{ marginTop: 16 }}>
         {DIMENSION_META.map((item) => (
           <div className="dimension-item" key={item.name}>

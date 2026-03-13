@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Dimension } from "../types/survey";
 import type { PublicPeerGetResponse, PublicSelfGetResponse } from "../types/api";
+import type { Dimension } from "../types/survey";
 import DimensionGuide from "./DimensionGuide";
 
 type TabKey = "self" | "peer";
@@ -71,7 +71,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
   const [peerData, setPeerData] = useState<PublicPeerGetResponse | null>(null);
   const [selfForm, setSelfForm] = useState<SelfFormState | null>(null);
   const [peerForms, setPeerForms] = useState<Record<string, PeerFormState>>({});
-  const [activeAssignmentId, setActiveAssignmentId] = useState<string>("");
+  const [activeAssignmentId, setActiveAssignmentId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selfMessage, setSelfMessage] = useState("");
@@ -86,6 +86,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
 
     const workspaceResponse = await fetch(`/api/public/workspace/${token}`, { cache: "no-store" });
     const workspacePayload = await workspaceResponse.json().catch(() => ({}));
+
     if (!workspaceResponse.ok) {
       setError(workspacePayload.error || "참여 페이지를 불러오지 못했습니다.");
       setLoading(false);
@@ -109,9 +110,11 @@ export default function WorkspaceClient({ token }: { token: string }) {
     if (nextWorkspace.linked.peerToken) {
       const peerResponse = await fetch(`/api/public/peer/${nextWorkspace.linked.peerToken}`, { cache: "no-store" });
       const peerPayload = await peerResponse.json().catch(() => ({}));
+
       if (peerResponse.ok) {
         const nextPeerData = peerPayload as PublicPeerGetResponse;
         setPeerData(nextPeerData);
+
         const nextForms = Object.fromEntries(
           nextPeerData.assignments.map((assignment) => {
             const current = nextPeerData.responsesByAssignment[assignment.assignmentId] || {};
@@ -132,6 +135,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
             ];
           }),
         ) as Record<string, PeerFormState>;
+
         setPeerForms(nextForms);
         const firstPending = nextPeerData.assignments.find((assignment) => assignment.status !== "completed");
         setActiveAssignmentId(firstPending?.assignmentId || nextPeerData.assignments[0]?.assignmentId || "");
@@ -187,6 +191,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
     });
     const payload = await response.json().catch(() => ({}));
     setSavingSelf(false);
+
     if (!response.ok) {
       setError(payload.error || "자가진단 저장에 실패했습니다.");
       return;
@@ -212,12 +217,14 @@ export default function WorkspaceClient({ token }: { token: string }) {
     });
     const payload = await response.json().catch(() => ({}));
     setSavingPeer(false);
+
     if (!response.ok) {
       setError(payload.error || "Peer 피드백 저장에 실패했습니다.");
       return;
     }
 
     setPeerMessage("현재 대상에 대한 Peer 피드백이 저장되었습니다.");
+
     if (moveNext && peerData) {
       const currentIndex = peerData.assignments.findIndex((item) => item.assignmentId === activeAssignmentId);
       const nextAssignment =
@@ -227,10 +234,12 @@ export default function WorkspaceClient({ token }: { token: string }) {
             const form = peerForms[item.assignmentId];
             return !form || !!validatePeer(form);
           }) || peerData.assignments[currentIndex + 1];
+
       if (nextAssignment) {
         setActiveAssignmentId(nextAssignment.assignmentId);
       }
     }
+
     await loadAll();
     setTab("peer");
   }
@@ -247,10 +256,12 @@ export default function WorkspaceClient({ token }: { token: string }) {
     const response = await fetch(`/api/public/peer/${workspace.linked.peerToken}/submit`, { method: "POST" });
     const payload = await response.json().catch(() => ({}));
     setSubmittingPeer(false);
+
     if (!response.ok) {
       setError(payload.error || "Peer 최종 제출에 실패했습니다.");
       return;
     }
+
     setPeerMessage("Peer 피드백 최종 제출이 완료되었습니다.");
     await loadAll();
   }
@@ -280,11 +291,11 @@ export default function WorkspaceClient({ token }: { token: string }) {
     <main className="page-shell">
       <section className="page-hero">
         <div>
-          <div className="eyebrow">팀장 워크샵 참여 페이지</div>
-          <h1>{workspace.participant.nameKo} 팀장님, 이 페이지에서 모두 진행해 주세요</h1>
+          <div className="eyebrow">2026 SK엔무브 팀장 SUPEX 워크샵</div>
+          <h1>{workspace.participant.nameKo} 팀장님, 진단을 진행해 주세요.</h1>
           <p>
-            자가진단과 Peer 피드백을 한 링크에서 진행할 수 있습니다. 개인 리포트는 추후 HR 담당자가 별도로 전달할
-            예정입니다.
+            자가진단과 Peer 피드백을 작성해 주세요. 제출해 주신 모든 응답은 익명 처리되며, 팀장 워크샵 세션용으로만
+            활용됩니다. (~3/18(수))
           </p>
         </div>
         <div className="hero-badge">{workspace.participant.teamName}</div>
@@ -342,6 +353,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                   <label>강점 1 판단 근거</label>
                   <textarea className="textarea" value={selfForm.strength1Comment} onChange={(e) => updateSelf("strength1Comment", e.target.value)} />
                 </div>
+
                 <div className="field">
                   <label>강점 2</label>
                   <select className="select" value={selfForm.strength2} onChange={(e) => updateSelf("strength2", e.target.value)}>
@@ -357,6 +369,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                   <label>강점 2 판단 근거</label>
                   <textarea className="textarea" value={selfForm.strength2Comment} onChange={(e) => updateSelf("strength2Comment", e.target.value)} />
                 </div>
+
                 <div className="field">
                   <label>성장가능성 1</label>
                   <select className="select" value={selfForm.growth1} onChange={(e) => updateSelf("growth1", e.target.value)}>
@@ -372,6 +385,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                   <label>성장가능성 1 판단 근거</label>
                   <textarea className="textarea" value={selfForm.growth1Comment} onChange={(e) => updateSelf("growth1Comment", e.target.value)} />
                 </div>
+
                 <div className="field">
                   <label>성장가능성 2</label>
                   <select className="select" value={selfForm.growth2} onChange={(e) => updateSelf("growth2", e.target.value)}>
@@ -388,7 +402,9 @@ export default function WorkspaceClient({ token }: { token: string }) {
                   <textarea className="textarea" value={selfForm.growth2Comment} onChange={(e) => updateSelf("growth2Comment", e.target.value)} />
                 </div>
               </div>
+
               {selfValidation ? <div className="notice">저장 조건: {selfValidation}</div> : null}
+
               <div className="button-row">
                 <button className="btn" type="button" disabled={Boolean(selfValidation) || savingSelf} onClick={saveSelf}>
                   {savingSelf ? "저장 중..." : "자가진단 저장"}
@@ -451,6 +467,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                           <label>강점 1 판단 근거</label>
                           <textarea className="textarea" value={activePeerForm.strength1Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength1Comment", e.target.value)} />
                         </div>
+
                         <div className="field">
                           <label>강점 2</label>
                           <select className="select" value={activePeerForm.strength2} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength2", e.target.value)}>
@@ -466,6 +483,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                           <label>강점 2 판단 근거</label>
                           <textarea className="textarea" value={activePeerForm.strength2Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength2Comment", e.target.value)} />
                         </div>
+
                         <div className="field">
                           <label>성장가능성 1</label>
                           <select className="select" value={activePeerForm.growth1} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth1", e.target.value)}>
@@ -481,6 +499,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                           <label>성장가능성 1 판단 근거</label>
                           <textarea className="textarea" value={activePeerForm.growth1Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth1Comment", e.target.value)} />
                         </div>
+
                         <div className="field">
                           <label>성장가능성 2</label>
                           <select className="select" value={activePeerForm.growth2} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth2", e.target.value)}>
@@ -496,6 +515,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                           <label>성장가능성 2 판단 근거</label>
                           <textarea className="textarea" value={activePeerForm.growth2Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth2Comment", e.target.value)} />
                         </div>
+
                         <div className="field full">
                           <label>응원 메시지 (선택)</label>
                           <textarea className="textarea" value={activePeerForm.freeMessage} onChange={(e) => updatePeer(activePeerForm.assignmentId, "freeMessage", e.target.value)} />
@@ -504,7 +524,9 @@ export default function WorkspaceClient({ token }: { token: string }) {
                           </div>
                         </div>
                       </div>
+
                       {activePeerValidation ? <div className="notice">저장 조건: {activePeerValidation}</div> : null}
+
                       <div className="button-row">
                         <button className="btn" type="button" disabled={Boolean(activePeerValidation) || savingPeer} onClick={() => savePeer(false)}>
                           {savingPeer ? "저장 중..." : "현재 대상 저장"}

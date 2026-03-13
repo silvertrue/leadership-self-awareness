@@ -45,9 +45,9 @@ export const DIMENSION_META: Array<{
     name: DIMENSIONS[4],
     group: "자질",
     groupKey: "trait",
-    hashtags: "#신뢰 #Resilience",
+    hashtags: "#신뢰 #Integrity #회복탄력성",
     summary:
-      "조직과 구성원에게 신뢰를 주는 기본적인 가치관과 업무 태도입니다. 정직성, 책임감, 협업 의지, 회복탄력성처럼 리더의 기본적인 인성 요소와 일관된 기준을 포함합니다.",
+      "조직과 구성원에게 신뢰를 주는 기본적인 가치관과 업무 태도입니다. Integrity, 책임감, 협업 의지, 회복탄력성처럼 리더의 기본적인 인성 요소와 일관된 기준을 포함합니다.",
   },
   {
     name: DIMENSIONS[5],

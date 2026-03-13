@@ -47,6 +47,16 @@ a { color: inherit; }
 .meta-card > div { padding: 14px 16px; border-radius: 16px; background: var(--soft); }
 .meta-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
 .meta-value { font-weight: 800; }
+.survey-section { margin-top: 20px; padding: 18px; border-radius: 20px; border: 1px solid var(--line); }
+.survey-section.strength-section { background: #fff8f3; border-color: #f4d9c7; }
+.survey-section.growth-section { background: #f4faf6; border-color: #d1e8d9; }
+.survey-section.message-section { background: #f7f7fb; border-color: #dde2ef; }
+.survey-section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.survey-section-head h3 { margin: 0; font-size: 20px; }
+.survey-section-badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 800; }
+.survey-section-badge.strength { background: #ffe4d4; color: #a24c14; }
+.survey-section-badge.growth { background: #ddf1e4; color: #1f6a4b; }
+.survey-section-badge.message { background: #e9edf6; color: #435773; }
 .dimension-guide { display: grid; gap: 12px; }
 .dimension-item { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
 .dimension-item.experience { background: #fff9f1; border-color: #f2dfbf; }

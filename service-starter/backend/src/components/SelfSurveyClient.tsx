@@ -25,7 +25,7 @@ function validate(form: FormState) {
   if (form.strength1 === form.strength2) return "강점 1과 강점 2는 서로 다른 항목이어야 합니다.";
   if (form.growth1 === form.growth2) return "성장가능성 1과 성장가능성 2는 서로 다른 항목이어야 합니다.";
   if (![form.strength1Comment, form.strength2Comment, form.growth1Comment, form.growth2Comment].every((item) => item.trim())) {
-    return "모든 판단 근거를 작성해 주세요.";
+    return "강점과 성장가능성에 대한 판단 근거를 모두 작성해 주세요.";
   }
   return "";
 }
@@ -54,7 +54,7 @@ export default function SelfSurveyClient({ token }: { token: string }) {
   useEffect(() => {
     async function load() {
       const response = await fetch(`/api/public/self/${token}`, { cache: "no-store" });
-      const payload = await response.json();
+      const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
         setError(payload.error || "자가진단 정보를 불러오지 못했습니다.");
         return;
@@ -77,7 +77,7 @@ export default function SelfSurveyClient({ token }: { token: string }) {
   }
 
   async function save() {
-    if (!form || !data || validationMessage) {
+    if (!form || validationMessage) {
       setError(validationMessage || "필수 문항을 모두 작성해 주세요.");
       return;
     }
@@ -88,7 +88,7 @@ export default function SelfSurveyClient({ token }: { token: string }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-    const payload = await response.json();
+    const payload = await response.json().catch(() => ({}));
     setSaving(false);
 
     if (!response.ok) {
@@ -120,11 +120,8 @@ export default function SelfSurveyClient({ token }: { token: string }) {
       <section className="page-hero">
         <div>
           <div className="eyebrow">자가진단</div>
-          <h1>강점 2개와 성장가능성 2개를 선택하고, 그렇게 고른 근거를 작성해 주세요.</h1>
-          <p>
-            정답을 맞히는 시간이 아니라, 내가 실제로 어떤 경험과 행동을 통해 그렇게 인식하고 있는지 돌아보는
-            시간입니다.
-          </p>
+          <h1>강점과 성장가능성을 구분해 선택하고, 그 근거를 작성해 주세요.</h1>
+          <p>강점 2개와 성장가능성 2개를 각각 선택한 뒤, 판단 근거를 구체적으로 작성해 주세요.</p>
         </div>
         <div className="hero-badge">참가자용</div>
       </section>
@@ -147,96 +144,91 @@ export default function SelfSurveyClient({ token }: { token: string }) {
       <div className="grid-2">
         <div className="panel">
           <h2>자가진단 입력</h2>
-          <p className="muted">
-            각 영역에서 항목을 먼저 선택한 뒤, 왜 그렇게 판단했는지 근거를 작성해 주세요. 모든 판단 근거는
-            필수입니다.
-          </p>
+          <p className="muted">강점과 성장가능성은 서로 다른 의미이므로, 아래 두 섹션을 나누어 작성해 주세요.</p>
 
           {error ? <div className="error-box" style={{ marginTop: 16 }}>{error}</div> : null}
           {message ? <div className="message">{message}</div> : null}
-          {validationMessage ? <div className="notice">저장 가능 조건: {validationMessage}</div> : null}
+          {validationMessage ? <div className="notice">저장 조건: {validationMessage}</div> : null}
 
-          <div className="form-grid">
-            <div className="field">
-              <label>강점 1</label>
-              <select className="select" value={form.strength1} onChange={(e) => update("strength1", e.target.value)}>
-                <option value="">---선택하세요---</option>
-                {data.surveyMeta.dimensions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+          <section className="survey-section strength-section">
+            <div className="survey-section-head">
+              <div className="survey-section-badge strength">강점</div>
+              <h3>내가 생각하는 강점 2가지</h3>
             </div>
-            <div className="field">
-              <label>강점 1 판단 근거</label>
-              <textarea
-                className="textarea"
-                value={form.strength1Comment}
-                onChange={(e) => update("strength1Comment", e.target.value)}
-              />
+            <p className="muted">본인이 강점이라고 생각하는 영역 2개를 고르고, 그렇게 판단한 근거를 적어 주세요.</p>
+            <div className="form-grid">
+              <div className="field">
+                <label>강점 1</label>
+                <select className="select" value={form.strength1} onChange={(e) => update("strength1", e.target.value)}>
+                  <option value="">---선택하세요---</option>
+                  {data.surveyMeta.dimensions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>강점 1 판단 근거</label>
+                <textarea className="textarea" value={form.strength1Comment} onChange={(e) => update("strength1Comment", e.target.value)} />
+              </div>
+              <div className="field">
+                <label>강점 2</label>
+                <select className="select" value={form.strength2} onChange={(e) => update("strength2", e.target.value)}>
+                  <option value="">---선택하세요---</option>
+                  {data.surveyMeta.dimensions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>강점 2 판단 근거</label>
+                <textarea className="textarea" value={form.strength2Comment} onChange={(e) => update("strength2Comment", e.target.value)} />
+              </div>
             </div>
+          </section>
 
-            <div className="field">
-              <label>강점 2</label>
-              <select className="select" value={form.strength2} onChange={(e) => update("strength2", e.target.value)}>
-                <option value="">---선택하세요---</option>
-                {data.surveyMeta.dimensions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+          <section className="survey-section growth-section">
+            <div className="survey-section-head">
+              <div className="survey-section-badge growth">성장가능성</div>
+              <h3>앞으로 더 키우고 싶은 영역 2가지</h3>
             </div>
-            <div className="field">
-              <label>강점 2 판단 근거</label>
-              <textarea
-                className="textarea"
-                value={form.strength2Comment}
-                onChange={(e) => update("strength2Comment", e.target.value)}
-              />
+            <p className="muted">성장가능성이 높다고 생각하는 영역 2개를 고르고, 그렇게 판단한 근거를 적어 주세요.</p>
+            <div className="form-grid">
+              <div className="field">
+                <label>성장가능성 1</label>
+                <select className="select" value={form.growth1} onChange={(e) => update("growth1", e.target.value)}>
+                  <option value="">---선택하세요---</option>
+                  {data.surveyMeta.dimensions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>성장가능성 1 판단 근거</label>
+                <textarea className="textarea" value={form.growth1Comment} onChange={(e) => update("growth1Comment", e.target.value)} />
+              </div>
+              <div className="field">
+                <label>성장가능성 2</label>
+                <select className="select" value={form.growth2} onChange={(e) => update("growth2", e.target.value)}>
+                  <option value="">---선택하세요---</option>
+                  {data.surveyMeta.dimensions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>성장가능성 2 판단 근거</label>
+                <textarea className="textarea" value={form.growth2Comment} onChange={(e) => update("growth2Comment", e.target.value)} />
+              </div>
             </div>
-
-            <div className="field">
-              <label>성장가능성 1</label>
-              <select className="select" value={form.growth1} onChange={(e) => update("growth1", e.target.value)}>
-                <option value="">---선택하세요---</option>
-                {data.surveyMeta.dimensions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label>성장가능성 1 판단 근거</label>
-              <textarea
-                className="textarea"
-                value={form.growth1Comment}
-                onChange={(e) => update("growth1Comment", e.target.value)}
-              />
-            </div>
-
-            <div className="field">
-              <label>성장가능성 2</label>
-              <select className="select" value={form.growth2} onChange={(e) => update("growth2", e.target.value)}>
-                <option value="">---선택하세요---</option>
-                {data.surveyMeta.dimensions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label>성장가능성 2 판단 근거</label>
-              <textarea
-                className="textarea"
-                value={form.growth2Comment}
-                onChange={(e) => update("growth2Comment", e.target.value)}
-              />
-            </div>
-          </div>
+          </section>
 
           <div className="button-row">
             <button className="btn" disabled={saving || Boolean(validationMessage)} onClick={save}>
@@ -245,7 +237,7 @@ export default function SelfSurveyClient({ token }: { token: string }) {
           </div>
         </div>
 
-        <DimensionGuide title="6개 Dimension 안내" />
+        <DimensionGuide title="리더십 3영역 - 6개 Dimension 설명" />
       </div>
     </main>
   );

@@ -336,72 +336,87 @@ export default function WorkspaceClient({ token }: { token: string }) {
           {tab === "self" ? (
             <section className="panel">
               <h2>자가진단 작성</h2>
-              <p className="muted">강점 2개, 성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
-              <div className="form-grid">
-                <div className="field">
-                  <label>강점 1</label>
-                  <select className="select" value={selfForm.strength1} onChange={(e) => updateSelf("strength1", e.target.value)}>
-                    <option value="">---선택하세요---</option>
-                    {workspace.surveyMeta.dimensions.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="field">
-                  <label>강점 1 판단 근거</label>
-                  <textarea className="textarea" value={selfForm.strength1Comment} onChange={(e) => updateSelf("strength1Comment", e.target.value)} />
-                </div>
+              <p className="muted">강점과 성장가능성을 각각 나누어 생각할 수 있도록 두 섹션으로 구분했습니다.</p>
 
-                <div className="field">
-                  <label>강점 2</label>
-                  <select className="select" value={selfForm.strength2} onChange={(e) => updateSelf("strength2", e.target.value)}>
-                    <option value="">---선택하세요---</option>
-                    {workspace.surveyMeta.dimensions.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
+              <section className="survey-section strength-section">
+                <div className="survey-section-head">
+                  <div className="survey-section-badge strength">강점</div>
+                  <h3>내가 생각하는 강점 2가지</h3>
                 </div>
-                <div className="field">
-                  <label>강점 2 판단 근거</label>
-                  <textarea className="textarea" value={selfForm.strength2Comment} onChange={(e) => updateSelf("strength2Comment", e.target.value)} />
+                <p className="muted">강점 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
+                <div className="form-grid">
+                  <div className="field">
+                    <label>강점 1</label>
+                    <select className="select" value={selfForm.strength1} onChange={(e) => updateSelf("strength1", e.target.value)}>
+                      <option value="">---선택하세요---</option>
+                      {workspace.surveyMeta.dimensions.map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>강점 1 판단 근거</label>
+                    <textarea className="textarea" value={selfForm.strength1Comment} onChange={(e) => updateSelf("strength1Comment", e.target.value)} />
+                  </div>
+                  <div className="field">
+                    <label>강점 2</label>
+                    <select className="select" value={selfForm.strength2} onChange={(e) => updateSelf("strength2", e.target.value)}>
+                      <option value="">---선택하세요---</option>
+                      {workspace.surveyMeta.dimensions.map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>강점 2 판단 근거</label>
+                    <textarea className="textarea" value={selfForm.strength2Comment} onChange={(e) => updateSelf("strength2Comment", e.target.value)} />
+                  </div>
                 </div>
+              </section>
 
-                <div className="field">
-                  <label>성장가능성 1</label>
-                  <select className="select" value={selfForm.growth1} onChange={(e) => updateSelf("growth1", e.target.value)}>
-                    <option value="">---선택하세요---</option>
-                    {workspace.surveyMeta.dimensions.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
+              <section className="survey-section growth-section">
+                <div className="survey-section-head">
+                  <div className="survey-section-badge growth">성장가능성</div>
+                  <h3>앞으로 더 키우고 싶은 영역 2가지</h3>
                 </div>
-                <div className="field">
-                  <label>성장가능성 1 판단 근거</label>
-                  <textarea className="textarea" value={selfForm.growth1Comment} onChange={(e) => updateSelf("growth1Comment", e.target.value)} />
+                <p className="muted">성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
+                <div className="form-grid">
+                  <div className="field">
+                    <label>성장가능성 1</label>
+                    <select className="select" value={selfForm.growth1} onChange={(e) => updateSelf("growth1", e.target.value)}>
+                      <option value="">---선택하세요---</option>
+                      {workspace.surveyMeta.dimensions.map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>성장가능성 1 판단 근거</label>
+                    <textarea className="textarea" value={selfForm.growth1Comment} onChange={(e) => updateSelf("growth1Comment", e.target.value)} />
+                  </div>
+                  <div className="field">
+                    <label>성장가능성 2</label>
+                    <select className="select" value={selfForm.growth2} onChange={(e) => updateSelf("growth2", e.target.value)}>
+                      <option value="">---선택하세요---</option>
+                      {workspace.surveyMeta.dimensions.map((item) => (
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>성장가능성 2 판단 근거</label>
+                    <textarea className="textarea" value={selfForm.growth2Comment} onChange={(e) => updateSelf("growth2Comment", e.target.value)} />
+                  </div>
                 </div>
-
-                <div className="field">
-                  <label>성장가능성 2</label>
-                  <select className="select" value={selfForm.growth2} onChange={(e) => updateSelf("growth2", e.target.value)}>
-                    <option value="">---선택하세요---</option>
-                    {workspace.surveyMeta.dimensions.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="field">
-                  <label>성장가능성 2 판단 근거</label>
-                  <textarea className="textarea" value={selfForm.growth2Comment} onChange={(e) => updateSelf("growth2Comment", e.target.value)} />
-                </div>
-              </div>
+              </section>
 
               {selfValidation ? <div className="notice">저장 조건: {selfValidation}</div> : null}
 
@@ -450,80 +465,99 @@ export default function WorkspaceClient({ token }: { token: string }) {
 
                   {activePeerForm ? (
                     <div style={{ marginTop: 20 }}>
-                      <p className="muted">강점 2개, 성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
-                      <div className="form-grid">
-                        <div className="field">
-                          <label>강점 1</label>
-                          <select className="select" value={activePeerForm.strength1} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength1", e.target.value)}>
-                            <option value="">---선택하세요---</option>
-                            {peerData.dimensions.map((item) => (
-                              <option key={item} value={item}>
-                                {item}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="field">
-                          <label>강점 1 판단 근거</label>
-                          <textarea className="textarea" value={activePeerForm.strength1Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength1Comment", e.target.value)} />
-                        </div>
+                      <p className="muted">강점과 성장가능성을 구분해 작성할 수 있도록 두 섹션으로 나누었습니다.</p>
 
-                        <div className="field">
-                          <label>강점 2</label>
-                          <select className="select" value={activePeerForm.strength2} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength2", e.target.value)}>
-                            <option value="">---선택하세요---</option>
-                            {peerData.dimensions.map((item) => (
-                              <option key={item} value={item}>
-                                {item}
-                              </option>
-                            ))}
-                          </select>
+                      <section className="survey-section strength-section">
+                        <div className="survey-section-head">
+                          <div className="survey-section-badge strength">강점</div>
+                          <h3>이 팀장의 강점 2가지</h3>
                         </div>
-                        <div className="field">
-                          <label>강점 2 판단 근거</label>
-                          <textarea className="textarea" value={activePeerForm.strength2Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength2Comment", e.target.value)} />
-                        </div>
-
-                        <div className="field">
-                          <label>성장가능성 1</label>
-                          <select className="select" value={activePeerForm.growth1} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth1", e.target.value)}>
-                            <option value="">---선택하세요---</option>
-                            {peerData.dimensions.map((item) => (
-                              <option key={item} value={item}>
-                                {item}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="field">
-                          <label>성장가능성 1 판단 근거</label>
-                          <textarea className="textarea" value={activePeerForm.growth1Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth1Comment", e.target.value)} />
-                        </div>
-
-                        <div className="field">
-                          <label>성장가능성 2</label>
-                          <select className="select" value={activePeerForm.growth2} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth2", e.target.value)}>
-                            <option value="">---선택하세요---</option>
-                            {peerData.dimensions.map((item) => (
-                              <option key={item} value={item}>
-                                {item}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="field">
-                          <label>성장가능성 2 판단 근거</label>
-                          <textarea className="textarea" value={activePeerForm.growth2Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth2Comment", e.target.value)} />
-                        </div>
-
-                        <div className="field full">
-                          <label>응원 메시지 (선택)</label>
-                          <textarea className="textarea" value={activePeerForm.freeMessage} onChange={(e) => updatePeer(activePeerForm.assignmentId, "freeMessage", e.target.value)} />
-                          <div className="notice" style={{ marginTop: 0 }}>
-                            동료에게 평소 해 주고 싶었던 메시지를 작성해 주세요!
+                        <p className="muted">강점 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
+                        <div className="form-grid">
+                          <div className="field">
+                            <label>강점 1</label>
+                            <select className="select" value={activePeerForm.strength1} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength1", e.target.value)}>
+                              <option value="">---선택하세요---</option>
+                              {peerData.dimensions.map((item) => (
+                                <option key={item} value={item}>
+                                  {item}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="field">
+                            <label>강점 1 판단 근거</label>
+                            <textarea className="textarea" value={activePeerForm.strength1Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength1Comment", e.target.value)} />
+                          </div>
+                          <div className="field">
+                            <label>강점 2</label>
+                            <select className="select" value={activePeerForm.strength2} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength2", e.target.value)}>
+                              <option value="">---선택하세요---</option>
+                              {peerData.dimensions.map((item) => (
+                                <option key={item} value={item}>
+                                  {item}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="field">
+                            <label>강점 2 판단 근거</label>
+                            <textarea className="textarea" value={activePeerForm.strength2Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "strength2Comment", e.target.value)} />
                           </div>
                         </div>
-                      </div>
+                      </section>
+
+                      <section className="survey-section growth-section">
+                        <div className="survey-section-head">
+                          <div className="survey-section-badge growth">성장가능성</div>
+                          <h3>이 팀장의 성장가능성 2가지</h3>
+                        </div>
+                        <p className="muted">성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
+                        <div className="form-grid">
+                          <div className="field">
+                            <label>성장가능성 1</label>
+                            <select className="select" value={activePeerForm.growth1} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth1", e.target.value)}>
+                              <option value="">---선택하세요---</option>
+                              {peerData.dimensions.map((item) => (
+                                <option key={item} value={item}>
+                                  {item}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="field">
+                            <label>성장가능성 1 판단 근거</label>
+                            <textarea className="textarea" value={activePeerForm.growth1Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth1Comment", e.target.value)} />
+                          </div>
+                          <div className="field">
+                            <label>성장가능성 2</label>
+                            <select className="select" value={activePeerForm.growth2} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth2", e.target.value)}>
+                              <option value="">---선택하세요---</option>
+                              {peerData.dimensions.map((item) => (
+                                <option key={item} value={item}>
+                                  {item}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="field">
+                            <label>성장가능성 2 판단 근거</label>
+                            <textarea className="textarea" value={activePeerForm.growth2Comment} onChange={(e) => updatePeer(activePeerForm.assignmentId, "growth2Comment", e.target.value)} />
+                          </div>
+                        </div>
+                      </section>
+
+                      <section className="survey-section message-section">
+                        <div className="survey-section-head">
+                          <div className="survey-section-badge message">응원 메시지</div>
+                          <h3>동료에게 전하고 싶은 한마디</h3>
+                        </div>
+                        <div className="field">
+                          <label>응원 메시지 (선택)</label>
+                          <textarea className="textarea" value={activePeerForm.freeMessage} onChange={(e) => updatePeer(activePeerForm.assignmentId, "freeMessage", e.target.value)} />
+                          <div className="notice" style={{ marginTop: 0 }}>동료에게 평소 해 주고 싶었던 메시지를 작성해 주세요!</div>
+                        </div>
+                      </section>
 
                       {activePeerValidation ? <div className="notice">저장 조건: {activePeerValidation}</div> : null}
 

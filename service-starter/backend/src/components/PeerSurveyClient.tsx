@@ -26,7 +26,7 @@ function validate(form: PeerForm) {
   if (form.strength1 === form.strength2) return "강점 1과 강점 2는 서로 다른 항목이어야 합니다.";
   if (form.growth1 === form.growth2) return "성장가능성 1과 성장가능성 2는 서로 다른 항목이어야 합니다.";
   if (![form.strength1Comment, form.strength2Comment, form.growth1Comment, form.growth2Comment].every((item) => item.trim())) {
-    return "응원 메시지를 제외한 모든 판단 근거를 작성해 주세요.";
+    return "강점과 성장가능성에 대한 판단 근거를 모두 작성해 주세요.";
   }
   return "";
 }
@@ -42,7 +42,7 @@ export default function PeerSurveyClient({ token }: { token: string }) {
   useEffect(() => {
     async function load() {
       const response = await fetch(`/api/public/peer/${token}`, { cache: "no-store" });
-      const payload = await response.json();
+      const payload = await response.json().catch(() => ({}));
 
       if (!response.ok) {
         setError(payload.error || "Peer 피드백 정보를 불러오지 못했습니다.");
@@ -105,7 +105,7 @@ export default function PeerSurveyClient({ token }: { token: string }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, status: "submitted" } as PeerResponse),
     });
-    const payload = await response.json();
+    const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
       throw new Error(payload.error || "저장에 실패했습니다.");
     }
@@ -117,7 +117,7 @@ export default function PeerSurveyClient({ token }: { token: string }) {
     try {
       setBusy(true);
       await saveOne(currentAssignment.assignmentId);
-      setMessage("현재 대상 응답이 저장되었습니다.");
+      setMessage("현재 대상의 응답이 저장되었습니다.");
       setIndex((prev) => Math.max(0, Math.min(data.assignments.length - 1, prev + nextStep)));
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "저장에 실패했습니다.");
@@ -136,12 +136,12 @@ export default function PeerSurveyClient({ token }: { token: string }) {
       }
 
       const response = await fetch(`/api/public/peer/${token}/submit`, { method: "POST" });
-      const payload = await response.json();
+      const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(payload.error || "최종 제출에 실패했습니다.");
       }
 
-      setMessage("배정된 모든 대상에 대한 응답이 최종 제출되었습니다.");
+      setMessage("배정된 모든 대상에 대한 응답을 최종 제출했습니다.");
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "최종 제출에 실패했습니다.");
     } finally {
@@ -170,11 +170,8 @@ export default function PeerSurveyClient({ token }: { token: string }) {
       <section className="page-hero">
         <div>
           <div className="eyebrow">Peer 피드백</div>
-          <h1>강점 2개와 성장가능성 2개를 선택하고, 그렇게 고른 근거를 작성해 주세요.</h1>
-          <p>
-            응원 메시지만 선택 입력입니다. 나머지 항목은 모두 필수이며, 배정된 모든 동료에 대한 응답을 완료해야
-            최종 제출할 수 있습니다.
-          </p>
+          <h1>강점과 성장가능성을 구분해 선택하고, 그 근거를 작성해 주세요.</h1>
+          <p>각 대상마다 강점 2개와 성장가능성 2개를 각각 선택한 뒤, 판단 근거를 구체적으로 남겨 주세요.</p>
         </div>
         <div className="hero-badge">평가자용</div>
       </section>
@@ -223,102 +220,103 @@ export default function PeerSurveyClient({ token }: { token: string }) {
       <div className="grid-2">
         <div className="panel">
           <h2>현재 평가 대상: {currentAssignment.target.nameKo}</h2>
-          <p className="muted">
-            각 항목에서 영역을 선택한 뒤, 왜 그렇게 판단했는지 구체적인 근거를 적어 주세요. 응원 메시지는 선택
-            항목입니다.
-          </p>
+          <p className="muted">강점과 성장가능성을 나누어 생각하면 응답이 훨씬 명확해집니다. 아래 두 섹션을 순서대로 작성해 주세요.</p>
 
           {error ? <div className="error-box" style={{ marginTop: 16 }}>{error}</div> : null}
           {message ? <div className="message">{message}</div> : null}
-          {currentInvalid ? <div className="notice">저장 가능 조건: {currentInvalid}</div> : null}
+          {currentInvalid ? <div className="notice">저장 조건: {currentInvalid}</div> : null}
 
-          <div className="form-grid">
-            <div className="field">
-              <label>강점 1</label>
-              <select className="select" value={currentForm.strength1} onChange={(e) => update("strength1", e.target.value)}>
-                <option value="">---선택하세요---</option>
-                {data.dimensions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+          <section className="survey-section strength-section">
+            <div className="survey-section-head">
+              <div className="survey-section-badge strength">강점</div>
+              <h3>이 팀장의 강점 2가지</h3>
             </div>
-            <div className="field">
-              <label>강점 1 판단 근거</label>
-              <textarea
-                className="textarea"
-                value={currentForm.strength1Comment}
-                onChange={(e) => update("strength1Comment", e.target.value)}
-              />
+            <p className="muted">이 팀장의 강점이라고 생각하는 영역 2개를 고르고, 그렇게 판단한 근거를 적어 주세요.</p>
+            <div className="form-grid">
+              <div className="field">
+                <label>강점 1</label>
+                <select className="select" value={currentForm.strength1} onChange={(e) => update("strength1", e.target.value)}>
+                  <option value="">---선택하세요---</option>
+                  {data.dimensions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>강점 1 판단 근거</label>
+                <textarea className="textarea" value={currentForm.strength1Comment} onChange={(e) => update("strength1Comment", e.target.value)} />
+              </div>
+              <div className="field">
+                <label>강점 2</label>
+                <select className="select" value={currentForm.strength2} onChange={(e) => update("strength2", e.target.value)}>
+                  <option value="">---선택하세요---</option>
+                  {data.dimensions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>강점 2 판단 근거</label>
+                <textarea className="textarea" value={currentForm.strength2Comment} onChange={(e) => update("strength2Comment", e.target.value)} />
+              </div>
             </div>
+          </section>
 
-            <div className="field">
-              <label>강점 2</label>
-              <select className="select" value={currentForm.strength2} onChange={(e) => update("strength2", e.target.value)}>
-                <option value="">---선택하세요---</option>
-                {data.dimensions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+          <section className="survey-section growth-section">
+            <div className="survey-section-head">
+              <div className="survey-section-badge growth">성장가능성</div>
+              <h3>이 팀장의 성장가능성 2가지</h3>
             </div>
-            <div className="field">
-              <label>강점 2 판단 근거</label>
-              <textarea
-                className="textarea"
-                value={currentForm.strength2Comment}
-                onChange={(e) => update("strength2Comment", e.target.value)}
-              />
+            <p className="muted">앞으로 더 발휘될 수 있다고 생각하는 영역 2개를 고르고, 그렇게 판단한 근거를 적어 주세요.</p>
+            <div className="form-grid">
+              <div className="field">
+                <label>성장가능성 1</label>
+                <select className="select" value={currentForm.growth1} onChange={(e) => update("growth1", e.target.value)}>
+                  <option value="">---선택하세요---</option>
+                  {data.dimensions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>성장가능성 1 판단 근거</label>
+                <textarea className="textarea" value={currentForm.growth1Comment} onChange={(e) => update("growth1Comment", e.target.value)} />
+              </div>
+              <div className="field">
+                <label>성장가능성 2</label>
+                <select className="select" value={currentForm.growth2} onChange={(e) => update("growth2", e.target.value)}>
+                  <option value="">---선택하세요---</option>
+                  {data.dimensions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field">
+                <label>성장가능성 2 판단 근거</label>
+                <textarea className="textarea" value={currentForm.growth2Comment} onChange={(e) => update("growth2Comment", e.target.value)} />
+              </div>
             </div>
+          </section>
 
-            <div className="field">
-              <label>성장가능성 1</label>
-              <select className="select" value={currentForm.growth1} onChange={(e) => update("growth1", e.target.value)}>
-                <option value="">---선택하세요---</option>
-                {data.dimensions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+          <section className="survey-section message-section">
+            <div className="survey-section-head">
+              <div className="survey-section-badge message">응원 메시지</div>
+              <h3>동료에게 전하고 싶은 한마디</h3>
             </div>
             <div className="field">
-              <label>성장가능성 1 판단 근거</label>
-              <textarea
-                className="textarea"
-                value={currentForm.growth1Comment}
-                onChange={(e) => update("growth1Comment", e.target.value)}
-              />
-            </div>
-
-            <div className="field">
-              <label>성장가능성 2</label>
-              <select className="select" value={currentForm.growth2} onChange={(e) => update("growth2", e.target.value)}>
-                <option value="">---선택하세요---</option>
-                {data.dimensions.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label>성장가능성 2 판단 근거</label>
-              <textarea
-                className="textarea"
-                value={currentForm.growth2Comment}
-                onChange={(e) => update("growth2Comment", e.target.value)}
-              />
-            </div>
-
-            <div className="field full">
-              <label>응원 메시지</label>
+              <label>응원 메시지 (선택)</label>
               <textarea className="textarea" value={currentForm.freeMessage} onChange={(e) => update("freeMessage", e.target.value)} />
-              <div className="notice">동료에게 평소 해 주고 싶었던 메시지를 작성해 주세요!</div>
+              <div className="notice" style={{ marginTop: 0 }}>동료에게 평소 해 주고 싶었던 메시지를 작성해 주세요!</div>
             </div>
-          </div>
+          </section>
 
           <div className="button-row">
             <button className="btn secondary" disabled={busy || index === 0} onClick={() => setIndex((prev) => Math.max(0, prev - 1))}>
@@ -334,10 +332,10 @@ export default function PeerSurveyClient({ token }: { token: string }) {
         </div>
 
         <div>
-          <DimensionGuide title="6개 Dimension 안내" />
+          <DimensionGuide title="리더십 3영역 - 6개 Dimension 설명" />
           <div className="panel" style={{ marginTop: 20 }}>
             <h2>최종 제출</h2>
-            <p className="muted">배정된 모든 대상이 완료 상태가 되어야 최종 제출이 가능합니다.</p>
+            <p className="muted">배정된 모든 대상이 완료 상태가 되어야 최종 제출할 수 있습니다.</p>
             <div className="button-row">
               <button className="btn" disabled={busy || completedCount !== data.assignments.length} onClick={submitAll}>
                 최종 제출

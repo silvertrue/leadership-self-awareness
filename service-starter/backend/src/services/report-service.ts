@@ -46,6 +46,47 @@ function uniqueMessages(messages: string[]): string[] {
     .filter((message, index, array) => array.indexOf(message) === index);
 }
 
+function toAnonymousYoTone(comment: string): string {
+  let text = String(comment || "").trim();
+  if (!text) return "";
+
+  text = text
+    .replace(/팀장님/g, "이 리더는")
+    .replace(/당신/g, "이 리더")
+    .replace(/[“”"]/g, "")
+    .replace(/\s+/g, " ");
+
+  const replacements: Array<[RegExp, string]> = [
+    [/했습니다[.]?$/u, "했어요."],
+    [/하였습니다[.]?$/u, "했어요."],
+    [/있습니다[.]?$/u, "있어요."],
+    [/없습니다[.]?$/u, "없어요."],
+    [/좋습니다[.]?$/u, "좋아요."],
+    [/됩니다[.]?$/u, "돼요."],
+    [/보입니다[.]?$/u, "보여요."],
+    [/느껴집니다[.]?$/u, "느껴져요."],
+    [/같습니다[.]?$/u, "같아요."],
+    [/입니다[.]?$/u, "이에요."],
+    [/습니다[.]?$/u, "어요."],
+  ];
+
+  for (const [pattern, replacement] of replacements) {
+    if (pattern.test(text)) {
+      return text.replace(pattern, replacement);
+    }
+  }
+
+  if (/[요.!?]$/u.test(text)) {
+    return text;
+  }
+
+  if (/다$/u.test(text)) {
+    return `${text.slice(0, -1)}요.`;
+  }
+
+  return `${text}요.`;
+}
+
 function buildDimensionSummary(kind: "strength" | "growth", dimension: Dimension, count: number, comments: string[]) {
   const representatives = pickRepresentativeComments(comments);
 
@@ -53,7 +94,7 @@ function buildDimensionSummary(kind: "strength" | "growth", dimension: Dimension
     return [
       `${dimension}은 Peer 응답에서 총 ${count}회 선택되어 가장 많이 언급된 강점 중 하나였습니다.`,
       representatives[0]
-        ? `동료들은 특히 "${representatives[0]}"와 같은 장면을 근거로 이 강점을 인식하고 있었습니다.`
+        ? `동료들은 특히 ${toAnonymousYoTone(representatives[0])}라는 맥락을 근거로 이 강점을 인식하고 있었습니다.`
         : `동료들은 이 차원이 실제 업무 장면에서 반복적으로 드러난다고 보고 있었습니다.`,
     ].join(" ");
   }
@@ -61,7 +102,7 @@ function buildDimensionSummary(kind: "strength" | "growth", dimension: Dimension
   return [
     `${dimension}은 Peer 응답에서 총 ${count}회 선택되어 가장 많이 언급된 성장가능성 중 하나였습니다.`,
     representatives[0]
-      ? `동료들은 특히 "${representatives[0]}"와 같은 맥락에서 이 차원의 확장을 기대하고 있었습니다.`
+      ? `동료들은 특히 ${toAnonymousYoTone(representatives[0])}라는 맥락에서 이 차원의 확장을 기대하고 있었습니다.`
       : `동료들은 이 차원에서 한 단계 더 확장되면 좋겠다는 기대를 반복적으로 보여주었습니다.`,
   ].join(" ");
 }
@@ -73,21 +114,23 @@ function buildDimensionDetails(
   counts: Map<Dimension, number>,
 ): PeerDimensionEvidence[] {
   return topDimensions.map((dimension) => {
-    const matchingComments = peerResponses.flatMap((response) => {
-      if (kind === "strength") {
+    const matchingComments = peerResponses
+      .flatMap((response) => {
+        if (kind === "strength") {
+          return [
+            response.strength1 === dimension ? response.strength1Comment : "",
+            response.strength2 === dimension ? response.strength2Comment : "",
+          ];
+        }
+
         return [
-          response.strength1 === dimension ? response.strength1Comment : "",
-          response.strength2 === dimension ? response.strength2Comment : "",
+          response.growth1 === dimension ? response.growth1Comment : "",
+          response.growth2 === dimension ? response.growth2Comment : "",
         ];
-      }
+      })
+      .filter(Boolean);
 
-      return [
-        response.growth1 === dimension ? response.growth1Comment : "",
-        response.growth2 === dimension ? response.growth2Comment : "",
-      ];
-    }).filter(Boolean);
-
-    const representativeComments = pickRepresentativeComments(matchingComments);
+    const representativeComments = pickRepresentativeComments(matchingComments).map(toAnonymousYoTone);
 
     return {
       dimension,
@@ -171,7 +214,10 @@ export class ReportService {
   ) {}
 
   async buildParticipantReport(participantId: string): Promise<GeneratedReport> {
-    const participant = await this.participantRepository.listAll().then((items) => items.find((item) => item.participantId === participantId));
+    const participant = await this.participantRepository
+      .listAll()
+      .then((items) => items.find((item) => item.participantId === participantId));
+
     if (!participant) {
       throw new Error("Participant not found.");
     }
@@ -195,8 +241,8 @@ export class ReportService {
       growthComments: peerResponses.flatMap((item: PeerResponse) => [item.growth1Comment, item.growth2Comment]),
       freeMessages: peerResponses.map((item) => item.freeMessage ?? "").filter(Boolean),
     });
-    const peerFreeMessages = uniqueMessages(peerResponses.map((item) => item.freeMessage ?? ""));
 
+    const peerFreeMessages = uniqueMessages(peerResponses.map((item) => item.freeMessage ?? ""));
     const insight = buildInsight(selfResponse, peerStrengths, peerGrowths);
     const actionPlan = buildActionPlan(selfResponse, peerStrengths, peerGrowths);
     const llmMeta = this.llmClient.getMetadata();

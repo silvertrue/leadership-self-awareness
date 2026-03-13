@@ -157,6 +157,7 @@ export class OpenAiResponsesLlmClient implements LlmClient {
       "Avoid harsh labels, diagnosis-style wording, or anything that could feel shaming.",
       "Do not quote full comments verbatim. Short key phrases of one to three words may be echoed only when they are clearly repeated.",
       "Each paragraph should be 2 to 4 sentences and should feel specific, concrete, and evidence-based.",
+      "In the overall strength and growth summaries, wrap one or two truly core phrases in markdown bold (**like this**) so they stand out for the reader.",
       strengthPrompt,
       growthPrompt,
     ].join("\n\n");

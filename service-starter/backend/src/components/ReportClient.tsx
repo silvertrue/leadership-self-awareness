@@ -2,6 +2,21 @@
 
 import { useEffect, useState } from "react";
 import type { PublicReportGetResponse } from "../types/api";
+import DimensionGuide from "./DimensionGuide";
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function formatBoldText(text: string) {
+  const escaped = escapeHtml(text);
+  return escaped.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+}
 
 export default function ReportClient({ token }: { token: string }) {
   const [data, setData] = useState<PublicReportGetResponse | null>(null);
@@ -133,9 +148,11 @@ export default function ReportClient({ token }: { token: string }) {
                 <strong>강점 전체 요약</strong>
                 <br />
                 {report.peerStrengthComments.map((item, index) => (
-                  <p key={`psc-${index}`} style={{ margin: index === 0 ? "8px 0 0" : "8px 0 0" }}>
-                    {item}
-                  </p>
+                  <p
+                    key={`psc-${index}`}
+                    style={{ margin: "8px 0 0" }}
+                    dangerouslySetInnerHTML={{ __html: formatBoldText(item) }}
+                  />
                 ))}
               </div>
 
@@ -143,9 +160,11 @@ export default function ReportClient({ token }: { token: string }) {
                 <strong>성장가능성 전체 요약</strong>
                 <br />
                 {report.peerGrowthComments.map((item, index) => (
-                  <p key={`pgc-${index}`} style={{ margin: index === 0 ? "8px 0 0" : "8px 0 0" }}>
-                    {item}
-                  </p>
+                  <p
+                    key={`pgc-${index}`}
+                    style={{ margin: "8px 0 0" }}
+                    dangerouslySetInnerHTML={{ __html: formatBoldText(item) }}
+                  />
                 ))}
               </div>
             </div>
@@ -214,6 +233,10 @@ export default function ReportClient({ token }: { token: string }) {
               </div>
             </div>
           ) : null}
+
+          <div style={{ marginTop: 22 }}>
+            <DimensionGuide title="리더십 3영역 - 6개 Dimension 설명" />
+          </div>
 
           <div className="action-grid">
             {report.actionPlan.map((item) => (

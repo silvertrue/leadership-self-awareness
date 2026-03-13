@@ -31,6 +31,7 @@ export interface GeneratedReport {
   peerGrowthComments: string[];
   peerStrengthDetails: PeerDimensionEvidence[];
   peerGrowthDetails: PeerDimensionEvidence[];
+  peerFreeMessages: string[];
   insightTitle: string;
   insightBody: string;
   actionPlan: Array<{ title: string; body: string }>;

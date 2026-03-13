@@ -39,6 +39,13 @@ function pickRepresentativeComments(comments: string[], limit = 2): string[] {
     .slice(0, limit);
 }
 
+function uniqueMessages(messages: string[]): string[] {
+  return messages
+    .map((message) => String(message || "").trim())
+    .filter(Boolean)
+    .filter((message, index, array) => array.indexOf(message) === index);
+}
+
 function buildDimensionSummary(kind: "strength" | "growth", dimension: Dimension, count: number, comments: string[]) {
   const representatives = pickRepresentativeComments(comments);
 
@@ -188,6 +195,7 @@ export class ReportService {
       growthComments: peerResponses.flatMap((item: PeerResponse) => [item.growth1Comment, item.growth2Comment]),
       freeMessages: peerResponses.map((item) => item.freeMessage ?? "").filter(Boolean),
     });
+    const peerFreeMessages = uniqueMessages(peerResponses.map((item) => item.freeMessage ?? ""));
 
     const insight = buildInsight(selfResponse, peerStrengths, peerGrowths);
     const actionPlan = buildActionPlan(selfResponse, peerStrengths, peerGrowths);
@@ -220,6 +228,7 @@ export class ReportService {
       peerGrowthComments: llm.growthSummaryParagraphs,
       peerStrengthDetails: buildDimensionDetails("strength", peerResponses, peerStrengths, strengthCounts),
       peerGrowthDetails: buildDimensionDetails("growth", peerResponses, peerGrowths, growthCounts),
+      peerFreeMessages,
       insightTitle: insight.title,
       insightBody: insight.body,
       actionPlan,

@@ -199,6 +199,22 @@ export default function ReportClient({ token }: { token: string }) {
             </div>
           </div>
 
+          {report.peerFreeMessages.length > 0 ? (
+            <div className="panel" style={{ marginTop: 22 }}>
+              <h2>동료가 남긴 한마디</h2>
+              <p className="muted">이 메시지는 동료가 남긴 워딩을 원문 그대로 보여줍니다.</p>
+              <div style={{ marginTop: 16, display: "grid", gap: 12 }}>
+                {report.peerFreeMessages.map((message, index) => (
+                  <div key={`pfm-${index}`} className="quote">
+                    <strong>한마디 {index + 1}</strong>
+                    <br />
+                    {message}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           <div className="action-grid">
             {report.actionPlan.map((item) => (
               <div key={item.title} className="panel">

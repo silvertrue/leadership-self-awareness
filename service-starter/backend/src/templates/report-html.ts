@@ -94,6 +94,14 @@ export function renderReportHtml(report: GeneratedReport): string {
         </div>
       `).join('')}
     </div>
+
+    ${report.peerFreeMessages.length > 0 ? `
+      <div class="section">
+        <h2 class="section-title">동료가 남긴 한마디</h2>
+        <p style="font-size:14px;line-height:1.7;color:#5a6d84;">이 메시지는 동료가 남긴 워딩을 원문 그대로 보여줍니다.</p>
+        ${quotes(report.peerFreeMessages, '원문 메시지')}
+      </div>
+    ` : ''}
   </div>
 </body>
 </html>`;

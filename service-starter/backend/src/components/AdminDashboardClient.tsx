@@ -128,7 +128,7 @@ export default function AdminDashboardClient() {
           <div>
             <div className="eyebrow">HR Dashboard</div>
             <h1>워크샵 응답 현황을 한눈에 확인하세요</h1>
-            <p>자가진단 제출률, Peer 피드백 진행률, 리포트 생성 준비 상태를 관리자 전용 화면에서 확인할 수 있습니다.</p>
+            <p>자가진단 제출률, Peer 피드백 진행률, 리포트 준비 상태를 관리자 전용 화면에서 확인할 수 있습니다.</p>
           </div>
           <div className="hero-badge">관리자 전용</div>
         </section>
@@ -181,6 +181,7 @@ export default function AdminDashboardClient() {
       <div className="admin-toolbar">
         <div className="notice">세션 만료: {new Date(session.expiresAt).toLocaleString('ko-KR')}</div>
         <div className="button-row" style={{ marginTop: 0 }}>
+          <a className="btn secondary" href="/api/admin/export">데이터 백업</a>
           <button className="btn secondary" type="button" onClick={() => loadDashboard()}>새로고침</button>
           <button className="btn secondary" type="button" onClick={handleLogout} disabled={loggingOut}>{loggingOut ? '로그아웃 중...' : '로그아웃'}</button>
         </div>

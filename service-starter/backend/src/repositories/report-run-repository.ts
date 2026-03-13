@@ -43,6 +43,24 @@ export class ReportRunRepository {
     };
   }
 
+  async listAll(): Promise<ReportRun[]> {
+    const rows = await this.db.reportRun.findMany({
+      orderBy: [{ generatedAt: 'desc' }]
+    });
+
+    return rows.map((row) => ({
+      reportRunId: row.reportRunId.toString(),
+      participantId: row.participantId,
+      reportStatus: row.reportStatus,
+      peerResponseCount: row.peerResponseCount,
+      reportJson: row.reportJson as unknown as ReportRun['reportJson'],
+      htmlPath: row.htmlPath,
+      pdfPath: row.pdfPath,
+      llmModel: row.llmModel,
+      llmPromptVersion: row.llmPromptVersion,
+      generatedAt: row.generatedAt.toISOString()
+    }));
+  }
   async attachArtifacts(reportRunId: string | number, htmlPath: string | null, pdfPath: string | null): Promise<void> {
     await this.db.reportRun.update({
       where: { reportRunId: BigInt(reportRunId) },

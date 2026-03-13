@@ -10,11 +10,13 @@
         "prisma:generate": "prisma generate",
         "prisma:migrate": "prisma migrate dev",
         "seed:generated": "node ./scripts/import-generated-data.mjs",
+        "email:test": "node ./scripts/send-test-emails.mjs",
         "postinstall": "prisma generate"
     },
     "dependencies": {
         "@prisma/client": "^6.6.0",
         "next": "^15.2.8",
+        "nodemailer": "^8.0.2",
         "playwright": "^1.52.0",
         "react": "^19.0.4",
         "react-dom": "^19.0.4",

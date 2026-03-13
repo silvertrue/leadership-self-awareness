@@ -7,6 +7,13 @@ export interface ReportSummaryBlock {
   comment: string;
 }
 
+export interface PeerDimensionEvidence {
+  dimension: Dimension;
+  count: number;
+  summary: string;
+  representativeComments: string[];
+}
+
 export interface GeneratedReport {
   participantId: string;
   participantName: string;
@@ -22,6 +29,8 @@ export interface GeneratedReport {
   peerGrowths: Dimension[];
   peerStrengthComments: string[];
   peerGrowthComments: string[];
+  peerStrengthDetails: PeerDimensionEvidence[];
+  peerGrowthDetails: PeerDimensionEvidence[];
   insightTitle: string;
   insightBody: string;
   actionPlan: Array<{ title: string; body: string }>;

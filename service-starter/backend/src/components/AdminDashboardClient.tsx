@@ -186,7 +186,7 @@ export default function AdminDashboardClient() {
               <span className="chip orange">Peer 진행 현황</span>
               <span className="chip green">리포트 준비 상태</span>
             </div>
-            <div className="notice">데이터 백업, TEST조 상태 확인, 워크샵 준비 문항 응답 확인도 이 화면에서 가능합니다.</div>
+            <div className="notice">데이터 백업, TEST조 상태 확인, 자가진단 원본 CSV 다운로드도 이 화면에서 가능합니다.</div>
           </section>
         </div>
       </main>
@@ -401,7 +401,14 @@ export default function AdminDashboardClient() {
           </section>
 
           <section className="panel" style={{ marginTop: 22 }}>
-            <h2>자가진단 응답 상세</h2>
+            <div className="admin-toolbar" style={{ marginTop: 0 }}>
+              <h2>자가진단 응답 상세</h2>
+              <div className="button-row" style={{ marginTop: 0 }}>
+                <a className="btn secondary" href="/api/admin/export?type=self-responses-csv">
+                  자가진단 Raw CSV 다운로드
+                </a>
+              </div>
+            </div>
             <div className="table-wrap admin-table-scroll-lg">
               <table className="admin-table">
                 <thead>
@@ -457,7 +464,6 @@ export default function AdminDashboardClient() {
                     <th>차량번호</th>
                     <th>노트북</th>
                     <th>OS</th>
-                    <th>test문항입니다</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -475,7 +481,6 @@ export default function AdminDashboardClient() {
                       <td>{participant.vehicleNumber || "-"}</td>
                       <td>{formatLaptopBringOption(participant.laptopBringOption)}</td>
                       <td>{formatLaptopOs(participant.laptopOs)}</td>
-                      <td>{participant.testQuestionAnswer || "-"}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -4,8 +4,10 @@ import type { SelfResponse } from '../types/survey';
 function mapSelf(row: {
   participantId: string;
   transportMode: string | null;
+  vehicleNumber: string | null;
   laptopBringOption: string | null;
   laptopOs: string | null;
+  testQuestionAnswer: string | null;
   strength1: string;
   strength1Comment: string;
   strength2: string;
@@ -21,8 +23,10 @@ function mapSelf(row: {
   return {
     participantId: row.participantId,
     transportMode: row.transportMode as SelfResponse["transportMode"],
+    vehicleNumber: row.vehicleNumber,
     laptopBringOption: row.laptopBringOption as SelfResponse["laptopBringOption"],
     laptopOs: row.laptopOs as SelfResponse["laptopOs"],
+    testQuestionAnswer: row.testQuestionAnswer,
     strength1: row.strength1 as SelfResponse['strength1'],
     strength1Comment: row.strength1Comment,
     strength2: row.strength2 as SelfResponse['strength2'],
@@ -55,8 +59,10 @@ export class SelfResponseRepository {
       where: { participantId: response.participantId },
       update: {
         transportMode: response.transportMode ?? null,
+        vehicleNumber: response.transportMode === "self_drive" ? response.vehicleNumber ?? null : null,
         laptopBringOption: response.laptopBringOption ?? null,
         laptopOs: response.laptopBringOption === "bring" ? response.laptopOs ?? null : null,
+        testQuestionAnswer: response.testQuestionAnswer ?? null,
         strength1: response.strength1,
         strength1Comment: response.strength1Comment,
         strength2: response.strength2,
@@ -71,8 +77,10 @@ export class SelfResponseRepository {
       create: {
         participantId: response.participantId,
         transportMode: response.transportMode ?? null,
+        vehicleNumber: response.transportMode === "self_drive" ? response.vehicleNumber ?? null : null,
         laptopBringOption: response.laptopBringOption ?? null,
         laptopOs: response.laptopBringOption === "bring" ? response.laptopOs ?? null : null,
+        testQuestionAnswer: response.testQuestionAnswer ?? null,
         strength1: response.strength1,
         strength1Comment: response.strength1Comment,
         strength2: response.strength2,

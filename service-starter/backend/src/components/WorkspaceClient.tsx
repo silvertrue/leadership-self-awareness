@@ -21,6 +21,7 @@ type WorkspaceResponse = PublicSelfGetResponse & {
 type SelfFormState = {
   participantId: string;
   transportMode: TransportMode | "";
+  vehicleNumber: string;
   laptopBringOption: LaptopBringOption | "";
   laptopOs: LaptopOs | "";
   strength1: SelectValue;
@@ -31,6 +32,7 @@ type SelfFormState = {
   growth1Comment: string;
   growth2: SelectValue;
   growth2Comment: string;
+  testQuestionAnswer: string;
 };
 
 type PeerFormState = {
@@ -48,26 +50,26 @@ type PeerFormState = {
 
 function validateSelf(form: SelfFormState) {
   if (!form.transportMode) return "대절버스 이용 여부를 선택해 주세요.";
+  if (form.transportMode === "self_drive" && !form.vehicleNumber.trim()) return "자차 이동 시 차량번호를 입력해 주세요.";
   if (!form.laptopBringOption) return "개인 노트북 지참 가능 여부를 선택해 주세요.";
   if (form.laptopBringOption === "bring" && !form.laptopOs) return "노트북 지참 가능 시 OS 종류를 선택해 주세요.";
   if (!form.strength1 || !form.strength2) return "강점 1과 강점 2를 모두 선택해 주세요.";
-  if (!form.growth1 || !form.growth2) return "성장가능성 1과 성장가능성 2를 모두 선택해 주세요.";
   if (form.strength1 === form.strength2) return "강점 1과 강점 2는 서로 다른 항목이어야 합니다.";
+  if (!form.strength1Comment.trim() || !form.strength2Comment.trim()) return "강점 판단 근거를 모두 작성해 주세요.";
+  if (!form.growth1 || !form.growth2) return "성장가능성 1과 성장가능성 2를 모두 선택해 주세요.";
   if (form.growth1 === form.growth2) return "성장가능성 1과 성장가능성 2는 서로 다른 항목이어야 합니다.";
-  if (![form.strength1Comment, form.strength2Comment, form.growth1Comment, form.growth2Comment].every((item) => item.trim())) {
-    return "강점과 성장가능성에 대한 판단 근거를 모두 작성해 주세요.";
-  }
+  if (!form.growth1Comment.trim() || !form.growth2Comment.trim()) return "성장가능성 판단 근거를 모두 작성해 주세요.";
+  if (!form.testQuestionAnswer.trim()) return "test문항입니다를 작성해 주세요.";
   return "";
 }
 
 function validatePeer(form: PeerFormState) {
   if (!form.strength1 || !form.strength2) return "강점 1과 강점 2를 모두 선택해 주세요.";
-  if (!form.growth1 || !form.growth2) return "성장가능성 1과 성장가능성 2를 모두 선택해 주세요.";
   if (form.strength1 === form.strength2) return "강점 1과 강점 2는 서로 다른 항목이어야 합니다.";
+  if (!form.strength1Comment.trim() || !form.strength2Comment.trim()) return "강점 판단 근거를 모두 작성해 주세요.";
+  if (!form.growth1 || !form.growth2) return "성장가능성 1과 성장가능성 2를 모두 선택해 주세요.";
   if (form.growth1 === form.growth2) return "성장가능성 1과 성장가능성 2는 서로 다른 항목이어야 합니다.";
-  if (![form.strength1Comment, form.strength2Comment, form.growth1Comment, form.growth2Comment].every((item) => item.trim())) {
-    return "강점과 성장가능성에 대한 판단 근거를 모두 작성해 주세요.";
-  }
+  if (!form.growth1Comment.trim() || !form.growth2Comment.trim()) return "성장가능성 판단 근거를 모두 작성해 주세요.";
   return "";
 }
 
@@ -104,6 +106,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
     setSelfForm({
       participantId: nextWorkspace.participant.participantId,
       transportMode: nextWorkspace.response.transportMode || "",
+      vehicleNumber: nextWorkspace.response.vehicleNumber || "",
       laptopBringOption: nextWorkspace.response.laptopBringOption || "",
       laptopOs: nextWorkspace.response.laptopOs || "",
       strength1: (nextWorkspace.response.strength1 as SelectValue) || "",
@@ -114,6 +117,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
       growth1Comment: nextWorkspace.response.growth1Comment || "",
       growth2: (nextWorkspace.response.growth2 as SelectValue) || "",
       growth2Comment: nextWorkspace.response.growth2Comment || "",
+      testQuestionAnswer: nextWorkspace.response.testQuestionAnswer || "",
     });
 
     if (nextWorkspace.linked.peerToken) {
@@ -149,6 +153,10 @@ export default function WorkspaceClient({ token }: { token: string }) {
         const firstPending = nextPeerData.assignments.find((assignment) => assignment.status !== "completed");
         setActiveAssignmentId(firstPending?.assignmentId || nextPeerData.assignments[0]?.assignmentId || "");
       }
+    } else {
+      setPeerData(null);
+      setPeerForms({});
+      setActiveAssignmentId("");
     }
 
     setLoading(false);
@@ -178,7 +186,11 @@ export default function WorkspaceClient({ token }: { token: string }) {
 
   function selectTransportMode(value: TransportMode) {
     if (!selfForm) return;
-    setSelfForm({ ...selfForm, transportMode: value });
+    setSelfForm({
+      ...selfForm,
+      transportMode: value,
+      vehicleNumber: value === "self_drive" ? selfForm.vehicleNumber : "",
+    });
     setError("");
     setSelfMessage("");
   }
@@ -262,12 +274,10 @@ export default function WorkspaceClient({ token }: { token: string }) {
     if (moveNext && peerData) {
       const currentIndex = peerData.assignments.findIndex((item) => item.assignmentId === activeAssignmentId);
       const nextAssignment =
-        peerData.assignments
-          .slice(currentIndex + 1)
-          .find((item) => {
-            const form = peerForms[item.assignmentId];
-            return !form || !!validatePeer(form);
-          }) || peerData.assignments[currentIndex + 1];
+        peerData.assignments.slice(currentIndex + 1).find((item) => {
+          const form = peerForms[item.assignmentId];
+          return !form || Boolean(validatePeer(form));
+        }) || peerData.assignments[currentIndex + 1];
 
       if (nextAssignment) {
         setActiveAssignmentId(nextAssignment.assignmentId);
@@ -320,6 +330,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
 
   const selfDone = workspace.surveyMeta.status === "submitted";
   const peerDone = Boolean(workspace.linked.peerSubmitted);
+  const activeAssignment = peerData?.assignments.find((item) => item.assignmentId === activeAssignmentId) || null;
 
   return (
     <main className="page-shell">
@@ -327,10 +338,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
         <div>
           <div className="eyebrow">2026 SK엔무브 팀장 SUPEX 워크샵</div>
           <h1>{workspace.participant.nameKo} 팀장님, 진단을 진행해 주세요.</h1>
-          <p>
-            자가진단과 Peer 피드백을 작성해 주세요. 제출해 주신 모든 응답은 익명 처리되며, 팀장 워크샵 세션용으로만
-            활용됩니다. (~3/18(수))
-          </p>
+          <p>자가진단과 Peer 피드백을 작성해 주세요. 제출해 주신 모든 응답은 익명 처리되며, 팀장 워크샵 세션용으로만 활용됩니다. (~3/18(수))</p>
         </div>
         <div className="hero-badge">{workspace.participant.teamName}</div>
       </section>
@@ -361,54 +369,65 @@ export default function WorkspaceClient({ token }: { token: string }) {
       {selfMessage ? <div className="message">{selfMessage}</div> : null}
       {peerMessage ? <div className="message">{peerMessage}</div> : null}
 
+      {tab === "self" ? (
+        <section className="panel" style={{ marginTop: 22 }}>
+          <h2>워크샵 준비 문항</h2>
+          <div className="prep-grid">
+            <section className="prep-card">
+              <h3>준비 문항 1</h3>
+              <p className="muted">대절버스 이용 여부를 선택해 주세요.</p>
+              <div className="choice-row">
+                <button type="button" className={`choice-chip ${selfForm.transportMode === "chartered_bus" ? "active" : ""}`} onClick={() => selectTransportMode("chartered_bus")}>
+                  대절버스 이용
+                </button>
+                <button type="button" className={`choice-chip ${selfForm.transportMode === "self_drive" ? "active" : ""}`} onClick={() => selectTransportMode("self_drive")}>
+                  자차 이동
+                </button>
+              </div>
+              {selfForm.transportMode === "self_drive" ? (
+                <div className="field">
+                  <label>차량번호</label>
+                  <input className="input" value={selfForm.vehicleNumber} onChange={(e) => updateSelf("vehicleNumber", e.target.value)} placeholder="예: 123가4567" />
+                </div>
+              ) : null}
+            </section>
+
+            <section className="prep-card">
+              <h3>준비 문항 2</h3>
+              <p className="muted">이번 워크샵에서는 AX 교육 실습을 위하여 개인 노트북 지참이 필요합니다. 노트북 지참이 가능하신지 응답해 주세요.</p>
+              <div className="choice-row">
+                <button type="button" className={`choice-chip ${selfForm.laptopBringOption === "bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("bring")}>
+                  개인노트북 지참 가능
+                </button>
+                <button type="button" className={`choice-chip ${selfForm.laptopBringOption === "cannot_bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("cannot_bring")}>
+                  개인노트북 지참 불가
+                </button>
+              </div>
+              {selfForm.laptopBringOption === "bring" ? (
+                <div className="choice-row">
+                  <button type="button" className={`choice-chip soft-active ${selfForm.laptopOs === "windows" ? "active" : ""}`} onClick={() => selectLaptopOs("windows")}>
+                    윈도우
+                  </button>
+                  <button type="button" className={`choice-chip soft-active ${selfForm.laptopOs === "mac" ? "active" : ""}`} onClick={() => selectLaptopOs("mac")}>
+                    맥
+                  </button>
+                </div>
+              ) : null}
+            </section>
+          </div>
+        </section>
+      ) : null}
+
       <div className="grid-2" style={{ alignItems: "start", marginTop: 22 }}>
         <div>
           {tab === "self" ? (
             <section className="panel">
               <h2>자가진단 작성</h2>
 
-              <div className="prep-grid">
-                <section className="prep-card">
-                  <h3>워크샵 준비 문항 1</h3>
-                  <p className="muted">대절버스 이용 여부를 선택해 주세요.</p>
-                  <div className="choice-row">
-                    <button type="button" className={`choice-chip ${selfForm.transportMode === "chartered_bus" ? "active" : ""}`} onClick={() => selectTransportMode("chartered_bus")}>
-                      대절버스 이용
-                    </button>
-                    <button type="button" className={`choice-chip ${selfForm.transportMode === "self_drive" ? "active" : ""}`} onClick={() => selectTransportMode("self_drive")}>
-                      자차 이동
-                    </button>
-                  </div>
-                </section>
-
-                <section className="prep-card">
-                  <h3>워크샵 준비 문항 2</h3>
-                  <p className="muted">이번 워크샵에서는 AX 교육 실습을 위하여 개인 노트북 지참이 필요합니다. 노트북 지참이 가능하신지 응답해 주세요.</p>
-                  <div className="choice-row">
-                    <button type="button" className={`choice-chip ${selfForm.laptopBringOption === "bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("bring")}>
-                      개인노트북 지참 가능
-                    </button>
-                    <button type="button" className={`choice-chip ${selfForm.laptopBringOption === "cannot_bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("cannot_bring")}>
-                      개인노트북 지참 불가
-                    </button>
-                  </div>
-                  {selfForm.laptopBringOption === "bring" ? (
-                    <div className="choice-row">
-                      <button type="button" className={`choice-chip soft-active ${selfForm.laptopOs === "windows" ? "active" : ""}`} onClick={() => selectLaptopOs("windows")}>
-                        윈도우
-                      </button>
-                      <button type="button" className={`choice-chip soft-active ${selfForm.laptopOs === "mac" ? "active" : ""}`} onClick={() => selectLaptopOs("mac")}>
-                        맥
-                      </button>
-                    </div>
-                  ) : null}
-                </section>
-              </div>
-
               <section className="survey-section strength-section">
                 <div className="survey-section-head">
                   <div className="survey-section-badge strength">강점</div>
-                  <h3>내가 생각하는 강점 2가지</h3>
+                  <h3>나의 강점 2가지</h3>
                 </div>
                 <p className="muted">우측 설명을 참고해서 강점 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
                 <div className="form-grid">
@@ -448,7 +467,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
               <section className="survey-section growth-section">
                 <div className="survey-section-head">
                   <div className="survey-section-badge growth">성장가능성</div>
-                  <h3>앞으로 더 키우고 싶은 영역 2가지</h3>
+                  <h3>나의 성장가능성 2가지</h3>
                 </div>
                 <p className="muted">우측 설명을 참고해서 성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
                 <div className="form-grid">
@@ -482,6 +501,17 @@ export default function WorkspaceClient({ token }: { token: string }) {
                     <label>성장가능성 2 판단 근거</label>
                     <textarea className="textarea" value={selfForm.growth2Comment} onChange={(e) => updateSelf("growth2Comment", e.target.value)} />
                   </div>
+                </div>
+              </section>
+
+              <section className="survey-section message-section">
+                <div className="survey-section-head">
+                  <div className="survey-section-badge message">추가 문항</div>
+                  <h3>test문항입니다</h3>
+                </div>
+                <div className="field" style={{ marginTop: 0 }}>
+                  <label>test문항입니다</label>
+                  <textarea className="textarea" value={selfForm.testQuestionAnswer} onChange={(e) => updateSelf("testQuestionAnswer", e.target.value)} />
                 </div>
               </section>
 
@@ -530,12 +560,12 @@ export default function WorkspaceClient({ token }: { token: string }) {
                     })}
                   </div>
 
-                  {activePeerForm ? (
+                  {activePeerForm && activeAssignment ? (
                     <div style={{ marginTop: 20 }}>
                       <section className="survey-section strength-section">
                         <div className="survey-section-head">
                           <div className="survey-section-badge strength">강점</div>
-                          <h3>{peerData.assignments.find((item) => item.assignmentId === activeAssignmentId)?.target.nameKo} 팀장의 강점 2가지</h3>
+                          <h3>{activeAssignment.target.nameKo} 팀장의 강점 2가지</h3>
                         </div>
                         <p className="muted">우측 설명을 참고해서 강점 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
                         <div className="form-grid">
@@ -575,7 +605,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                       <section className="survey-section growth-section">
                         <div className="survey-section-head">
                           <div className="survey-section-badge growth">성장가능성</div>
-                          <h3>{peerData.assignments.find((item) => item.assignmentId === activeAssignmentId)?.target.nameKo} 팀장의 성장가능성 2가지</h3>
+                          <h3>{activeAssignment.target.nameKo} 팀장의 성장가능성 2가지</h3>
                         </div>
                         <p className="muted">우측 설명을 참고해서 성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
                         <div className="form-grid">
@@ -615,9 +645,9 @@ export default function WorkspaceClient({ token }: { token: string }) {
                       <section className="survey-section message-section">
                         <div className="survey-section-head">
                           <div className="survey-section-badge message">응원 메시지</div>
-                          <h3>동료에게 전하고 싶은 한마디</h3>
+                          <h3>동료에게 해 주고 싶은 한마디</h3>
                         </div>
-                        <div className="field">
+                        <div className="field" style={{ marginTop: 0 }}>
                           <label>응원 메시지 (선택)</label>
                           <textarea className="textarea" value={activePeerForm.freeMessage} onChange={(e) => updatePeer(activePeerForm.assignmentId, "freeMessage", e.target.value)} />
                           <div className="notice" style={{ marginTop: 0 }}>동료에게 평소 해 주고 싶었던 메시지를 작성해 주세요!</div>

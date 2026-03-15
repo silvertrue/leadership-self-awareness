@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
-import type { AdminDashboardResponse } from '../types/api';
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import type { AdminDashboardResponse } from "../types/api";
 
 type SessionInfo = {
   email: string;
@@ -14,7 +14,25 @@ type LoginState = {
 };
 
 function isTestGroup(groupName: string) {
-  return groupName.toUpperCase().includes('TEST');
+  return groupName.toUpperCase().includes("TEST");
+}
+
+function formatTransportMode(value?: string | null) {
+  if (value === "chartered_bus") return "대절버스 이용";
+  if (value === "self_drive") return "자차 이동";
+  return "-";
+}
+
+function formatLaptopBringOption(value?: string | null) {
+  if (value === "bring") return "개인노트북 지참 가능";
+  if (value === "cannot_bring") return "개인노트북 지참 불가";
+  return "-";
+}
+
+function formatLaptopOs(value?: string | null) {
+  if (value === "windows") return "윈도우";
+  if (value === "mac") return "맥";
+  return "-";
 }
 
 export default function AdminDashboardClient() {
@@ -23,20 +41,20 @@ export default function AdminDashboardClient() {
   const [loading, setLoading] = useState(true);
   const [loggingIn, setLoggingIn] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [error, setError] = useState('');
-  const [login, setLogin] = useState<LoginState>({ email: '', password: '' });
+  const [error, setError] = useState("");
+  const [login, setLogin] = useState<LoginState>({ email: "", password: "" });
 
   async function loadDashboard() {
-    const response = await fetch('/api/admin/dashboard', { cache: 'no-store' });
+    const response = await fetch("/api/admin/dashboard", { cache: "no-store" });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error(payload.error || '대시보드 정보를 불러오지 못했습니다.');
+      throw new Error(payload.error || "대시보드 정보를 불러오지 못했습니다.");
     }
     setData(payload);
   }
 
   async function loadSession() {
-    const response = await fetch('/api/admin/session', { cache: 'no-store' });
+    const response = await fetch("/api/admin/session", { cache: "no-store" });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
       setSession(null);
@@ -49,14 +67,14 @@ export default function AdminDashboardClient() {
   useEffect(() => {
     async function initialize() {
       setLoading(true);
-      setError('');
+      setError("");
       try {
         const hasSession = await loadSession();
         if (hasSession) {
           await loadDashboard();
         }
       } catch (nextError) {
-        setError(nextError instanceof Error ? nextError.message : '관리자 화면을 불러오지 못했습니다.');
+        setError(nextError instanceof Error ? nextError.message : "관리자 화면을 불러오지 못했습니다.");
       } finally {
         setLoading(false);
       }
@@ -79,25 +97,27 @@ export default function AdminDashboardClient() {
   const testResponders = useMemo(() => data?.responders.filter((responder) => isTestGroup(responder.groupName)) ?? [], [data]);
   const testParticipants = useMemo(() => data?.participants.filter((participant) => isTestGroup(participant.groupName)) ?? [], [data]);
 
-  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoggingIn(true);
-    setError('');
+    setError("");
 
     try {
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(login)
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(login),
       });
       const payload = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        throw new Error(payload.error || '로그인에 실패했습니다.');
+        throw new Error(payload.error || "로그인에 실패했습니다.");
       }
+
       setSession(payload.session);
       await loadDashboard();
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '로그인에 실패했습니다.');
+      setError(nextError instanceof Error ? nextError.message : "로그인에 실패했습니다.");
     } finally {
       setLoggingIn(false);
     }
@@ -105,20 +125,24 @@ export default function AdminDashboardClient() {
 
   async function handleLogout() {
     setLoggingOut(true);
-    setError('');
+    setError("");
     try {
-      await fetch('/api/admin/logout', { method: 'POST' });
+      await fetch("/api/admin/logout", { method: "POST" });
       setSession(null);
       setData(null);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '로그아웃에 실패했습니다.');
+      setError(nextError instanceof Error ? nextError.message : "로그아웃에 실패했습니다.");
     } finally {
       setLoggingOut(false);
     }
   }
 
   if (loading) {
-    return <main className="page-shell"><div className="panel">HR 대시보드를 불러오는 중입니다...</div></main>;
+    return (
+      <main className="page-shell">
+        <div className="panel">HR 대시보드를 불러오는 중입니다...</div>
+      </main>
+    );
   }
 
   if (!session) {
@@ -127,11 +151,12 @@ export default function AdminDashboardClient() {
         <section className="page-hero">
           <div>
             <div className="eyebrow">HR Dashboard</div>
-            <h1>워크샵 응답 현황을 한눈에 확인하세요</h1>
-            <p>자가진단 제출률, Peer 피드백 진행률, 리포트 준비 상태를 관리자 전용 화면에서 확인할 수 있습니다.</p>
+            <h1>워크샵 응답 현황을 확인해 주세요</h1>
+            <p>자가진단 제출, Peer 피드백 진행, 리포트 준비 상태와 준비 문항 응답을 관리자 전용 화면에서 확인할 수 있습니다.</p>
           </div>
           <div className="hero-badge">관리자 전용</div>
         </section>
+
         <div className="grid-2">
           <section className="panel">
             <h2>관리자 로그인</h2>
@@ -147,18 +172,21 @@ export default function AdminDashboardClient() {
                 <input id="password" className="input" type="password" value={login.password} onChange={(e) => setLogin((prev) => ({ ...prev, password: e.target.value }))} />
               </div>
               <div className="button-row">
-                <button className="btn" type="submit" disabled={loggingIn || !login.email || !login.password}>{loggingIn ? '로그인 중...' : '로그인'}</button>
+                <button className="btn" type="submit" disabled={loggingIn || !login.email || !login.password}>
+                  {loggingIn ? "로그인 중..." : "로그인"}
+                </button>
               </div>
             </form>
           </section>
+
           <section className="panel">
-            <h2>이 화면에서 보는 정보</h2>
+            <h2>확인 가능한 정보</h2>
             <div className="chip-row" style={{ marginTop: 12 }}>
               <span className="chip blue">자가진단 제출 현황</span>
               <span className="chip orange">Peer 진행 현황</span>
-              <span className="chip green">리포트 준비 현황</span>
+              <span className="chip green">리포트 준비 상태</span>
             </div>
-            <div className="notice">로그인 후에는 조별 현황, 응답자별 완료 수, 참가자별 리포트 준비 상태까지 바로 확인할 수 있습니다.</div>
+            <div className="notice">데이터 백업, TEST조 상태 확인, 워크샵 준비 문항 응답 확인도 이 화면에서 가능합니다.</div>
           </section>
         </div>
       </main>
@@ -170,8 +198,8 @@ export default function AdminDashboardClient() {
       <section className="page-hero">
         <div>
           <div className="eyebrow">HR Dashboard</div>
-          <h1>2026 1차 팀장 워크샵 응답 현황</h1>
-          <p>자가진단, Peer 피드백, 리포트 준비 상태를 실시간으로 확인하고 미완료 대상을 빠르게 파악할 수 있습니다.</p>
+          <h1>2026 SK엔무브 팀장 SUPEX 워크샵 응답 현황</h1>
+          <p>자가진단, Peer 피드백, 리포트 준비 상태와 워크샵 준비 문항 응답까지 한 화면에서 확인할 수 있습니다.</p>
         </div>
         <div className="hero-badge">{session.email}</div>
       </section>
@@ -179,22 +207,28 @@ export default function AdminDashboardClient() {
       {error ? <div className="error-box" style={{ marginTop: 22 }}>{error}</div> : null}
 
       <div className="admin-toolbar">
-        <div className="notice">세션 만료: {new Date(session.expiresAt).toLocaleString('ko-KR')}</div>
+        <div className="notice">세션 만료: {new Date(session.expiresAt).toLocaleString("ko-KR")}</div>
         <div className="button-row" style={{ marginTop: 0 }}>
-          <a className="btn secondary" href="/api/admin/export">데이터 백업</a>
-          <button className="btn secondary" type="button" onClick={() => loadDashboard()}>새로고침</button>
-          <button className="btn secondary" type="button" onClick={handleLogout} disabled={loggingOut}>{loggingOut ? '로그아웃 중...' : '로그아웃'}</button>
+          <a className="btn secondary" href="/api/admin/export">
+            데이터 백업
+          </a>
+          <button className="btn secondary" type="button" onClick={() => loadDashboard()}>
+            새로고침
+          </button>
+          <button className="btn secondary" type="button" onClick={handleLogout} disabled={loggingOut}>
+            {loggingOut ? "로그아웃 중..." : "로그아웃"}
+          </button>
         </div>
       </div>
 
       {testParticipants.length > 0 ? (
-        <section className="panel" style={{ marginTop: 22, borderColor: '#ffd5c3', background: 'linear-gradient(135deg, #fff7f1 0%, #fffdfb 100%)' }}>
+        <section className="panel" style={{ marginTop: 22, borderColor: "#ffd5c3", background: "linear-gradient(135deg, #fff7f1 0%, #fffdfb 100%)" }}>
           <div className="chip-row" style={{ marginBottom: 12 }}>
             <span className="chip orange">TEST조</span>
-            <span className="chip blue">내일 테스트용 계정</span>
+            <span className="chip blue">테스트 운영 계정</span>
           </div>
           <h2>테스트 그룹 현황</h2>
-          <p className="muted">운영 대상과 별도로 추가한 테스트 전용 계정입니다. 데모, 리허설, 링크 확인 용도로만 사용하면 됩니다.</p>
+          <p className="muted">운영 대상과 별도로 추가된 테스트 전용 계정입니다. 링크 점검과 응답 흐름 확인용으로 활용하면 됩니다.</p>
           <div className="chip-row" style={{ marginTop: 14 }}>
             <span className="chip orange">테스트 참가자 {testParticipants.length}명</span>
             <span className="chip blue">테스트 응답자 {testResponders.length}명</span>
@@ -218,7 +252,9 @@ export default function AdminDashboardClient() {
             </div>
             <div className="admin-stat-card">
               <div className="admin-stat-label">Peer 완료</div>
-              <div className="admin-stat-value">{data.summary.peerCompleted}/{data.summary.peerAssignments}</div>
+              <div className="admin-stat-value">
+                {data.summary.peerCompleted}/{data.summary.peerAssignments}
+              </div>
               <div className="admin-stat-sub">응답 진행률 {peerCompletion}%</div>
             </div>
             <div className="admin-stat-card highlight">
@@ -228,7 +264,7 @@ export default function AdminDashboardClient() {
             </div>
           </section>
 
-          <div className="grid-2" style={{ alignItems: 'start' }}>
+          <div className="grid-2" style={{ alignItems: "start" }}>
             <section className="panel">
               <h2>조별 현황</h2>
               <div className="table-wrap">
@@ -252,8 +288,12 @@ export default function AdminDashboardClient() {
                           </div>
                         </td>
                         <td>{group.members}</td>
-                        <td>{group.selfCompleted}/{group.members}</td>
-                        <td>{group.reportReady}/{group.members}</td>
+                        <td>
+                          {group.selfCompleted}/{group.members}
+                        </td>
+                        <td>
+                          {group.reportReady}/{group.members}
+                        </td>
                         <td>{group.targetsPerPerson}명</td>
                       </tr>
                     ))}
@@ -284,10 +324,12 @@ export default function AdminDashboardClient() {
                             {isTestGroup(responder.groupName) ? <span className="chip orange">TEST</span> : null}
                           </div>
                         </td>
-                        <td>{responder.completed}/{responder.total}</td>
                         <td>
-                          <span className={`status-pill ${responder.submitted ? 'done' : responder.completed > 0 ? 'progress' : 'pending'}`}>
-                            {responder.submitted ? '제출 완료' : responder.completed > 0 ? '작성 중' : '미작성'}
+                          {responder.completed}/{responder.total}
+                        </td>
+                        <td>
+                          <span className={`status-pill ${responder.submitted ? "done" : responder.completed > 0 ? "progress" : "pending"}`}>
+                            {responder.submitted ? "제출 완료" : responder.completed > 0 ? "작성 중" : "미작성"}
                           </span>
                         </td>
                       </tr>
@@ -325,26 +367,115 @@ export default function AdminDashboardClient() {
                         </div>
                       </td>
                       <td>
-                        <span className={`status-pill ${participant.selfCompleted ? 'done' : 'pending'}`}>
-                          {participant.selfCompleted ? '완료' : '대기'}
+                        <span className={`status-pill ${participant.selfCompleted ? "done" : "pending"}`}>
+                          {participant.selfCompleted ? "완료" : "대기"}
                         </span>
                       </td>
-                      <td>{participant.peerResponseCount}/{participant.expectedPeerCount}</td>
                       <td>
-                        <span className={`status-pill ${participant.reportReady ? 'done' : participant.peerResponseCount > 0 || participant.selfCompleted ? 'progress' : 'pending'}`}>
-                          {participant.reportReady ? '준비 완료' : participant.peerResponseCount > 0 || participant.selfCompleted ? '진행 중' : '대기'}
+                        {participant.peerResponseCount}/{participant.expectedPeerCount}
+                      </td>
+                      <td>
+                        <span className={`status-pill ${participant.reportReady ? "done" : participant.peerResponseCount > 0 || participant.selfCompleted ? "progress" : "pending"}`}>
+                          {participant.reportReady ? "준비 완료" : participant.peerResponseCount > 0 || participant.selfCompleted ? "진행 중" : "대기"}
                         </span>
                       </td>
                       <td>
                         {participant.reportToken ? (
                           <div className="admin-link-stack">
-                            <a className="btn secondary admin-mini-btn" href={`/report/${participant.reportToken}`} target="_blank" rel="noreferrer">열기</a>
-                            <a className="btn secondary admin-mini-btn" href={`/report/${participant.reportToken}?print=1`} target="_blank" rel="noreferrer">다운로드</a>
+                            <a className="btn secondary admin-mini-btn" href={`/report/${participant.reportToken}`} target="_blank" rel="noreferrer">
+                              열기
+                            </a>
+                            <a className="btn secondary admin-mini-btn" href={`/report/${participant.reportToken}?print=1`} target="_blank" rel="noreferrer">
+                              다운로드
+                            </a>
                           </div>
                         ) : (
                           <span className="muted">-</span>
                         )}
                       </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="panel" style={{ marginTop: 22 }}>
+            <h2>자가진단 응답 상세</h2>
+            <div className="table-wrap admin-table-scroll-lg">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>이름</th>
+                    <th>조직</th>
+                    <th>강점 1</th>
+                    <th>강점 2</th>
+                    <th>성장가능성 1</th>
+                    <th>성장가능성 2</th>
+                    <th>test문항입니다</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.participants.map((participant) => (
+                    <tr key={`${participant.participantId}-self`}>
+                      <td>{participant.nameKo}</td>
+                      <td>{participant.teamName}</td>
+                      <td>
+                        <strong>{participant.strength1 || "-"}</strong>
+                        <div className="muted">{participant.strength1Comment || "-"}</div>
+                      </td>
+                      <td>
+                        <strong>{participant.strength2 || "-"}</strong>
+                        <div className="muted">{participant.strength2Comment || "-"}</div>
+                      </td>
+                      <td>
+                        <strong>{participant.growth1 || "-"}</strong>
+                        <div className="muted">{participant.growth1Comment || "-"}</div>
+                      </td>
+                      <td>
+                        <strong>{participant.growth2 || "-"}</strong>
+                        <div className="muted">{participant.growth2Comment || "-"}</div>
+                      </td>
+                      <td>{participant.testQuestionAnswer || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="panel" style={{ marginTop: 22 }}>
+            <h2>자가진단 준비 문항 응답</h2>
+            <div className="table-wrap admin-table-scroll-lg">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>이름</th>
+                    <th>조직</th>
+                    <th>조</th>
+                    <th>이동 방식</th>
+                    <th>차량번호</th>
+                    <th>노트북</th>
+                    <th>OS</th>
+                    <th>test문항입니다</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.participants.map((participant) => (
+                    <tr key={`${participant.participantId}-prep`}>
+                      <td>{participant.nameKo}</td>
+                      <td>{participant.teamName}</td>
+                      <td>
+                        <div className="chip-row">
+                          <span>{participant.groupName}</span>
+                          {isTestGroup(participant.groupName) ? <span className="chip orange">TEST</span> : null}
+                        </div>
+                      </td>
+                      <td>{formatTransportMode(participant.transportMode)}</td>
+                      <td>{participant.vehicleNumber || "-"}</td>
+                      <td>{formatLaptopBringOption(participant.laptopBringOption)}</td>
+                      <td>{formatLaptopOs(participant.laptopOs)}</td>
+                      <td>{participant.testQuestionAnswer || "-"}</td>
                     </tr>
                   ))}
                 </tbody>

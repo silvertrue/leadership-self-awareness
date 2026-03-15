@@ -33,6 +33,7 @@ export class DashboardService {
     const selfCompletedSet = new Set(
       selfResponses.filter((response) => response.status === 'submitted').map((response) => response.participantId)
     );
+    const selfResponseMap = new Map(selfResponses.map((response) => [response.participantId, response]));
     const peerCompletedAssignmentSet = new Set(
       peerResponses.filter((response) => response.status === 'submitted').map((response) => response.assignmentId)
     );
@@ -77,6 +78,7 @@ export class DashboardService {
       const expectedPeerCount = inboundAssignmentCountByParticipant.get(participant.participantId) ?? 0;
       const peerResponseCount = inboundSubmittedCountByParticipant.get(participant.participantId) ?? 0;
       const selfCompleted = selfCompletedSet.has(participant.participantId);
+      const selfResponse = selfResponseMap.get(participant.participantId);
       const generatedReport = reportRunMap.get(participant.participantId);
       const derivedReady = selfCompleted && expectedPeerCount > 0 && peerResponseCount >= expectedPeerCount;
       const reportReady = generatedReport?.reportStatus === 'ready' || generatedReport?.reportStatus === 'exported' || derivedReady;
@@ -87,6 +89,19 @@ export class DashboardService {
         teamName: participant.teamName,
         groupName: participant.groupName,
         selfCompleted,
+        strength1: selfResponse?.strength1 ?? null,
+        strength1Comment: selfResponse?.strength1Comment ?? null,
+        strength2: selfResponse?.strength2 ?? null,
+        strength2Comment: selfResponse?.strength2Comment ?? null,
+        growth1: selfResponse?.growth1 ?? null,
+        growth1Comment: selfResponse?.growth1Comment ?? null,
+        growth2: selfResponse?.growth2 ?? null,
+        growth2Comment: selfResponse?.growth2Comment ?? null,
+        transportMode: selfResponse?.transportMode ?? null,
+        vehicleNumber: selfResponse?.vehicleNumber ?? null,
+        laptopBringOption: selfResponse?.laptopBringOption ?? null,
+        laptopOs: selfResponse?.laptopOs ?? null,
+        testQuestionAnswer: selfResponse?.testQuestionAnswer ?? null,
         peerResponseCount,
         expectedPeerCount,
         reportReady,

@@ -40,8 +40,10 @@ export interface PeerAssignment {
 export interface SelfResponse {
   participantId: string;
   transportMode?: TransportMode | null;
+  vehicleNumber?: string | null;
   laptopBringOption?: LaptopBringOption | null;
   laptopOs?: LaptopOs | null;
+  testQuestionAnswer?: string | null;
   strength1: Dimension;
   strength1Comment: string;
   strength2: Dimension;

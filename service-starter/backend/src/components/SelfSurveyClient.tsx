@@ -10,6 +10,7 @@ type SelectValue = Dimension | "";
 type FormState = {
   participantId: string;
   transportMode: TransportMode | "";
+  vehicleNumber: string;
   laptopBringOption: LaptopBringOption | "";
   laptopOs: LaptopOs | "";
   strength1: SelectValue;
@@ -20,19 +21,21 @@ type FormState = {
   growth1Comment: string;
   growth2: SelectValue;
   growth2Comment: string;
+  testQuestionAnswer: string;
 };
 
 function validate(form: FormState) {
   if (!form.transportMode) return "대절버스 이용 여부를 선택해 주세요.";
+  if (form.transportMode === "self_drive" && !form.vehicleNumber.trim()) return "자차 이동 시 차량번호를 입력해 주세요.";
   if (!form.laptopBringOption) return "개인 노트북 지참 가능 여부를 선택해 주세요.";
   if (form.laptopBringOption === "bring" && !form.laptopOs) return "노트북 지참 가능 시 OS 종류를 선택해 주세요.";
   if (!form.strength1 || !form.strength2) return "강점 1과 강점 2를 모두 선택해 주세요.";
-  if (!form.growth1 || !form.growth2) return "성장가능성 1과 성장가능성 2를 모두 선택해 주세요.";
   if (form.strength1 === form.strength2) return "강점 1과 강점 2는 서로 다른 항목이어야 합니다.";
+  if (!form.strength1Comment.trim() || !form.strength2Comment.trim()) return "강점 판단 근거를 모두 작성해 주세요.";
+  if (!form.growth1 || !form.growth2) return "성장가능성 1과 성장가능성 2를 모두 선택해 주세요.";
   if (form.growth1 === form.growth2) return "성장가능성 1과 성장가능성 2는 서로 다른 항목이어야 합니다.";
-  if (![form.strength1Comment, form.strength2Comment, form.growth1Comment, form.growth2Comment].every((item) => item.trim())) {
-    return "강점과 성장가능성에 대한 판단 근거를 모두 작성해 주세요.";
-  }
+  if (!form.growth1Comment.trim() || !form.growth2Comment.trim()) return "성장가능성 판단 근거를 모두 작성해 주세요.";
+  if (!form.testQuestionAnswer.trim()) return "test문항입니다를 작성해 주세요.";
   return "";
 }
 
@@ -40,6 +43,7 @@ function buildInitialForm(payload: PublicSelfGetResponse): FormState {
   return {
     participantId: payload.participant.participantId,
     transportMode: payload.response.transportMode || "",
+    vehicleNumber: payload.response.vehicleNumber || "",
     laptopBringOption: payload.response.laptopBringOption || "",
     laptopOs: payload.response.laptopOs || "",
     strength1: (payload.response.strength1 as SelectValue) || "",
@@ -50,6 +54,7 @@ function buildInitialForm(payload: PublicSelfGetResponse): FormState {
     growth1Comment: payload.response.growth1Comment || "",
     growth2: (payload.response.growth2 as SelectValue) || "",
     growth2Comment: payload.response.growth2Comment || "",
+    testQuestionAnswer: payload.response.testQuestionAnswer || "",
   };
 }
 
@@ -87,7 +92,11 @@ export default function SelfSurveyClient({ token }: { token: string }) {
 
   function selectTransportMode(value: TransportMode) {
     if (!form) return;
-    setForm({ ...form, transportMode: value });
+    setForm({
+      ...form,
+      transportMode: value,
+      vehicleNumber: value === "self_drive" ? form.vehicleNumber : "",
+    });
     setError("");
     setMessage("");
   }
@@ -154,8 +163,8 @@ export default function SelfSurveyClient({ token }: { token: string }) {
       <section className="page-hero">
         <div>
           <div className="eyebrow">자가진단</div>
-          <h1>강점과 성장가능성을 구분해 선택하고, 그 근거를 작성해 주세요.</h1>
-          <p>강점 2개와 성장가능성 2개를 각각 선택한 뒤, 판단 근거를 구체적으로 작성해 주세요.</p>
+          <h1>진단 문항에 응답해 주세요</h1>
+          <p>워크샵 준비 문항과 자가진단 문항을 모두 작성해 주세요. 저장 후 HR 담당자가 응답 현황을 확인할 수 있습니다.</p>
         </div>
         <div className="hero-badge">참가자용</div>
       </section>
@@ -175,57 +184,65 @@ export default function SelfSurveyClient({ token }: { token: string }) {
         </div>
       </div>
 
+      {error ? <div className="error-box" style={{ marginTop: 18 }}>{error}</div> : null}
+      {message ? <div className="message">{message}</div> : null}
+      {validationMessage ? <div className="notice">저장 조건: {validationMessage}</div> : null}
+
+      <section className="panel" style={{ marginTop: 22 }}>
+        <h2>워크샵 준비 문항</h2>
+        <div className="prep-grid">
+          <section className="prep-card">
+            <h3>준비 문항 1</h3>
+            <p className="muted">대절버스 이용 여부를 선택해 주세요.</p>
+            <div className="choice-row">
+              <button type="button" className={`choice-chip ${form.transportMode === "chartered_bus" ? "active" : ""}`} onClick={() => selectTransportMode("chartered_bus")}>
+                대절버스 이용
+              </button>
+              <button type="button" className={`choice-chip ${form.transportMode === "self_drive" ? "active" : ""}`} onClick={() => selectTransportMode("self_drive")}>
+                자차 이동
+              </button>
+            </div>
+            {form.transportMode === "self_drive" ? (
+              <div className="field">
+                <label>차량번호</label>
+                <input className="input" value={form.vehicleNumber} onChange={(e) => update("vehicleNumber", e.target.value)} placeholder="예: 123가4567" />
+              </div>
+            ) : null}
+          </section>
+
+          <section className="prep-card">
+            <h3>준비 문항 2</h3>
+            <p className="muted">이번 워크샵에서는 AX 교육 실습을 위하여 개인 노트북 지참이 필요합니다. 노트북 지참이 가능하신지 응답해 주세요.</p>
+            <div className="choice-row">
+              <button type="button" className={`choice-chip ${form.laptopBringOption === "bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("bring")}>
+                개인노트북 지참 가능
+              </button>
+              <button type="button" className={`choice-chip ${form.laptopBringOption === "cannot_bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("cannot_bring")}>
+                개인노트북 지참 불가
+              </button>
+            </div>
+            {form.laptopBringOption === "bring" ? (
+              <div className="choice-row">
+                <button type="button" className={`choice-chip soft-active ${form.laptopOs === "windows" ? "active" : ""}`} onClick={() => selectLaptopOs("windows")}>
+                  윈도우
+                </button>
+                <button type="button" className={`choice-chip soft-active ${form.laptopOs === "mac" ? "active" : ""}`} onClick={() => selectLaptopOs("mac")}>
+                  맥
+                </button>
+              </div>
+            ) : null}
+          </section>
+        </div>
+      </section>
+
       <div className="grid-2">
         <div className="panel">
-          <h2>자가진단 입력</h2>
-          <p className="muted">강점과 성장가능성은 서로 다른 의미이므로, 아래 두 섹션을 나누어 작성해 주세요.</p>
-
-          {error ? <div className="error-box" style={{ marginTop: 16 }}>{error}</div> : null}
-          {message ? <div className="message">{message}</div> : null}
-          {validationMessage ? <div className="notice">저장 조건: {validationMessage}</div> : null}
-
-          <div className="prep-grid">
-            <section className="prep-card">
-              <h3>워크샵 준비 문항 1</h3>
-              <p className="muted">대절버스 이용 여부를 선택해 주세요.</p>
-              <div className="choice-row">
-                <button type="button" className={`choice-chip ${form.transportMode === "chartered_bus" ? "active" : ""}`} onClick={() => selectTransportMode("chartered_bus")}>
-                  대절버스 이용
-                </button>
-                <button type="button" className={`choice-chip ${form.transportMode === "self_drive" ? "active" : ""}`} onClick={() => selectTransportMode("self_drive")}>
-                  자차 이동
-                </button>
-              </div>
-            </section>
-
-            <section className="prep-card">
-              <h3>워크샵 준비 문항 2</h3>
-              <p className="muted">이번 워크샵에서는 AX 교육 실습을 위하여 개인 노트북 지참이 필요합니다. 노트북 지참이 가능하신지 응답해 주세요.</p>
-              <div className="choice-row">
-                <button type="button" className={`choice-chip ${form.laptopBringOption === "bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("bring")}>
-                  개인노트북 지참 가능
-                </button>
-                <button type="button" className={`choice-chip ${form.laptopBringOption === "cannot_bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("cannot_bring")}>
-                  개인노트북 지참 불가
-                </button>
-              </div>
-              {form.laptopBringOption === "bring" ? (
-                <div className="choice-row">
-                  <button type="button" className={`choice-chip soft-active ${form.laptopOs === "windows" ? "active" : ""}`} onClick={() => selectLaptopOs("windows")}>
-                    윈도우
-                  </button>
-                  <button type="button" className={`choice-chip soft-active ${form.laptopOs === "mac" ? "active" : ""}`} onClick={() => selectLaptopOs("mac")}>
-                    맥
-                  </button>
-                </div>
-              ) : null}
-            </section>
-          </div>
+          <h2>자가진단 작성</h2>
 
           <section className="survey-section strength-section">
             <div className="survey-section-head">
               <div className="survey-section-badge strength">강점</div>
-              <h3>내가 생각하는 강점 2가지</h3>
+              <h3>나의 강점 2가지</h3>
             </div>
             <p className="muted">우측 설명을 참고해서 강점 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
             <div className="form-grid">
@@ -265,7 +282,7 @@ export default function SelfSurveyClient({ token }: { token: string }) {
           <section className="survey-section growth-section">
             <div className="survey-section-head">
               <div className="survey-section-badge growth">성장가능성</div>
-              <h3>앞으로 더 키우고 싶은 영역 2가지</h3>
+              <h3>나의 성장가능성 2가지</h3>
             </div>
             <p className="muted">우측 설명을 참고해서 성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
             <div className="form-grid">
@@ -299,6 +316,17 @@ export default function SelfSurveyClient({ token }: { token: string }) {
                 <label>성장가능성 2 판단 근거</label>
                 <textarea className="textarea" value={form.growth2Comment} onChange={(e) => update("growth2Comment", e.target.value)} />
               </div>
+            </div>
+          </section>
+
+          <section className="survey-section message-section">
+            <div className="survey-section-head">
+              <div className="survey-section-badge message">추가 문항</div>
+              <h3>test문항입니다</h3>
+            </div>
+            <div className="field" style={{ marginTop: 0 }}>
+              <label>test문항입니다</label>
+              <textarea className="textarea" value={form.testQuestionAnswer} onChange={(e) => update("testQuestionAnswer", e.target.value)} />
             </div>
           </section>
 

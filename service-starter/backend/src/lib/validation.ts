@@ -34,6 +34,10 @@ export function validateSelfResponseInput(input: SelfResponse): string[] {
     errors.push("대절버스 이용 여부를 선택해 주세요.");
   }
 
+  if (input.transportMode === "self_drive" && isBlank(input.vehicleNumber)) {
+    errors.push("자차 이동 시 차량번호를 입력해 주세요.");
+  }
+
   if (!isLaptopBringOption(input.laptopBringOption)) {
     errors.push("개인 노트북 지참 가능 여부를 선택해 주세요.");
   }
@@ -60,6 +64,10 @@ export function validateSelfResponseInput(input: SelfResponse): string[] {
 
   if ([input.strength1Comment, input.strength2Comment, input.growth1Comment, input.growth2Comment].some(isBlank)) {
     errors.push("자가진단의 모든 판단 근거는 필수입니다.");
+  }
+
+  if (isBlank(input.testQuestionAnswer)) {
+    errors.push("test문항입니다를 작성해 주세요.");
   }
 
   return errors;

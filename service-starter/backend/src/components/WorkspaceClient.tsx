@@ -342,7 +342,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                   <div className="survey-section-badge strength">강점</div>
                   <h3>내가 생각하는 강점 2가지</h3>
                 </div>
-                <p className="muted">강점 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
+                <p className="muted">우측 설명을 참고해서 강점 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
                 <div className="form-grid">
                   <div className="field">
                     <label>강점 1</label>
@@ -382,7 +382,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                   <div className="survey-section-badge growth">성장가능성</div>
                   <h3>앞으로 더 키우고 싶은 영역 2가지</h3>
                 </div>
-                <p className="muted">성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
+                <p className="muted">우측 설명을 참고해서 성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
                 <div className="form-grid">
                   <div className="field">
                     <label>성장가능성 1</label>
@@ -469,7 +469,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                           <div className="survey-section-badge strength">강점</div>
                           <h3>{peerData.assignments.find((item) => item.assignmentId === activeAssignmentId)?.target.nameKo} 팀장의 강점 2가지</h3>
                         </div>
-                        <p className="muted">강점 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
+                        <p className="muted">우측 설명을 참고해서 강점 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
                         <div className="form-grid">
                           <div className="field">
                             <label>강점 1</label>
@@ -509,7 +509,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
                           <div className="survey-section-badge growth">성장가능성</div>
                           <h3>{peerData.assignments.find((item) => item.assignmentId === activeAssignmentId)?.target.nameKo} 팀장의 성장가능성 2가지</h3>
                         </div>
-                        <p className="muted">성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
+                        <p className="muted">우측 설명을 참고해서 성장가능성 2개를 고르고 각 항목에 대한 판단 근거를 작성해 주세요.</p>
                         <div className="form-grid">
                           <div className="field">
                             <label>성장가능성 1</label>

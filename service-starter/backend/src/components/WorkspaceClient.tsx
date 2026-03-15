@@ -331,6 +331,22 @@ export default function WorkspaceClient({ token }: { token: string }) {
   const selfDone = workspace.surveyMeta.status === "submitted";
   const peerDone = Boolean(workspace.linked.peerSubmitted);
   const activeAssignment = peerData?.assignments.find((item) => item.assignmentId === activeAssignmentId) || null;
+  const submissionComplete = selfDone && (!workspace.linked.peerToken || peerDone);
+
+  if (submissionComplete) {
+    return (
+      <main className="page-shell">
+        <section className="page-hero" style={{ alignItems: "center" }}>
+          <div>
+            <div className="eyebrow">2026 SK엔무브 팀장 SUPEX 워크샵</div>
+            <h1>제출이 완료되었습니다.</h1>
+            <p>모든 응답이 정상적으로 제출되었습니다. 감사합니다.</p>
+          </div>
+          <div className="hero-badge">제출 완료</div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="page-shell">

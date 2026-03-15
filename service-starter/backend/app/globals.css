@@ -54,6 +54,7 @@ a { color: inherit; }
 .choice-chip { border: 1px solid #d1dbe9; background: #fff; color: var(--navy); border-radius: 999px; padding: 10px 14px; font: inherit; font-weight: 700; cursor: pointer; }
 .choice-chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
 .choice-chip.soft-active { background: #edf3ff; color: #234b80; border-color: #c7d7f5; }
+.choice-chip.soft-active.active { background: var(--navy); color: #fff; border-color: var(--navy); }
 .survey-section { margin-top: 20px; padding: 18px; border-radius: 20px; border: 1px solid var(--line); }
 .survey-section.strength-section { background: #fff8f3; border-color: #f4d9c7; }
 .survey-section.growth-section { background: #f4faf6; border-color: #d1e8d9; }

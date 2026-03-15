@@ -3,6 +3,9 @@ import type { SelfResponse } from '../types/survey';
 
 function mapSelf(row: {
   participantId: string;
+  transportMode: string | null;
+  laptopBringOption: string | null;
+  laptopOs: string | null;
   strength1: string;
   strength1Comment: string;
   strength2: string;
@@ -17,6 +20,9 @@ function mapSelf(row: {
 }): SelfResponse {
   return {
     participantId: row.participantId,
+    transportMode: row.transportMode as SelfResponse["transportMode"],
+    laptopBringOption: row.laptopBringOption as SelfResponse["laptopBringOption"],
+    laptopOs: row.laptopOs as SelfResponse["laptopOs"],
     strength1: row.strength1 as SelfResponse['strength1'],
     strength1Comment: row.strength1Comment,
     strength2: row.strength2 as SelfResponse['strength2'],
@@ -48,6 +54,9 @@ export class SelfResponseRepository {
     await this.db.selfResponse.upsert({
       where: { participantId: response.participantId },
       update: {
+        transportMode: response.transportMode ?? null,
+        laptopBringOption: response.laptopBringOption ?? null,
+        laptopOs: response.laptopBringOption === "bring" ? response.laptopOs ?? null : null,
         strength1: response.strength1,
         strength1Comment: response.strength1Comment,
         strength2: response.strength2,
@@ -61,6 +70,9 @@ export class SelfResponseRepository {
       },
       create: {
         participantId: response.participantId,
+        transportMode: response.transportMode ?? null,
+        laptopBringOption: response.laptopBringOption ?? null,
+        laptopOs: response.laptopBringOption === "bring" ? response.laptopOs ?? null : null,
         strength1: response.strength1,
         strength1Comment: response.strength1Comment,
         strength2: response.strength2,

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { PublicPeerGetResponse, PublicSelfGetResponse } from "../types/api";
-import type { Dimension } from "../types/survey";
+import type { Dimension, LaptopBringOption, LaptopOs, TransportMode } from "../types/survey";
 import DimensionGuide from "./DimensionGuide";
 
 type TabKey = "self" | "peer";
@@ -20,6 +20,9 @@ type WorkspaceResponse = PublicSelfGetResponse & {
 
 type SelfFormState = {
   participantId: string;
+  transportMode: TransportMode | "";
+  laptopBringOption: LaptopBringOption | "";
+  laptopOs: LaptopOs | "";
   strength1: SelectValue;
   strength1Comment: string;
   strength2: SelectValue;
@@ -44,6 +47,9 @@ type PeerFormState = {
 };
 
 function validateSelf(form: SelfFormState) {
+  if (!form.transportMode) return "대절버스 이용 여부를 선택해 주세요.";
+  if (!form.laptopBringOption) return "개인 노트북 지참 가능 여부를 선택해 주세요.";
+  if (form.laptopBringOption === "bring" && !form.laptopOs) return "노트북 지참 가능 시 OS 종류를 선택해 주세요.";
   if (!form.strength1 || !form.strength2) return "강점 1과 강점 2를 모두 선택해 주세요.";
   if (!form.growth1 || !form.growth2) return "성장가능성 1과 성장가능성 2를 모두 선택해 주세요.";
   if (form.strength1 === form.strength2) return "강점 1과 강점 2는 서로 다른 항목이어야 합니다.";
@@ -97,6 +103,9 @@ export default function WorkspaceClient({ token }: { token: string }) {
     setWorkspace(nextWorkspace);
     setSelfForm({
       participantId: nextWorkspace.participant.participantId,
+      transportMode: nextWorkspace.response.transportMode || "",
+      laptopBringOption: nextWorkspace.response.laptopBringOption || "",
+      laptopOs: nextWorkspace.response.laptopOs || "",
       strength1: (nextWorkspace.response.strength1 as SelectValue) || "",
       strength1Comment: nextWorkspace.response.strength1Comment || "",
       strength2: (nextWorkspace.response.strength2 as SelectValue) || "",
@@ -163,6 +172,31 @@ export default function WorkspaceClient({ token }: { token: string }) {
   function updateSelf(key: keyof SelfFormState, value: string) {
     if (!selfForm) return;
     setSelfForm({ ...selfForm, [key]: value } as SelfFormState);
+    setError("");
+    setSelfMessage("");
+  }
+
+  function selectTransportMode(value: TransportMode) {
+    if (!selfForm) return;
+    setSelfForm({ ...selfForm, transportMode: value });
+    setError("");
+    setSelfMessage("");
+  }
+
+  function selectLaptopBringOption(value: LaptopBringOption) {
+    if (!selfForm) return;
+    setSelfForm({
+      ...selfForm,
+      laptopBringOption: value,
+      laptopOs: value === "bring" ? selfForm.laptopOs : "",
+    });
+    setError("");
+    setSelfMessage("");
+  }
+
+  function selectLaptopOs(value: LaptopOs) {
+    if (!selfForm) return;
+    setSelfForm({ ...selfForm, laptopOs: value });
     setError("");
     setSelfMessage("");
   }
@@ -301,7 +335,7 @@ export default function WorkspaceClient({ token }: { token: string }) {
         <div className="hero-badge">{workspace.participant.teamName}</div>
       </section>
 
-      <div className="meta-card">
+      <div className="meta-card" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
         <div>
           <div className="meta-label">자가진단</div>
           <div className="meta-value">{selfDone ? "완료" : "작성 필요"}</div>
@@ -311,10 +345,6 @@ export default function WorkspaceClient({ token }: { token: string }) {
           <div className="meta-value">
             {workspace.linked.peerCompleted} / {workspace.linked.peerAssignments}
           </div>
-        </div>
-        <div>
-          <div className="meta-label">리포트 안내</div>
-          <div className="meta-value">HR 별도 제공</div>
         </div>
       </div>
 
@@ -336,6 +366,44 @@ export default function WorkspaceClient({ token }: { token: string }) {
           {tab === "self" ? (
             <section className="panel">
               <h2>자가진단 작성</h2>
+
+              <div className="prep-grid">
+                <section className="prep-card">
+                  <h3>워크샵 준비 문항 1</h3>
+                  <p className="muted">대절버스 이용 여부를 선택해 주세요.</p>
+                  <div className="choice-row">
+                    <button type="button" className={`choice-chip ${selfForm.transportMode === "chartered_bus" ? "active" : ""}`} onClick={() => selectTransportMode("chartered_bus")}>
+                      대절버스 이용
+                    </button>
+                    <button type="button" className={`choice-chip ${selfForm.transportMode === "self_drive" ? "active" : ""}`} onClick={() => selectTransportMode("self_drive")}>
+                      자차 이동
+                    </button>
+                  </div>
+                </section>
+
+                <section className="prep-card">
+                  <h3>워크샵 준비 문항 2</h3>
+                  <p className="muted">이번 워크샵에서는 AX 교육 실습을 위하여 개인 노트북 지참이 필요합니다. 노트북 지참이 가능하신지 응답해 주세요.</p>
+                  <div className="choice-row">
+                    <button type="button" className={`choice-chip ${selfForm.laptopBringOption === "bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("bring")}>
+                      개인노트북 지참 가능
+                    </button>
+                    <button type="button" className={`choice-chip ${selfForm.laptopBringOption === "cannot_bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("cannot_bring")}>
+                      개인노트북 지참 불가
+                    </button>
+                  </div>
+                  {selfForm.laptopBringOption === "bring" ? (
+                    <div className="choice-row">
+                      <button type="button" className={`choice-chip soft-active ${selfForm.laptopOs === "windows" ? "active" : ""}`} onClick={() => selectLaptopOs("windows")}>
+                        윈도우
+                      </button>
+                      <button type="button" className={`choice-chip soft-active ${selfForm.laptopOs === "mac" ? "active" : ""}`} onClick={() => selectLaptopOs("mac")}>
+                        맥
+                      </button>
+                    </div>
+                  ) : null}
+                </section>
+              </div>
 
               <section className="survey-section strength-section">
                 <div className="survey-section-head">

@@ -63,6 +63,9 @@ model PeerAssignment {
 
 model SelfResponse {
   participantId     String           @id @map("participant_id") @db.VarChar(32)
+  transportMode     String?          @map("transport_mode") @db.VarChar(30)
+  laptopBringOption String?          @map("laptop_bring_option") @db.VarChar(30)
+  laptopOs          String?          @map("laptop_os") @db.VarChar(20)
   strength1         String           @map("strength_1") @db.VarChar(50)
   strength1Comment  String           @map("strength_1_comment") @db.Text
   strength2         String           @map("strength_2") @db.VarChar(50)

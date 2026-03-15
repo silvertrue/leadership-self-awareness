@@ -2,13 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { PublicSelfGetResponse } from "../types/api";
-import type { Dimension } from "../types/survey";
+import type { Dimension, LaptopBringOption, LaptopOs, TransportMode } from "../types/survey";
 import DimensionGuide from "./DimensionGuide";
 
 type SelectValue = Dimension | "";
 
 type FormState = {
   participantId: string;
+  transportMode: TransportMode | "";
+  laptopBringOption: LaptopBringOption | "";
+  laptopOs: LaptopOs | "";
   strength1: SelectValue;
   strength1Comment: string;
   strength2: SelectValue;
@@ -20,6 +23,9 @@ type FormState = {
 };
 
 function validate(form: FormState) {
+  if (!form.transportMode) return "대절버스 이용 여부를 선택해 주세요.";
+  if (!form.laptopBringOption) return "개인 노트북 지참 가능 여부를 선택해 주세요.";
+  if (form.laptopBringOption === "bring" && !form.laptopOs) return "노트북 지참 가능 시 OS 종류를 선택해 주세요.";
   if (!form.strength1 || !form.strength2) return "강점 1과 강점 2를 모두 선택해 주세요.";
   if (!form.growth1 || !form.growth2) return "성장가능성 1과 성장가능성 2를 모두 선택해 주세요.";
   if (form.strength1 === form.strength2) return "강점 1과 강점 2는 서로 다른 항목이어야 합니다.";
@@ -33,6 +39,9 @@ function validate(form: FormState) {
 function buildInitialForm(payload: PublicSelfGetResponse): FormState {
   return {
     participantId: payload.participant.participantId,
+    transportMode: payload.response.transportMode || "",
+    laptopBringOption: payload.response.laptopBringOption || "",
+    laptopOs: payload.response.laptopOs || "",
     strength1: (payload.response.strength1 as SelectValue) || "",
     strength1Comment: payload.response.strength1Comment || "",
     strength2: (payload.response.strength2 as SelectValue) || "",
@@ -72,6 +81,31 @@ export default function SelfSurveyClient({ token }: { token: string }) {
   function update(key: keyof FormState, value: string) {
     if (!form) return;
     setForm({ ...form, [key]: value } as FormState);
+    setError("");
+    setMessage("");
+  }
+
+  function selectTransportMode(value: TransportMode) {
+    if (!form) return;
+    setForm({ ...form, transportMode: value });
+    setError("");
+    setMessage("");
+  }
+
+  function selectLaptopBringOption(value: LaptopBringOption) {
+    if (!form) return;
+    setForm({
+      ...form,
+      laptopBringOption: value,
+      laptopOs: value === "bring" ? form.laptopOs : "",
+    });
+    setError("");
+    setMessage("");
+  }
+
+  function selectLaptopOs(value: LaptopOs) {
+    if (!form) return;
+    setForm({ ...form, laptopOs: value });
     setError("");
     setMessage("");
   }
@@ -149,6 +183,44 @@ export default function SelfSurveyClient({ token }: { token: string }) {
           {error ? <div className="error-box" style={{ marginTop: 16 }}>{error}</div> : null}
           {message ? <div className="message">{message}</div> : null}
           {validationMessage ? <div className="notice">저장 조건: {validationMessage}</div> : null}
+
+          <div className="prep-grid">
+            <section className="prep-card">
+              <h3>워크샵 준비 문항 1</h3>
+              <p className="muted">대절버스 이용 여부를 선택해 주세요.</p>
+              <div className="choice-row">
+                <button type="button" className={`choice-chip ${form.transportMode === "chartered_bus" ? "active" : ""}`} onClick={() => selectTransportMode("chartered_bus")}>
+                  대절버스 이용
+                </button>
+                <button type="button" className={`choice-chip ${form.transportMode === "self_drive" ? "active" : ""}`} onClick={() => selectTransportMode("self_drive")}>
+                  자차 이동
+                </button>
+              </div>
+            </section>
+
+            <section className="prep-card">
+              <h3>워크샵 준비 문항 2</h3>
+              <p className="muted">이번 워크샵에서는 AX 교육 실습을 위하여 개인 노트북 지참이 필요합니다. 노트북 지참이 가능하신지 응답해 주세요.</p>
+              <div className="choice-row">
+                <button type="button" className={`choice-chip ${form.laptopBringOption === "bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("bring")}>
+                  개인노트북 지참 가능
+                </button>
+                <button type="button" className={`choice-chip ${form.laptopBringOption === "cannot_bring" ? "active" : ""}`} onClick={() => selectLaptopBringOption("cannot_bring")}>
+                  개인노트북 지참 불가
+                </button>
+              </div>
+              {form.laptopBringOption === "bring" ? (
+                <div className="choice-row">
+                  <button type="button" className={`choice-chip soft-active ${form.laptopOs === "windows" ? "active" : ""}`} onClick={() => selectLaptopOs("windows")}>
+                    윈도우
+                  </button>
+                  <button type="button" className={`choice-chip soft-active ${form.laptopOs === "mac" ? "active" : ""}`} onClick={() => selectLaptopOs("mac")}>
+                    맥
+                  </button>
+                </div>
+              ) : null}
+            </section>
+          </div>
 
           <section className="survey-section strength-section">
             <div className="survey-section-head">

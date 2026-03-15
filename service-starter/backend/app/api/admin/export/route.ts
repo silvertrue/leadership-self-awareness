@@ -91,6 +91,49 @@ export async function GET(request: Request) {
       });
     }
 
+    if (exportType === 'self-prep-csv') {
+      const participantMap = new Map(participants.map((participant) => [participant.participantId, participant]));
+      const headers = [
+        'participant_id',
+        'name_ko',
+        'team_name',
+        'group_name',
+        'transport_mode',
+        'vehicle_number',
+        'laptop_bring_option',
+        'laptop_os',
+        'status',
+        'submitted_at',
+        'updated_at'
+      ];
+
+      const rows = selfResponses.map((response) => {
+        const participant = participantMap.get(response.participantId);
+        return [
+          response.participantId,
+          participant?.nameKo ?? '',
+          participant?.teamName ?? '',
+          participant?.groupName ?? '',
+          response.transportMode ?? '',
+          response.vehicleNumber ?? '',
+          response.laptopBringOption ?? '',
+          response.laptopOs ?? '',
+          response.status ?? '',
+          response.submittedAt ?? '',
+          response.updatedAt ?? ''
+        ].map(csvEscape).join(',');
+      });
+
+      const csv = [headers.join(','), ...rows].join('\n');
+      return new Response(csv, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="self-awareness-prep-responses-${stamp}.csv"`
+        }
+      });
+    }
+
     const backup = {
       exportedAt: now.toISOString(),
       counts: {

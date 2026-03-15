@@ -452,7 +452,14 @@ export default function AdminDashboardClient() {
           </section>
 
           <section className="panel" style={{ marginTop: 22 }}>
-            <h2>자가진단 준비 문항 응답</h2>
+            <div className="admin-toolbar" style={{ marginTop: 0 }}>
+              <h2>자가진단 준비 문항 응답</h2>
+              <div className="button-row" style={{ marginTop: 0 }}>
+                <a className="btn secondary" href="/api/admin/export?type=self-prep-csv">
+                  준비 문항 CSV 다운로드
+                </a>
+              </div>
+            </div>
             <div className="table-wrap admin-table-scroll-lg">
               <table className="admin-table">
                 <thead>
